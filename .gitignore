@@ -76,7 +76,6 @@ env/
 *~
 
 # Data folder exclusions (as requested, ignore heavy raw data)
-data/raw/
 data/external/
 
 # Antigravity/Gemini local CLI cache
