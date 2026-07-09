@@ -1,0 +1,8 @@
+step,result,notes
+Load Raw Dataset,"Shape: (253680, 22)",Successfully loaded dataset with 22 features and 253680 records.
+Check Missing Values,0 missing values,No missing value handling needed.
+Remove Duplicate Rows,24206 duplicates removed,"Exact duplicate rows removed. Cleaned shape is (229474, 22)."
+Check Expected Ranges,0 invalid values,All variables conform to CDC expected ranges.
+Convert Data Types,float64 -> int,Converted categorical and binary float representations to integer types for clean formatting and memory efficiency.
+Save Cleaned Dataset,"Saved shape: (229474, 22)",Cleaned data successfully written to CSV file.
+Preserve Class Imbalance,Preserved,"Imbalance preserved without SMOTE/resampling. Raw: 13.93% positive, 86.07% negative. Cleaned: 15.29% positive, 84.71% negative."
