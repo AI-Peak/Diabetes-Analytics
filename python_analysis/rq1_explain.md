@@ -110,6 +110,20 @@ Diabetes-Analytics/
     └── statistical_analysis.md    <- Báo cáo học thuật được tự động xuất ra
 ```
 
+### 2.2 Bản đồ Tạo lập Kết quả (Hàm và Kết quả Đầu ra)
+
+Dưới đây là chi tiết cụ thể về việc hàm nào trong kịch bản [statistical_analysis.py](file:///d:/My%20document/DAP391m/Diabetes/Diabetes-Analytics/python_analysis/statistical_analysis.py) chịu trách nhiệm tạo ra các tệp kết quả tương ứng:
+
+| Hàm thực thi | Tệp kết quả tạo ra | Mô tả & Loại kết quả |
+| :--- | :--- | :--- |
+| `perform_categorical_tests` | [chi_square_results.csv](file:///d:/My%20document/DAP391m/Diabetes/Diabetes-Analytics/results/statistical_analysis/chi_square_results.csv) | Bảng thống kê các chỉ số Chi-Square, p-value, độ tự do, Cramér's V, khoảng biến động tỷ lệ mắc bệnh tiểu đường cho các biến phân loại. |
+| `perform_numerical_tests` | [numerical_results.csv](file:///d:/My%20document/DAP391m/Diabetes/Diabetes-Analytics/results/statistical_analysis/numerical_results.csv) | Bảng thống kê so sánh giá trị trung bình/trung vị giữa hai nhóm, thống kê Welch t-Test, Mann-Whitney U, chỉ số Cohen's d, CLES và tương quan Rank-Biserial. |
+| `generate_visualizations` | [cramers_v_ranking.png](file:///d:/My%20document/DAP391m/Diabetes/Diabetes-Analytics/results/statistical_analysis/cramers_v_ranking.png) | Biểu đồ thanh ngang xếp hạng sức mạnh liên quan (Cramér's V) của tất cả 18 biến phân loại đối với nguy cơ tiểu đường. |
+| `generate_visualizations` | [top_categorical_prevalence.png](file:///d:/My%20document/DAP391m/Diabetes/Diabetes-Analytics/results/statistical_analysis/top_categorical_prevalence.png) | Tổ hợp 4 biểu đồ cột thể hiện tỷ lệ % mắc tiểu đường thực tế trực quan theo các phân nhóm của 4 chỉ số sức khỏe hàng đầu (`GenHlth`, `HighBP`, `DiffWalk`, `HighChol`). |
+| `generate_visualizations` | [bmi_boxplot.png](file:///d:/My%20document/DAP391m/Diabetes/Diabetes-Analytics/results/statistical_analysis/bmi_boxplot.png) | Biểu đồ hộp (boxplot) so sánh sự phân phối và dịch chuyển giá trị BMI giữa hai nhóm khỏe mạnh (`0`) và tiểu đường (`1`). |
+| `generate_visualizations` | [health_days_comparison.png](file:///d:/My%20document/DAP391m/Diabetes/Diabetes-Analytics/results/statistical_analysis/health_days_comparison.png) | Biểu đồ cột có vạch sai số (Confidence Interval) so sánh số ngày trung bình có sức khỏe thể chất và tinh thần kém trong 30 ngày qua. |
+| `write_academic_report` | [docs/statistical_analysis.md](file:///d:/My%20document/DAP391m/Diabetes/Diabetes-Analytics/docs/statistical_analysis.md) | Báo cáo học thuật chính thức tự động tổng hợp tất cả các bảng số liệu, phân tích dịch tễ học và hình ảnh đồ thị phục vụ RQ1. |
+
 ---
 
 ## 3. Cách thực thi phân tích
