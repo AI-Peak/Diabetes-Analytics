@@ -235,9 +235,8 @@ def conduct_threshold_analysis(best_model_name, best_model_metrics, y_test):
     opt_precision = df_threshold.loc[closest_idx, "Precision"]
     
     plt.axvline(x=opt_t, color="purple", linestyle="-.", label=f"Optimized Threshold ({opt_t:.2f} for Recall~{opt_recall*100:.1f}%)")
-    plt.legend(loc="lower center", bbox_to_anchor=(0.5, -0.2), ncol=5)
-    plt.tight_layout()
-    plt.savefig(RESULTS_DIR / "threshold_analysis.png", dpi=300)
+    plt.legend(loc="upper center", bbox_to_anchor=(0.5, -0.18), ncol=2, frameon=True)
+    plt.savefig(RESULTS_DIR / "threshold_analysis.png", dpi=300, bbox_inches="tight")
     plt.close()
     
     # Detailed Reports comparison
