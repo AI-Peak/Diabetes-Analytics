@@ -1,0 +1,23 @@
+Model Optimization Report (XGBoost)
+==================================================
+Default Threshold (0.50):
+- Accuracy: 0.8555
+- Precision: 0.5966
+- Recall: 0.1707
+- F1-score: 0.2654
+
+Confusion Matrix (Default):
+[[38066   810]
+ [ 5821  1198]]
+
+--------------------------------------------------
+Optimized Threshold (0.15) for Screening:
+- Target: Prioritize Early Detection (Reduce False Negatives / High Recall)
+- Accuracy: 0.7045
+- Precision: 0.3153
+- Recall: 0.7961
+- F1-score: 0.4518
+
+Confusion Matrix (Optimized):
+[[26744 12132]
+ [ 1431  5588]]
