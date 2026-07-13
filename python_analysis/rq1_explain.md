@@ -22,6 +22,7 @@ $$\chi^2 = \sum_{i} \sum_{j} \frac{(O_{ij} - E_{ij})^2}{E_{ij}}$$
 
 *   **Giả thuyết Không ($H_0$)**: Chỉ số sức khỏe (ví dụ: `HighBP`) và tình trạng tiểu đường độc lập với nhau (không liên quan).
 *   **Giả thuyết Đối ($H_1$)**: Chỉ số sức khỏe và tình trạng tiểu đường có mối liên quan với nhau (không độc lập).
+*(Tệp kết quả tạo ra ở đây: chi_square_results.csv)*
 
 ### 1.2 Hệ số Cramér's V (Kích thước ảnh hưởng đối với biến phân loại)
 Vì kích thước mẫu lớn (*N* = 229,474) dễ làm phóng đại giá trị thống kê $\chi^2$ và dẫn đến các giá trị p-value cực kỳ nhỏ (thường $p < 0.05$ ngay cả đối với các mối liên quan rất yếu không đáng kể thực tế), chúng tôi tính toán **Cramér's V** để đo lường mức độ liên quan thực tế:
@@ -39,6 +40,8 @@ $$V = \sqrt{\frac{\chi^2}{N}}$$
 *   $0.20 \le V < 0.30$: Trung bình (Moderate)
 *   $V \ge 0.30$: Mạnh (Strong)
 
+*(Tệp kết quả tạo ra ở đây: cramers_v_ranking.png và top_categorical_prevalence.png)*
+
 ---
 
 ### 1.3 Kiểm định t-Test độc lập hai mẫu (Welch's t-Test)
@@ -47,6 +50,8 @@ $$V = \sqrt{\frac{\chi^2}{N}}$$
 $$t = \frac{\bar{X}_1 - \bar{X}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$$
 
 Trong đó $\bar{X}_i$ là trung bình mẫu, $s_i$ là độ lệch chuẩn mẫu, và $n_i$ là kích thước mẫu của nhóm tương ứng.
+
+*(Tệp kết quả tạo ra ở đây: numerical_results.csv)*
 
 ### 1.4 Hệ số Cohen's d (Kích thước ảnh hưởng tham số)
 Cohen's d đo lường sự khác biệt chuẩn hóa giữa hai giá trị trung bình:
@@ -82,6 +87,7 @@ Trong đó $R_1$ là tổng thứ hạng của mẫu 1.
 2.  **Hệ số tương quan Rank-Biserial ($r_{rb}$)**: Định lượng mức độ khác biệt về thứ hạng trong khoảng từ $-1$ đến $+1$:
     
     $$r_{rb} = 2 \cdot \text{CLES} - 1$$
+*(Tệp kết quả tạo ra ở đây: numerical_results.csv, bmi_boxplot.png và health_days_comparison.png)*
 
 ---
 
@@ -109,20 +115,6 @@ Diabetes-Analytics/
 └── docs/
     └── statistical_analysis.md    <- Báo cáo học thuật được tự động xuất ra
 ```
-
-### 2.2 Bản đồ Tạo lập Kết quả (Hàm và Kết quả Đầu ra)
-
-Dưới đây là chi tiết cụ thể về việc hàm nào trong kịch bản [statistical_analysis.py] chịu trách nhiệm tạo ra các tệp kết quả tương ứng:
-
-| Hàm thực thi | Tệp kết quả tạo ra | Mô tả & Loại kết quả |
-| :--- | :--- | :--- |
-| `perform_categorical_tests` | [chi_square_results.csv] | Bảng thống kê các chỉ số Chi-Square, p-value, độ tự do, Cramér's V, khoảng biến động tỷ lệ mắc bệnh tiểu đường cho các biến phân loại. |
-| `perform_numerical_tests` | [numerical_results.csv] | Bảng thống kê so sánh giá trị trung bình/trung vị giữa hai nhóm, thống kê Welch t-Test, Mann-Whitney U, chỉ số Cohen's d, CLES và tương quan Rank-Biserial. |
-| `generate_visualizations` | [cramers_v_ranking.png] | Biểu đồ thanh ngang xếp hạng sức mạnh liên quan (Cramér's V) của tất cả 18 biến phân loại đối với nguy cơ tiểu đường. |
-| `generate_visualizations` | [top_categorical_prevalence.png] | Tổ hợp 4 biểu đồ cột thể hiện tỷ lệ % mắc tiểu đường thực tế trực quan theo các phân nhóm của 4 chỉ số sức khỏe hàng đầu (`GenHlth`, `HighBP`, `DiffWalk`, `HighChol`). |
-| `generate_visualizations` | [bmi_boxplot.png] | Biểu đồ hộp (boxplot) so sánh sự phân phối và dịch chuyển giá trị BMI giữa hai nhóm khỏe mạnh (`0`) và tiểu đường (`1`). |
-| `generate_visualizations` | [health_days_comparison.png] | Biểu đồ cột có vạch sai số (Confidence Interval) so sánh số ngày trung bình có sức khỏe thể chất và tinh thần kém trong 30 ngày qua. |
-| `write_academic_report` | [docs/statistical_analysis.md] | Báo cáo học thuật chính thức tự động tổng hợp tất cả các bảng số liệu, phân tích dịch tễ học và hình ảnh đồ thị phục vụ RQ1. |
 
 ---
 
