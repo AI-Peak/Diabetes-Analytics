@@ -1,0 +1,27 @@
+"use client";
+
+import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
+import { ChartTooltip } from "./Tooltip";
+import { useChartTheme } from "./theme";
+
+export function ThresholdLineChart({ data, currentT }: { data: { t: number; precision: number; recall: number }[]; currentT: number }) {
+  const theme = useChartTheme();
+  return (
+    <div className="chart-scroll" role="img" aria-label="Precision and recall across decision thresholds with the selected threshold marked">
+      <div className="chart-min-width">
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={data} margin={{ top: 8, right: 14, left: 0, bottom: 8 }}>
+            <CartesianGrid stroke={theme.grid} vertical={false} />
+            <XAxis dataKey="t" tick={{ fill: theme.axis, fontSize: 9 }} tickFormatter={(value: number) => value.toFixed(2)} tickLine={false} axisLine={{ stroke: theme.grid }} />
+            <YAxis domain={[0, 1]} tick={{ fill: theme.axis, fontSize: 9 }} tickFormatter={(value: number) => `${Math.round(value * 100)}%`} tickLine={false} axisLine={false} />
+            <Tooltip content={<ChartTooltip formatter={(value) => `${(Number(value) * 100).toFixed(1)}%`} />} />
+            <Legend wrapperStyle={{ fontSize: 9, color: theme.axis }} />
+            <ReferenceLine x={currentT} stroke={theme.red} strokeDasharray="4 4" label={{ value: `t=${currentT.toFixed(2)}`, fill: theme.red, fontSize: 9, position: "insideTopRight" }} />
+            <Line type="monotone" dataKey="precision" name="Precision" stroke={theme.cyan} strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+            <Line type="monotone" dataKey="recall" name="Recall" stroke={theme.red} strokeWidth={2} dot={false} activeDot={{ r: 4 }} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}

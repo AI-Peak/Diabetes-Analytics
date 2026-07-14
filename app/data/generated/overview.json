@@ -1,0 +1,117 @@
+{
+  "dataset": {
+    "name": "CDC BRFSS 2015",
+    "nRows": 229474,
+    "nFeatures": 21,
+    "target": "Diabetes_binary",
+    "testSize": 45895,
+    "split": "stratified 80/20"
+  },
+  "classBalance": {
+    "healthyPct": 84.7,
+    "diabeticPct": 15.3,
+    "healthyN": 194377,
+    "diabeticN": 35097
+  },
+  "bestModel": {
+    "name": "XGBoost",
+    "rocAuc": 0.8183843935223754,
+    "prAuc": 0.4448324225038132
+  },
+  "topAssociations": [
+    {
+      "variable": "GenHlth",
+      "label": "Self-Rated General Health",
+      "cramersV": 0.28157482185325494
+    },
+    {
+      "variable": "HighBP",
+      "label": "High Blood Pressure",
+      "cramersV": 0.2543058668522422
+    },
+    {
+      "variable": "DiffWalk",
+      "label": "Difficulty Walking or Climbing Stairs",
+      "cramersV": 0.20528662026643651
+    },
+    {
+      "variable": "HighChol",
+      "label": "High Cholesterol",
+      "cramersV": 0.1949319185956483
+    },
+    {
+      "variable": "Age",
+      "label": "Age Category (13 levels)",
+      "cramersV": 0.18912436178628095
+    },
+    {
+      "variable": "HeartDiseaseorAttack",
+      "label": "Heart Disease or Attack History",
+      "cramersV": 0.16819328618437193
+    }
+  ],
+  "rqSummaries": [
+    {
+      "id": "rq1",
+      "eyebrow": "Statistical association",
+      "title": "Which factors move with diabetes?",
+      "finding": "General health and high blood pressure lead the categorical associations; BMI has the largest numeric effect.",
+      "chips": [
+        "Cramér's V",
+        "Cohen's d",
+        "N = 229,474"
+      ],
+      "href": "/rq1"
+    },
+    {
+      "id": "rq2",
+      "eyebrow": "Prediction",
+      "title": "Which model and threshold fit screening?",
+      "finding": "XGBoost leads on PR-AUC; lowering the threshold to 0.15 raises recall to about 80%.",
+      "chips": [
+        "XGBoost",
+        "PR-AUC 0.445",
+        "Recall 79.6%"
+      ],
+      "href": "/rq2"
+    },
+    {
+      "id": "rq3",
+      "eyebrow": "Explainability",
+      "title": "Do SHAP and statistics tell the same story?",
+      "finding": "The strongest model signals align with the study's statistical evidence, with correlated factors under-represented in SHAP.",
+      "chips": [
+        "TreeExplainer",
+        "2 groups",
+        "21 features"
+      ],
+      "href": "/rq3"
+    }
+  ],
+  "pipeline": [
+    {
+      "step": "Business",
+      "tool": "3 research questions"
+    },
+    {
+      "step": "Data",
+      "tool": "SQL"
+    },
+    {
+      "step": "Preparation",
+      "tool": "pandas"
+    },
+    {
+      "step": "Modeling",
+      "tool": "4 models"
+    },
+    {
+      "step": "Evaluation",
+      "tool": "PR-AUC"
+    },
+    {
+      "step": "Explainability",
+      "tool": "SHAP"
+    }
+  ]
+}

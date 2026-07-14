@@ -1,0 +1,297 @@
+{
+  "features": [
+    {
+      "variable": "GenHlth",
+      "label": "Self-Rated General Health",
+      "shapImportance": 0.54129773,
+      "pValue": 0,
+      "effectSize": 0.2815748218532549,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Moderate",
+      "shapRank": 1,
+      "statRank": 2,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "HighBP",
+      "label": "High Blood Pressure",
+      "shapImportance": 0.49943668,
+      "pValue": 0,
+      "effectSize": 0.2543058668522422,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Moderate",
+      "shapRank": 2,
+      "statRank": 3,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "Age",
+      "label": "Age Category",
+      "shapImportance": 0.38678536,
+      "pValue": 0,
+      "effectSize": 0.1891243617862809,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Small",
+      "shapRank": 3,
+      "statRank": 7,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "BMI",
+      "label": "Body Mass Index",
+      "shapImportance": 0.37937537,
+      "pValue": 0,
+      "effectSize": 0.3490390022699643,
+      "effectSizeType": "Abs Rank-Biserial",
+      "statInterpretation": "Medium",
+      "shapRank": 4,
+      "statRank": 1,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "HighChol",
+      "label": "High Cholesterol",
+      "shapImportance": 0.2795023,
+      "pValue": 0,
+      "effectSize": 0.1949319185956483,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Small",
+      "shapRank": 5,
+      "statRank": 6,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "Sex",
+      "label": "Biological Sex",
+      "shapImportance": 0.11609741,
+      "pValue": 2.4197839454991876e-55,
+      "effectSize": 0.032711964266193,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Negligible",
+      "shapRank": 6,
+      "statRank": 17,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "Income",
+      "label": "Income Bracket",
+      "shapImportance": 0.10524958,
+      "pValue": 0,
+      "effectSize": 0.1421546175364323,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Small",
+      "shapRank": 7,
+      "statRank": 9,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "MentHlth",
+      "label": "Poor Mental Health Days",
+      "shapImportance": 0.08268412,
+      "pValue": 1.1018982373056865e-19,
+      "effectSize": 0.0255606181450775,
+      "effectSizeType": "Abs Rank-Biserial",
+      "statInterpretation": "Negligible",
+      "shapRank": 8,
+      "statRank": 18,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "CholCheck",
+      "label": "Cholesterol Check (5 Years)",
+      "shapImportance": 0.07434168,
+      "pValue": 3.1386083621362587e-264,
+      "effectSize": 0.0724926789671642,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Weak / Very Small",
+      "shapRank": 9,
+      "statRank": 13,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "HvyAlcoholConsump",
+      "label": "Heavy Alcohol Consumption",
+      "shapImportance": 0.068794936,
+      "pValue": 6.906569461487025e-219,
+      "effectSize": 0.0659246839973041,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Weak / Very Small",
+      "shapRank": 10,
+      "statRank": 14,
+      "group": "Group 1: Strong Agreement (Significant & High SHAP)"
+    },
+    {
+      "variable": "HeartDiseaseorAttack",
+      "label": "Heart Disease or Attack History",
+      "shapImportance": 0.06070928,
+      "pValue": 0,
+      "effectSize": 0.1681932861843719,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Small",
+      "shapRank": 11,
+      "statRank": 8,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "DiffWalk",
+      "label": "Difficulty Walking",
+      "shapImportance": 0.043657813,
+      "pValue": 0,
+      "effectSize": 0.2052866202664365,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Moderate",
+      "shapRank": 12,
+      "statRank": 4,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "PhysHlth",
+      "label": "Poor Physical Health Days",
+      "shapImportance": 0.029215299,
+      "pValue": 0,
+      "effectSize": 0.1951438881431557,
+      "effectSizeType": "Abs Rank-Biserial",
+      "statInterpretation": "Small",
+      "shapRank": 13,
+      "statRank": 5,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "Education",
+      "label": "Education Level",
+      "shapImportance": 0.025493108,
+      "pValue": 0,
+      "effectSize": 0.1045519451810786,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Small",
+      "shapRank": 14,
+      "statRank": 10,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "Stroke",
+      "label": "Stroke History",
+      "shapImportance": 0.020577962,
+      "pValue": 0,
+      "effectSize": 0.0991640379949677,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Weak / Very Small",
+      "shapRank": 15,
+      "statRank": 12,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "Smoker",
+      "label": "Tobacco Smoker Status",
+      "shapImportance": 0.01758532,
+      "pValue": 2.753228537313405e-105,
+      "effectSize": 0.0454918535217922,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Negligible",
+      "shapRank": 16,
+      "statRank": 15,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "PhysActivity",
+      "label": "Physical Activity",
+      "shapImportance": 0.009710668,
+      "pValue": 0,
+      "effectSize": 0.1003906471990697,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Small",
+      "shapRank": 17,
+      "statRank": 11,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "NoDocbcCost",
+      "label": "Doctor Cost Barrier",
+      "shapImportance": 0.009259784,
+      "pValue": 8.487774987513059e-22,
+      "effectSize": 0.0200274243422375,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Negligible",
+      "shapRank": 18,
+      "statRank": 21,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "Fruits",
+      "label": "Daily Fruit Consumption",
+      "shapImportance": 0.008814316,
+      "pValue": 1.565008448239026e-32,
+      "effectSize": 0.0247929093201825,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Negligible",
+      "shapRank": 19,
+      "statRank": 20,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "AnyHealthcare",
+      "label": "Healthcare Coverage Access",
+      "shapImportance": 0.00780271,
+      "pValue": 8.100957411234124e-34,
+      "effectSize": 0.0253045499897131,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Negligible",
+      "shapRank": 20,
+      "statRank": 19,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    },
+    {
+      "variable": "Veggies",
+      "label": "Daily Vegetable Consumption",
+      "shapImportance": 0.006193219,
+      "pValue": 7.478661503930398e-89,
+      "effectSize": 0.0417187801756885,
+      "effectSizeType": "Cramér's V",
+      "statInterpretation": "Negligible",
+      "shapRank": 21,
+      "statRank": 16,
+      "group": "Group 2: Under-represented (Significant & Low SHAP)"
+    }
+  ],
+  "groups": [
+    {
+      "key": "strong-agreement",
+      "label": "Strong Agreement",
+      "members": [
+        "GenHlth",
+        "HighBP",
+        "Age",
+        "BMI",
+        "HighChol",
+        "Sex",
+        "Income",
+        "MentHlth",
+        "CholCheck",
+        "HvyAlcoholConsump"
+      ]
+    },
+    {
+      "key": "under-represented",
+      "label": "Under-represented",
+      "members": [
+        "HeartDiseaseorAttack",
+        "DiffWalk",
+        "PhysHlth",
+        "Education",
+        "Stroke",
+        "Smoker",
+        "PhysActivity",
+        "NoDocbcCost",
+        "Fruits",
+        "AnyHealthcare",
+        "Veggies"
+      ]
+    }
+  ],
+  "figures": {
+    "beeswarm": "/figures/shap_summary_dot.png",
+    "bar": "/figures/shap_summary_bar.png",
+    "localDiabetic": "/figures/shap_local_diabetic.png",
+    "localHealthy": "/figures/shap_local_healthy.png"
+  }
+}

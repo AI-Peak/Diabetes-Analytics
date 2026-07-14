@@ -80,3 +80,12 @@ data/external/
 
 # Antigravity/Gemini local CLI cache
 .gemini/
+
+# Local build prompts (do not commit)
+prompts/
+
+# Next.js web app build artifacts
+app/node_modules/
+app/.next/
+app/out/
+app/.env*.local

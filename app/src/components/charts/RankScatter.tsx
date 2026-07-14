@@ -1,0 +1,43 @@
+"use client";
+
+import { CartesianGrid, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
+import { useChartTheme } from "./theme";
+
+type RankPoint = { variable: string; statRank: number; shapRank: number; strong: boolean };
+type ScatterPayload = { payload?: RankPoint };
+
+function RankTooltip({ active, payload }: { active?: boolean; payload?: ScatterPayload[] }) {
+  const point = payload?.[0]?.payload;
+  if (!active || !point) return null;
+  return (
+    <div className="chart-tooltip">
+      <div className="tooltip-label">{point.variable}</div>
+      <div className="tooltip-row"><span>Stat rank</span><strong>#{point.statRank}</strong></div>
+      <div className="tooltip-row"><span>SHAP rank</span><strong>#{point.shapRank}</strong></div>
+    </div>
+  );
+}
+
+export function RankScatter({ data }: { data: RankPoint[] }) {
+  const theme = useChartTheme();
+  const strong = data.filter((item) => item.strong);
+  const under = data.filter((item) => !item.strong);
+  return (
+    <div className="chart-scroll" role="img" aria-label="Scatter plot comparing statistical rank on the x-axis and SHAP rank on the y-axis; the diagonal indicates perfect agreement">
+      <div className="chart-min-width">
+        <ResponsiveContainer width="100%" height={430}>
+          <ScatterChart margin={{ top: 18, right: 18, left: 0, bottom: 18 }}>
+            <CartesianGrid stroke={theme.grid} />
+            <XAxis type="number" dataKey="statRank" name="Stat rank" domain={[1, 21]} reversed tick={{ fill: theme.axis, fontSize: 9 }} tickLine={false} axisLine={{ stroke: theme.grid }} label={{ value: "Statistical rank (1 = strongest)", position: "insideBottom", offset: -12, fill: theme.axis, fontSize: 9 }} />
+            <YAxis type="number" dataKey="shapRank" name="SHAP rank" domain={[1, 21]} reversed tick={{ fill: theme.axis, fontSize: 9 }} tickLine={false} axisLine={false} label={{ value: "SHAP rank", angle: -90, position: "insideLeft", fill: theme.axis, fontSize: 9 }} />
+            <ZAxis range={[70, 70]} />
+            <ReferenceLine segment={[{ x: 1, y: 1 }, { x: 21, y: 21 }]} stroke={theme.axis} strokeDasharray="5 5" />
+            <Tooltip content={<RankTooltip />} cursor={{ strokeDasharray: "3 3" }} />
+            <Scatter name="Strong Agreement" data={strong} fill={theme.accent} />
+            <Scatter name="Under-represented" data={under} fill={theme.cyan} shape="diamond" />
+          </ScatterChart>
+        </ResponsiveContainer>
+      </div>
+    </div>
+  );
+}
