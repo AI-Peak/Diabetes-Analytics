@@ -1,10 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { GroupedBar, HBarChart } from "@/components/charts";
-import { ChartCard, Select, StatBadge } from "@/components/primitives";
+import { Callout, ChartCard, Select, StatBadge } from "@/components/primitives";
 import type { CohortCell } from "@/lib/data/schemas";
 import { fmtInt } from "@/lib/format";
+import { clearUrlState, useUrlState } from "@/lib/use-url-state";
+
+const SMALL_SAMPLE_N = 30;
+const SUPPRESS_ESTIMATE_N = 5;
 
 const SEX_OPTIONS = [
   { value: "all", label: "All sexes" },
@@ -54,10 +58,10 @@ export function CohortExplorer({
   cube: CohortCell[];
   overall: { positiveClassPct: number; positiveClassN: number };
 }) {
-  const [sex, setSex] = useState("all");
-  const [age, setAge] = useState("all");
-  const [bmi, setBmi] = useState("all");
-  const [highBP, setHighBP] = useState("all");
+  const [sex, setSex] = useUrlState<string>("sex", "all", (value) => SEX_OPTIONS.some((option) => option.value === value));
+  const [age, setAge] = useUrlState<string>("age", "all", (value) => AGE_OPTIONS.some((option) => option.value === value));
+  const [bmi, setBmi] = useUrlState<string>("bmi", "all", (value) => BMI_OPTIONS.some((option) => option.value === value));
+  const [highBP, setHighBP] = useUrlState<string>("bp", "all", (value) => BP_OPTIONS.some((option) => option.value === value));
 
   const selectedCells = useMemo(() => cube.filter((cell) =>
     (sex === "all" || cell.sex === Number(sex)) &&
@@ -79,25 +83,34 @@ export function CohortExplorer({
       (highBP === "all" || cell.highBP === Number(highBP)),
     );
     const total = summarize(cells);
+    const prevalence = total.n ? (total.positiveClassN / total.n) * 100 : 0;
+    const suppressed = total.n < SUPPRESS_ESTIMATE_N;
     return {
       name: option.label,
-      value: total.n ? (total.positiveClassN / total.n) * 100 : 0,
-      detail: `${fmtInt(total.positiveClassN)} positive records of ${fmtInt(total.n)}`,
+      value: suppressed ? 0 : prevalence,
+      displayValue: suppressed ? "Suppressed" : undefined,
+      detail: suppressed
+        ? `${fmtInt(total.n)} records; estimate suppressed`
+        : `${fmtInt(total.positiveClassN)} positive records of ${fmtInt(total.n)}${total.n < SMALL_SAMPLE_N ? "; small sample, interpret cautiously" : ""}`,
       ageValue: option.value,
+      n: total.n,
+      tone: total.n < SMALL_SAMPLE_N ? "orange" as const : "red" as const,
     };
-  }).filter((row) => row.value > 0), [bmi, cube, highBP, sex]);
+  }).filter((row) => row.n > 0), [bmi, cube, highBP, sex]);
 
   const selectedAgeLabel = AGE_OPTIONS.find((option) => option.value === age)?.label;
+  const estimateSuppressed = selected.n > 0 && selected.n < SUPPRESS_ESTIMATE_N;
+  const smallSample = selected.n > 0 && selected.n < SMALL_SAMPLE_N;
+  const prevalenceLabel = selected.n === 0 ? "No data" : estimateSuppressed ? "Suppressed" : `${prevalence.toFixed(1)}%`;
+  const liftLabel = selected.n === 0 ? "No data" : estimateSuppressed ? "Suppressed" : `${lift.toFixed(2)}x`;
+  const positiveShareLabel = selected.n === 0 ? "No data" : estimateSuppressed ? "Suppressed" : `${positiveShare.toFixed(1)}%`;
   const composition = [
     { name: "Selected cohort", noDiabetes: 1 - prevalence / 100, prediabetesOrDiabetes: prevalence / 100 },
     { name: "Population", noDiabetes: 1 - overall.positiveClassPct / 100, prediabetesOrDiabetes: overall.positiveClassPct / 100 },
   ];
 
   const reset = () => {
-    setSex("all");
-    setAge("all");
-    setBmi("all");
-    setHighBP("all");
+    clearUrlState(["sex", "age", "bmi", "bp"]);
   };
 
   return (
@@ -112,10 +125,19 @@ export function CohortExplorer({
 
       <div className="metric-strip" aria-live="polite">
         <div className="metric-mini"><span>Cohort records</span><strong>{fmtInt(selected.n)}</strong></div>
-        <div className="metric-mini"><span>Diabetes prevalence</span><strong>{prevalence.toFixed(1)}%</strong></div>
-        <div className="metric-mini"><span>Population lift</span><strong>{lift.toFixed(2)}x</strong></div>
-        <div className="metric-mini"><span>Share of positive cases</span><strong>{positiveShare.toFixed(1)}%</strong></div>
+        <div className="metric-mini"><span>Diabetes prevalence</span><strong>{prevalenceLabel}</strong></div>
+        <div className="metric-mini"><span>Population lift</span><strong>{liftLabel}</strong></div>
+        <div className="metric-mini"><span>Share of positive cases</span><strong>{positiveShareLabel}</strong></div>
       </div>
+
+      {smallSample ? (
+        <Callout variant="warn">
+          <strong>{estimateSuppressed ? "Estimate suppressed." : "Small sample warning."}</strong>{" "}
+          {estimateSuppressed
+            ? `This cohort contains only ${fmtInt(selected.n)} records, so prevalence, lift, and positive-case share are not displayed.`
+            : `This cohort contains ${fmtInt(selected.n)} records. The displayed estimates are unstable and should not be generalized.`}
+        </Callout>
+      ) : null}
 
       <div className="workbench-grid">
         <ChartCard
@@ -129,9 +151,9 @@ export function CohortExplorer({
             valueLabel="Diabetes prevalence"
             color="red"
             selectedName={age === "all" ? undefined : selectedAgeLabel}
-            onSelect={(datum) => {
+            onSelect={(datum, mode) => {
               const match = ageSeries.find((row) => row.name === datum.name);
-              if (match) setAge(match.ageValue);
+              if (match) setAge(match.ageValue, mode);
             }}
             formatValue={(value) => `${value.toFixed(1)}%`}
             ariaLabel="Diabetes prevalence by age group under the selected cohort filters"
@@ -143,16 +165,20 @@ export function CohortExplorer({
           subtitle="Class composition updates with every slicer and age-bar selection."
           source="overview.json · cohortCube"
         >
-          <GroupedBar
-            data={composition}
-            series={[
-              { key: "healthy", label: "Healthy", color: "accent" },
-              { key: "diabetic", label: "Diabetic", color: "red" },
-            ]}
-            formatValue={(value) => `${(value * 100).toFixed(0)}%`}
-            ariaLabel="Class composition for the selected cohort compared with the full population"
-          />
-          <p className="interaction-hint">Selections are computed from 208 anonymous aggregate cells; no person-level records are sent to the browser.</p>
+          {estimateSuppressed ? (
+            <div className="chart-empty">Cohort composition is suppressed when fewer than {SUPPRESS_ESTIMATE_N} records are selected.</div>
+          ) : (
+            <GroupedBar
+              data={composition}
+              series={[
+                { key: "noDiabetes", label: "No diabetes", color: "accent" },
+                { key: "prediabetesOrDiabetes", label: "Prediabetes or diabetes", color: "red" },
+              ]}
+              formatValue={(value) => `${(value * 100).toFixed(0)}%`}
+              ariaLabel="Class composition for the selected cohort compared with the full population"
+            />
+          )}
+          <p className="interaction-hint">Selections are computed from 208 anonymous aggregate cells; no person-level records are sent to the browser. Orange age bars have fewer than 30 records.</p>
         </ChartCard>
       </div>
     </div>

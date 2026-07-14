@@ -4,7 +4,7 @@ type TooltipItem = {
   name?: string | number;
   value?: string | number;
   color?: string;
-  payload?: { detail?: string };
+  payload?: { detail?: string; displayValue?: string };
 };
 
 export function ChartTooltip({
@@ -27,7 +27,7 @@ export function ChartTooltip({
       {payload.map((item, index) => (
         <div className="tooltip-row" key={`${item.name ?? "value"}-${index}`}>
           <span>{item.name ?? "Value"}</span>
-          <strong>{formatter(item.value ?? "", item.name)}</strong>
+          <strong>{item.payload?.displayValue ?? formatter(item.value ?? "", item.name)}</strong>
         </div>
       ))}
     </div>

@@ -1,11 +1,12 @@
 "use client";
 
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { HBarChart } from "@/components/charts";
 import { Callout, ChartCard, Chip, DataTable, Select, SliderControl, StatBadge, type TableColumn } from "@/components/primitives";
 import type { Rq1Data } from "@/lib/data/schemas";
 import { fmtFloat, fmtInt } from "@/lib/format";
+import { useUrlState } from "@/lib/use-url-state";
 
 function numericMagnitude(value: number): string {
   const magnitude = Math.abs(value);
@@ -16,9 +17,14 @@ function numericMagnitude(value: number): string {
 }
 
 export function Rq1Explorer({ data }: { data: Rq1Data }) {
-  const [sortBy, setSortBy] = useState("cramersV");
-  const [minEffect, setMinEffect] = useState(0);
-  const [selectedVariable, setSelectedVariable] = useState(data.categorical[0]?.variable ?? "");
+  const defaultVariable = data.categorical[0]?.variable ?? "";
+  const [sortBy, setSortBy] = useUrlState<string>("rank", "cramersV", (value) => value === "cramersV" || value === "maxDiffPct");
+  const [minEffectParam, setMinEffectParam] = useUrlState<string>("minV", "0", (value) => {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) && parsed >= 0 && parsed <= 0.25;
+  });
+  const [selectedVariable, setSelectedVariable] = useUrlState<string>("factor", defaultVariable, (value) => data.categorical.some((item) => item.variable === value));
+  const minEffect = Number(minEffectParam);
 
   const visible = useMemo(() => {
     const rows = data.categorical.filter((item) => item.cramersV >= minEffect);
@@ -42,7 +48,7 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
   ];
 
   return (
-    <>
+    <div className="analysis-workbench">
       <ChartCard
         title="Linked categorical association explorer"
         subtitle={`${visible.length} of ${data.categorical.length} variables shown. Click a bar or use the factor selector; the category chart and profile update together.`}
@@ -68,7 +74,7 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
             min={0}
             max={0.25}
             step={0.025}
-            onChange={setMinEffect}
+            onChange={(value) => setMinEffectParam(value === 0 ? "0" : value.toFixed(3), "replace")}
             formatValue={(value) => value.toFixed(3)}
           />
         </div>
@@ -81,7 +87,7 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
           }))}
           valueLabel={sortBy === "maxDiffPct" ? "Prevalence difference" : "Cramer's V"}
           selectedName={selected.variable}
-          onSelect={(datum) => setSelectedVariable(datum.name)}
+          onSelect={(datum, mode) => setSelectedVariable(datum.name, mode)}
           formatValue={(value) => sortBy === "maxDiffPct" ? `${value.toFixed(1)} pp` : value.toFixed(3)}
           ariaLabel="Interactive ranking of categorical factors by effect size or prevalence range"
         />
@@ -147,6 +153,6 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
           </figure>
         </ChartCard>
       </div>
-    </>
+    </div>
   );
 }

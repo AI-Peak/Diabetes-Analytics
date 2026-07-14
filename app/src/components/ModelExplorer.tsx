@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { HBarChart } from "@/components/charts";
 import { ChartCard, DataTable, RadioGroup, StatBadge, type TableColumn } from "@/components/primitives";
 import type { Rq2Data } from "@/lib/data/schemas";
 import { fmtPct } from "@/lib/format";
+import { useUrlState } from "@/lib/use-url-state";
 
 type ModelResult = Rq2Data["models"][number];
 type MetricKey = "accuracy" | "precision" | "recall" | "f1" | "rocAuc" | "prAuc";
@@ -29,8 +30,8 @@ function formatMetric(metric: MetricKey, value: number) {
 
 export function ModelExplorer({ data }: { data: Rq2Data }) {
   const initial = data.models.find((model) => model.isBest) ?? data.models[0];
-  const [metric, setMetric] = useState<MetricKey>("prAuc");
-  const [selectedName, setSelectedName] = useState(initial.name);
+  const [metric, setMetric] = useUrlState<MetricKey>("metric", "prAuc", (value) => METRICS.some((item) => item.value === value));
+  const [selectedName, setSelectedName] = useUrlState<string>("model", initial.name, (value) => data.models.some((model) => model.name === value));
   const selected = data.models.find((model) => model.name === selectedName) ?? initial;
 
   const ranked = useMemo(() => data.models.toSorted((a, b) => b[metric] - a[metric]), [data.models, metric]);
@@ -66,7 +67,7 @@ export function ModelExplorer({ data }: { data: Rq2Data }) {
             }))}
             valueLabel={metricLabel(metric)}
             selectedName={selected.name}
-            onSelect={(datum) => setSelectedName(datum.name)}
+            onSelect={(datum, mode) => setSelectedName(datum.name, mode)}
             formatValue={(value) => formatMetric(metric, value)}
             ariaLabel={`Four models ranked by ${metricLabel(metric)}`}
           />

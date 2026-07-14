@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo } from "react";
 import { HBarChart, RankScatter } from "@/components/charts";
 import { ChartCard, DataTable, RadioGroup, Select, StatBadge, type TableColumn } from "@/components/primitives";
 import type { FeatureResult } from "@/lib/data/schemas";
+import { useUrlState } from "@/lib/use-url-state";
 
 type GroupFilter = "all" | "g1" | "g2" | "g3" | "g4";
 type SortKey = "shapRank" | "statRank" | "gap";
@@ -16,9 +17,10 @@ function getGroupKey(feature: FeatureResult) {
 }
 
 export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
-  const [group, setGroup] = useState<GroupFilter>("all");
-  const [sort, setSort] = useState<SortKey>("shapRank");
-  const [selectedVariable, setSelectedVariable] = useState(features[0]?.variable ?? "");
+  const defaultVariable = features[0]?.variable ?? "";
+  const [group, setGroup] = useUrlState<GroupFilter>("group", "all", (value) => value === "all" || value === "strong" || value === "under");
+  const [sort, setSort] = useUrlState<SortKey>("sort", "shapRank", (value) => value === "shapRank" || value === "statRank" || value === "gap");
+  const [selectedVariable, setSelectedVariable] = useUrlState<string>("feature", defaultVariable, (value) => features.some((feature) => feature.variable === value));
 
   const rows = useMemo(() => features
     .filter((feature) => group === "all" || getGroupKey(feature) === group)
@@ -29,8 +31,8 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
     }), [features, group, sort]);
 
   useEffect(() => {
-    if (rows.length && !rows.some((row) => row.variable === selectedVariable)) setSelectedVariable(rows[0].variable);
-  }, [rows, selectedVariable]);
+    if (rows.length && !rows.some((row) => row.variable === selectedVariable)) setSelectedVariable(rows[0].variable, "replace");
+  }, [rows, selectedVariable, setSelectedVariable]);
 
   const selected = features.find((feature) => feature.variable === selectedVariable) ?? rows[0] ?? features[0];
   const rankGap = Math.abs(selected.shapRank - selected.statRank);
@@ -101,7 +103,7 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
             }))}
             valueLabel="mean|SHAP|"
             selectedName={selected.variable}
-            onSelect={(datum) => setSelectedVariable(datum.name)}
+            onSelect={(datum, mode) => setSelectedVariable(datum.name, mode)}
             ariaLabel="Feature importance ranking linked to the selected feature profile"
           />
         </ChartCard>
@@ -114,7 +116,7 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
           <RankScatter
             data={rows.map((feature) => ({ variable: feature.variable, statRank: feature.statRank, shapRank: feature.shapRank, strong: feature.group.startsWith("Group 1") }))}
             selectedVariable={selected.variable}
-            onSelect={setSelectedVariable}
+            onSelect={(variable, mode) => setSelectedVariable(variable, mode)}
           />
         </ChartCard>
       </div>

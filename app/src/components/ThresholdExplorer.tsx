@@ -1,20 +1,23 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { ThresholdLineChart } from "@/components/charts";
 import { Callout, ChartCard, SliderControl } from "@/components/primitives";
 import type { Rq2Data } from "@/lib/data/schemas";
 import { fmtInt, fmtPct } from "@/lib/format";
+import { useUrlState } from "@/lib/use-url-state";
 
 export function ThresholdExplorer({ data }: { data: Rq2Data }) {
   const optimizedIndex = Math.max(0, data.thresholds.findIndex((row) => row.t === data.highlights.optimized.t));
   const defaultIndex = Math.max(0, data.thresholds.findIndex((row) => row.t === data.highlights.default.t));
-  const [index, setIndex] = useState(optimizedIndex);
+  const defaultThreshold = data.thresholds[optimizedIndex].t.toFixed(2);
+  const [threshold, setThreshold] = useUrlState<string>("threshold", defaultThreshold, (value) => data.thresholds.some((row) => row.t.toFixed(2) === value));
+  const index = Math.max(0, data.thresholds.findIndex((row) => row.t.toFixed(2) === threshold));
   const selected = data.thresholds[index];
   const lineData = useMemo(() => data.thresholds.map(({ t, precision, recall }) => ({ t, precision, recall })), [data.thresholds]);
 
   return (
-    <div className="threshold-hero">
+    <div className="threshold-hero analysis-workbench">
       <ChartCard
         title="Decision-threshold explorer"
         subtitle="Move the slider or click the precision-recall chart. Metrics and the confusion matrix update together across 19 precomputed thresholds."
@@ -27,12 +30,12 @@ export function ThresholdExplorer({ data }: { data: Rq2Data }) {
             min={0}
             max={data.thresholds.length - 1}
             step={1}
-            onChange={setIndex}
+            onChange={(nextIndex) => setThreshold(data.thresholds[nextIndex].t.toFixed(2), "replace")}
             formatValue={() => `t = ${selected.t.toFixed(2)}`}
           />
           <div className="quick-actions">
-            <button className="quick-button secondary" type="button" onClick={() => setIndex(defaultIndex)}>Default 0.50</button>
-            <button className="quick-button" type="button" onClick={() => setIndex(optimizedIndex)}>Screening {data.highlights.optimized.t.toFixed(2)}</button>
+            <button className="quick-button secondary" type="button" onClick={() => setThreshold(data.thresholds[defaultIndex].t.toFixed(2))}>Default 0.50</button>
+            <button className="quick-button" type="button" onClick={() => setThreshold(defaultThreshold)}>Screening {data.highlights.optimized.t.toFixed(2)}</button>
           </div>
         </div>
 
@@ -46,9 +49,9 @@ export function ThresholdExplorer({ data }: { data: Rq2Data }) {
         <ThresholdLineChart
           data={lineData}
           currentT={selected.t}
-          onSelectT={(threshold) => {
+          onSelectT={(threshold, mode) => {
             const nextIndex = data.thresholds.findIndex((row) => row.t === threshold);
-            if (nextIndex >= 0) setIndex(nextIndex);
+            if (nextIndex >= 0) setThreshold(data.thresholds[nextIndex].t.toFixed(2), mode);
           }}
         />
         <div className="section-block">
