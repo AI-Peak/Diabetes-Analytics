@@ -1,0 +1,144 @@
+import { z } from "zod";
+
+const RqSummarySchema = z.object({
+  id: z.enum(["rq1", "rq2", "rq3"]),
+  eyebrow: z.string(),
+  title: z.string(),
+  finding: z.string(),
+  chips: z.array(z.string()),
+  href: z.enum(["/rq1", "/rq2", "/rq3"]),
+});
+
+export const OverviewSchema = z.object({
+  dataset: z.object({
+    name: z.string(),
+    nRows: z.number().int().positive(),
+    nFeatures: z.number().int().positive(),
+    target: z.string(),
+    testSize: z.number().int().positive(),
+    split: z.string(),
+  }),
+  classBalance: z.object({
+    healthyPct: z.number(),
+    diabeticPct: z.number(),
+    healthyN: z.number().int(),
+    diabeticN: z.number().int(),
+  }),
+  bestModel: z.object({ name: z.string(), rocAuc: z.number(), prAuc: z.number() }),
+  topAssociations: z.array(
+    z.object({ variable: z.string(), label: z.string(), cramersV: z.number() }),
+  ),
+  rqSummaries: z.array(RqSummarySchema).length(3),
+  pipeline: z.array(z.object({ step: z.string(), tool: z.string() })).length(6),
+});
+
+const CategoricalSchema = z.object({
+  variable: z.string(),
+  label: z.string(),
+  chi2: z.number(),
+  pValue: z.number(),
+  df: z.number().int(),
+  cramersV: z.number(),
+  interpretation: z.string(),
+  minRatePct: z.number(),
+  maxRatePct: z.number(),
+  maxDiffPct: z.number(),
+});
+
+const NumericSchema = z.object({
+  variable: z.string(),
+  healthyMean: z.number(),
+  diabeticMean: z.number(),
+  meanDiff: z.number(),
+  healthyMedian: z.number(),
+  diabeticMedian: z.number(),
+  tStat: z.number(),
+  tPValue: z.number(),
+  cohensD: z.number(),
+  mwuPValue: z.number(),
+  cles: z.number(),
+  rankBiserial: z.number(),
+});
+
+export const Rq1Schema = z.object({
+  categorical: z.array(CategoricalSchema).length(18),
+  numeric: z.array(NumericSchema).length(3),
+  notes: z.object({ largeN: z.boolean() }),
+});
+
+const ThresholdSchema = z.object({
+  t: z.number(),
+  accuracy: z.number(),
+  precision: z.number(),
+  recall: z.number(),
+  f1: z.number(),
+  tp: z.number().int(),
+  fn: z.number().int(),
+  fp: z.number().int(),
+  tn: z.number().int(),
+});
+
+const HighlightSchema = z.object({
+  t: z.number(),
+  accuracy: z.number(),
+  precision: z.number(),
+  recall: z.number(),
+  f1: z.number(),
+  cm: z.object({ tn: z.number().int(), fp: z.number().int(), fn: z.number().int(), tp: z.number().int() }),
+});
+
+export const Rq2Schema = z.object({
+  models: z.array(
+    z.object({
+      name: z.string(),
+      accuracy: z.number(),
+      precision: z.number(),
+      recall: z.number(),
+      f1: z.number(),
+      rocAuc: z.number(),
+      prAuc: z.number(),
+      isBest: z.boolean(),
+    }),
+  ).length(4),
+  bestModelName: z.string(),
+  thresholds: z.array(ThresholdSchema).length(19),
+  highlights: z.object({ default: HighlightSchema, optimized: HighlightSchema }),
+});
+
+const FeatureSchema = z.object({
+  variable: z.string(),
+  label: z.string(),
+  shapImportance: z.number(),
+  pValue: z.number(),
+  effectSize: z.number(),
+  effectSizeType: z.string(),
+  statInterpretation: z.string(),
+  shapRank: z.number().int(),
+  statRank: z.number().int(),
+  group: z.string(),
+});
+
+export const Rq3Schema = z.object({
+  features: z.array(FeatureSchema).length(21),
+  groups: z.array(
+    z.object({
+      key: z.enum(["strong-agreement", "under-represented"]),
+      label: z.string(),
+      members: z.array(z.string()),
+    }),
+  ).length(2),
+  figures: z.object({
+    beeswarm: z.string(),
+    bar: z.string(),
+    localDiabetic: z.string(),
+    localHealthy: z.string(),
+  }),
+});
+
+export type OverviewData = z.infer<typeof OverviewSchema>;
+export type Rq1Data = z.infer<typeof Rq1Schema>;
+export type Rq2Data = z.infer<typeof Rq2Schema>;
+export type Rq3Data = z.infer<typeof Rq3Schema>;
+export type CategoricalResult = Rq1Data["categorical"][number];
+export type ThresholdResult = Rq2Data["thresholds"][number];
+export type FeatureResult = Rq3Data["features"][number];
