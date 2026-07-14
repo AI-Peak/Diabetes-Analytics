@@ -10,7 +10,6 @@ const DEFAULT_BASE_URL = "https://9r-nhan.0err.com/v1";
 const DEFAULT_MODEL = "gpt-5.4-mini";
 
 export const runtime = "nodejs";
-export const preferredRegion = "sin1";
 
 function extractUpstreamError(body: string): string | null {
   try {
