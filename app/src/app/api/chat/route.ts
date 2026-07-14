@@ -9,6 +9,32 @@ type ChatCompletionResponse = {
 const DEFAULT_BASE_URL = "https://9r-nhan.0err.com/v1";
 const DEFAULT_MODEL = "gpt-5.4-mini";
 
+export const runtime = "nodejs";
+export const preferredRegion = "sin1";
+
+function extractUpstreamError(body: string): string | null {
+  try {
+    const payload = JSON.parse(body) as unknown;
+    if (!payload || typeof payload !== "object") return null;
+    const record = payload as Record<string, unknown>;
+    const error = record.error;
+
+    if (typeof error === "string") return error.trim().slice(0, 300) || null;
+    if (error && typeof error === "object") {
+      const message = (error as Record<string, unknown>).message;
+      if (typeof message === "string") return message.trim().slice(0, 300) || null;
+    }
+
+    for (const key of ["message", "detail"]) {
+      const message = record[key];
+      if (typeof message === "string") return message.trim().slice(0, 300) || null;
+    }
+  } catch {
+    // Ignore non-JSON proxy pages so logs never include an arbitrary HTML response.
+  }
+  return null;
+}
+
 function parseMessages(value: unknown): ChatMessage[] | null {
   if (!Array.isArray(value) || value.length === 0 || value.length > 12) return null;
   const messages: ChatMessage[] = [];
@@ -60,7 +86,9 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         Authorization: `Bearer ${apiKey}`,
+        Accept: "application/json",
         "Content-Type": "application/json",
+        "User-Agent": "Diabetes-Analytics/1.0",
       },
       body: JSON.stringify({
         model,
@@ -74,7 +102,15 @@ export async function POST(request: Request) {
       signal: AbortSignal.timeout(30_000),
     });
 
-    if (!response.ok) throw new Error(`9Router returned HTTP ${response.status}`);
+    if (!response.ok) {
+      const details = extractUpstreamError(await response.text());
+      const requestId = response.headers.get("cf-ray") || response.headers.get("x-request-id");
+      throw new Error([
+        `9Router returned HTTP ${response.status}`,
+        details ? `(${details})` : "",
+        requestId ? `[request ${requestId}]` : "",
+      ].filter(Boolean).join(" "));
+    }
     const payload = await response.json() as ChatCompletionResponse;
     const reply = extractReply(payload.choices?.[0]?.message?.content);
     if (!reply) throw new Error("9Router returned an empty response");
