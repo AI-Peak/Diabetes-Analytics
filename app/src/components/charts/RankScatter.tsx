@@ -1,6 +1,6 @@
 "use client";
 
-import { CartesianGrid, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
+import { CartesianGrid, Cell, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
 import { useChartTheme } from "./theme";
 
 type RankPoint = { variable: string; statRank: number; shapRank: number; strong: boolean };
@@ -18,10 +18,15 @@ function RankTooltip({ active, payload }: { active?: boolean; payload?: ScatterP
   );
 }
 
-export function RankScatter({ data }: { data: RankPoint[] }) {
+export function RankScatter({ data, selectedVariable, onSelect }: { data: RankPoint[]; selectedVariable?: string; onSelect?: (variable: string) => void }) {
   const theme = useChartTheme();
   const strong = data.filter((item) => item.strong);
   const under = data.filter((item) => !item.strong);
+  const handleClick = (entry: unknown) => {
+    if (!onSelect || !entry || typeof entry !== "object") return;
+    const candidate = "payload" in entry ? entry.payload : entry;
+    if (candidate && typeof candidate === "object" && "variable" in candidate && typeof candidate.variable === "string") onSelect(candidate.variable);
+  };
   return (
     <div className="chart-scroll" role="img" aria-label="Scatter plot comparing statistical rank on the x-axis and SHAP rank on the y-axis; the diagonal indicates perfect agreement">
       <div className="chart-min-width">
@@ -33,8 +38,12 @@ export function RankScatter({ data }: { data: RankPoint[] }) {
             <ZAxis range={[70, 70]} />
             <ReferenceLine segment={[{ x: 1, y: 1 }, { x: 21, y: 21 }]} stroke={theme.axis} strokeDasharray="5 5" />
             <Tooltip content={<RankTooltip />} cursor={{ strokeDasharray: "3 3" }} />
-            <Scatter name="Strong Agreement" data={strong} fill={theme.accent} />
-            <Scatter name="Under-represented" data={under} fill={theme.cyan} shape="diamond" />
+            <Scatter name="Strong Agreement" data={strong} fill={theme.accent} onClick={handleClick} cursor={onSelect ? "pointer" : undefined}>
+              {strong.map((point) => <Cell key={point.variable} fill={theme.accent} fillOpacity={selectedVariable && selectedVariable !== point.variable ? 0.32 : 1} stroke={selectedVariable === point.variable ? theme.red : "transparent"} strokeWidth={selectedVariable === point.variable ? 2 : 0} />)}
+            </Scatter>
+            <Scatter name="Under-represented" data={under} fill={theme.cyan} shape="diamond" onClick={handleClick} cursor={onSelect ? "pointer" : undefined}>
+              {under.map((point) => <Cell key={point.variable} fill={theme.cyan} fillOpacity={selectedVariable && selectedVariable !== point.variable ? 0.32 : 1} stroke={selectedVariable === point.variable ? theme.red : "transparent"} strokeWidth={selectedVariable === point.variable ? 2 : 0} />)}
+            </Scatter>
           </ScatterChart>
         </ResponsiveContainer>
       </div>

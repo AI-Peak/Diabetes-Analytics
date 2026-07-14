@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight } from "@/lib/icons";
+import { CohortExplorer } from "@/components/CohortExplorer";
 import { loadOverview } from "@/lib/data/load";
 import { fmtFloat, fmtInt } from "@/lib/format";
 import { HBarChart } from "@/components/charts";
@@ -34,6 +35,10 @@ export default function OverviewPage() {
           <KpiCard label="Diabetic prevalence" value={`${data.classBalance.diabeticPct.toFixed(1)}%`} note={`${fmtInt(data.classBalance.diabeticN)} positive records`} tone="risk" />
           <KpiCard label="Best model PR-AUC" value={fmtFloat(data.bestModel.prAuc, 3)} note={`${data.bestModel.name} · test n=${fmtInt(data.dataset.testSize)}`} tone="accent" />
         </div>
+      </Section>
+
+      <Section label="Interactive cohort lab" source="pre-aggregated BRFSS cohort cube">
+        <CohortExplorer cube={data.cohortCube} overall={{ diabeticPct: data.classBalance.diabeticPct, diabeticN: data.classBalance.diabeticN }} />
       </Section>
 
       <Section label="Evidence chain" source="RQ1 → RQ2 → RQ3">

@@ -17,7 +17,7 @@ export function ThresholdExplorer({ data }: { data: Rq2Data }) {
     <div className="threshold-hero">
       <ChartCard
         title="Decision-threshold explorer"
-        subtitle="Move across the 19 precomputed thresholds. No model inference runs in this dashboard."
+        subtitle="Move the slider or click the precision-recall chart. Metrics and the confusion matrix update together across 19 precomputed thresholds."
         source="results/modeling/threshold_analysis.csv"
       >
         <div className="control-row">
@@ -43,7 +43,14 @@ export function ThresholdExplorer({ data }: { data: Rq2Data }) {
           <div className="metric-mini"><span>Accuracy</span><strong>{fmtPct(selected.accuracy)}</strong></div>
         </div>
 
-        <ThresholdLineChart data={lineData} currentT={selected.t} />
+        <ThresholdLineChart
+          data={lineData}
+          currentT={selected.t}
+          onSelectT={(threshold) => {
+            const nextIndex = data.thresholds.findIndex((row) => row.t === threshold);
+            if (nextIndex >= 0) setIndex(nextIndex);
+          }}
+        />
         <div className="section-block">
           <Callout><strong>Screening trade-off.</strong> A false negative is the costly error in early screening. Lowering the threshold raises recall toward 80%, while accepting lower precision and more follow-up checks.</Callout>
         </div>

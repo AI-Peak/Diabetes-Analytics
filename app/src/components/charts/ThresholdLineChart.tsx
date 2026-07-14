@@ -4,13 +4,18 @@ import { CartesianGrid, Legend, Line, LineChart, ReferenceLine, ResponsiveContai
 import { ChartTooltip } from "./Tooltip";
 import { useChartTheme } from "./theme";
 
-export function ThresholdLineChart({ data, currentT }: { data: { t: number; precision: number; recall: number }[]; currentT: number }) {
+export function ThresholdLineChart({ data, currentT, onSelectT }: { data: { t: number; precision: number; recall: number }[]; currentT: number; onSelectT?: (threshold: number) => void }) {
   const theme = useChartTheme();
+  const handleClick = (state: unknown) => {
+    if (!onSelectT || !state || typeof state !== "object" || !("activeLabel" in state)) return;
+    const value = Number(state.activeLabel);
+    if (Number.isFinite(value)) onSelectT(value);
+  };
   return (
     <div className="chart-scroll" role="img" aria-label="Precision and recall across decision thresholds with the selected threshold marked">
       <div className="chart-min-width">
         <ResponsiveContainer width="100%" height={300}>
-          <LineChart data={data} margin={{ top: 8, right: 14, left: 0, bottom: 8 }}>
+          <LineChart data={data} margin={{ top: 8, right: 14, left: 0, bottom: 8 }} onClick={handleClick} style={{ cursor: onSelectT ? "crosshair" : "default" }}>
             <CartesianGrid stroke={theme.grid} vertical={false} />
             <XAxis dataKey="t" tick={{ fill: theme.axis, fontSize: 9 }} tickFormatter={(value: number) => value.toFixed(2)} tickLine={false} axisLine={{ stroke: theme.grid }} />
             <YAxis domain={[0, 1]} tick={{ fill: theme.axis, fontSize: 9 }} tickFormatter={(value: number) => `${Math.round(value * 100)}%`} tickLine={false} axisLine={false} />

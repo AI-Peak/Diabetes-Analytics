@@ -12,6 +12,8 @@ export function DataTable<T>({
   columns,
   rowKey,
   rowClassName,
+  onRowClick,
+  selectedRowKey,
   stickyHeader = false,
   caption,
 }: {
@@ -19,6 +21,8 @@ export function DataTable<T>({
   columns: TableColumn<T>[];
   rowKey: (row: T) => string;
   rowClassName?: (row: T) => string;
+  onRowClick?: (row: T) => void;
+  selectedRowKey?: string;
   stickyHeader?: boolean;
   caption: string;
 }) {
@@ -30,13 +34,28 @@ export function DataTable<T>({
           <tr>{columns.map((column) => <th className={column.align === "right" ? "align-right" : undefined} key={column.id} scope="col">{column.header}</th>)}</tr>
         </thead>
         <tbody>
-          {rows.map((row) => (
-            <tr className={rowClassName?.(row)} key={rowKey(row)}>
+          {rows.map((row) => {
+            const key = rowKey(row);
+            const className = [rowClassName?.(row), onRowClick ? "interactive-row" : "", selectedRowKey === key ? "selected-row" : ""].filter(Boolean).join(" ");
+            return (
+            <tr
+              className={className || undefined}
+              key={key}
+              aria-selected={selectedRowKey === key || undefined}
+              tabIndex={onRowClick ? 0 : undefined}
+              onClick={() => onRowClick?.(row)}
+              onKeyDown={(event) => {
+                if (onRowClick && (event.key === "Enter" || event.key === " ")) {
+                  event.preventDefault();
+                  onRowClick(row);
+                }
+              }}
+            >
               {columns.map((column) => (
                 <td className={column.align === "right" ? "align-right num" : undefined} key={column.id}>{column.render(row)}</td>
               ))}
             </tr>
-          ))}
+          );})}
         </tbody>
       </table>
     </div>

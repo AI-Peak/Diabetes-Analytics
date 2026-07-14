@@ -9,6 +9,15 @@ const RqSummarySchema = z.object({
   href: z.enum(["/rq1", "/rq2", "/rq3"]),
 });
 
+const CohortCellSchema = z.object({
+  sex: z.number().int().min(0).max(1),
+  age: z.number().int().min(1).max(13),
+  bmiBand: z.enum(["underweight", "healthy", "overweight", "obesity"]),
+  highBP: z.number().int().min(0).max(1),
+  n: z.number().int().positive(),
+  diabeticN: z.number().int().nonnegative(),
+});
+
 export const OverviewSchema = z.object({
   dataset: z.object({
     name: z.string(),
@@ -24,6 +33,7 @@ export const OverviewSchema = z.object({
     healthyN: z.number().int(),
     diabeticN: z.number().int(),
   }),
+  cohortCube: z.array(CohortCellSchema).min(1),
   bestModel: z.object({ name: z.string(), rocAuc: z.number(), prAuc: z.number() }),
   topAssociations: z.array(
     z.object({ variable: z.string(), label: z.string(), cramersV: z.number() }),
@@ -43,6 +53,13 @@ const CategoricalSchema = z.object({
   minRatePct: z.number(),
   maxRatePct: z.number(),
   maxDiffPct: z.number(),
+  levels: z.array(z.object({
+    value: z.string(),
+    label: z.string(),
+    n: z.number().int().positive(),
+    diabeticN: z.number().int().nonnegative(),
+    prevalencePct: z.number().min(0).max(100),
+  })).min(2),
 });
 
 const NumericSchema = z.object({
@@ -140,5 +157,7 @@ export type Rq1Data = z.infer<typeof Rq1Schema>;
 export type Rq2Data = z.infer<typeof Rq2Schema>;
 export type Rq3Data = z.infer<typeof Rq3Schema>;
 export type CategoricalResult = Rq1Data["categorical"][number];
+export type CategoryLevel = CategoricalResult["levels"][number];
+export type CohortCell = OverviewData["cohortCube"][number];
 export type ThresholdResult = Rq2Data["thresholds"][number];
 export type FeatureResult = Rq3Data["features"][number];

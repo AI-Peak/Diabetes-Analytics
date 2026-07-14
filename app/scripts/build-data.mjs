@@ -33,6 +33,94 @@ const VARIABLE_LABELS = {
   Income: "Income Bracket",
 };
 
+const CATEGORICAL_VARIABLES = [
+  "GenHlth",
+  "HighBP",
+  "DiffWalk",
+  "HighChol",
+  "Age",
+  "HeartDiseaseorAttack",
+  "Income",
+  "Education",
+  "PhysActivity",
+  "Stroke",
+  "CholCheck",
+  "HvyAlcoholConsump",
+  "Smoker",
+  "Veggies",
+  "Sex",
+  "AnyHealthcare",
+  "Fruits",
+  "NoDocbcCost",
+];
+
+const BINARY_VARIABLES = new Set([
+  "HighBP",
+  "DiffWalk",
+  "HighChol",
+  "HeartDiseaseorAttack",
+  "PhysActivity",
+  "Stroke",
+  "CholCheck",
+  "HvyAlcoholConsump",
+  "Smoker",
+  "Veggies",
+  "AnyHealthcare",
+  "Fruits",
+  "NoDocbcCost",
+]);
+
+const LEVEL_LABELS = {
+  Sex: { "0": "Female", "1": "Male" },
+  GenHlth: { "1": "Excellent", "2": "Very good", "3": "Good", "4": "Fair", "5": "Poor" },
+  Age: {
+    "1": "18-24",
+    "2": "25-29",
+    "3": "30-34",
+    "4": "35-39",
+    "5": "40-44",
+    "6": "45-49",
+    "7": "50-54",
+    "8": "55-59",
+    "9": "60-64",
+    "10": "65-69",
+    "11": "70-74",
+    "12": "75-79",
+    "13": "80+",
+  },
+  Education: {
+    "1": "Never / kindergarten",
+    "2": "Grades 1-8",
+    "3": "Grades 9-11",
+    "4": "High school graduate",
+    "5": "Some college",
+    "6": "College graduate",
+  },
+  Income: {
+    "1": "< $10k",
+    "2": "$10k-$15k",
+    "3": "$15k-$20k",
+    "4": "$20k-$25k",
+    "5": "$25k-$35k",
+    "6": "$35k-$50k",
+    "7": "$50k-$75k",
+    "8": "$75k+",
+  },
+};
+
+function levelLabel(variable, value) {
+  if (LEVEL_LABELS[variable]?.[value]) return LEVEL_LABELS[variable][value];
+  if (BINARY_VARIABLES.has(variable)) return value === "1" ? "Yes" : "No";
+  return `Level ${value}`;
+}
+
+function bmiBand(value) {
+  if (value < 18.5) return "underweight";
+  if (value < 25) return "healthy";
+  if (value < 30) return "overweight";
+  return "obesity";
+}
+
 async function parseCsv(relativePath) {
   const inputPath = path.join(repoRoot, relativePath);
   const raw = await readFile(inputPath, "utf8");
@@ -54,32 +142,74 @@ function number(row, key) {
   return value;
 }
 
-async function datasetProfile() {
+async function datasetAnalytics() {
   const relativePath = path.join("data", "processed", "diabetes_cleaned.csv");
   const raw = await readFile(path.join(repoRoot, relativePath), "utf8");
   const lines = raw.replace(/^\uFEFF/, "").split(/\r?\n/).filter((line) => line.trim());
   const headers = lines[0].split(",").map((cell) => cell.trim());
-  const targetIndex = headers.indexOf("Diabetes_binary");
-  if (targetIndex === -1) throw new Error(`${relativePath}: Diabetes_binary column is missing`);
+  const index = Object.fromEntries(headers.map((header, position) => [header, position]));
+  const required = ["Diabetes_binary", "Sex", "Age", "BMI", "HighBP", ...CATEGORICAL_VARIABLES];
+  for (const column of required) {
+    if (index[column] === undefined) throw new Error(`${relativePath}: ${column} column is missing`);
+  }
 
   let diabeticN = 0;
+  const cohortCells = new Map();
+  const categoryCells = Object.fromEntries(CATEGORICAL_VARIABLES.map((variable) => [variable, new Map()]));
+
   for (const line of lines.slice(1)) {
     const cells = line.split(",");
-    if (Number(cells[targetIndex]) === 1) diabeticN += 1;
+    const diabetic = Number(cells[index.Diabetes_binary]) === 1 ? 1 : 0;
+    diabeticN += diabetic;
+
+    const sex = Number(cells[index.Sex]);
+    const age = Number(cells[index.Age]);
+    const highBP = Number(cells[index.HighBP]);
+    const band = bmiBand(Number(cells[index.BMI]));
+    const cohortKey = `${sex}|${age}|${band}|${highBP}`;
+    const cohort = cohortCells.get(cohortKey) ?? { sex, age, bmiBand: band, highBP, n: 0, diabeticN: 0 };
+    cohort.n += 1;
+    cohort.diabeticN += diabetic;
+    cohortCells.set(cohortKey, cohort);
+
+    for (const variable of CATEGORICAL_VARIABLES) {
+      const value = cells[index[variable]];
+      const groups = categoryCells[variable];
+      const group = groups.get(value) ?? { value, n: 0, diabeticN: 0 };
+      group.n += 1;
+      group.diabeticN += diabetic;
+      groups.set(value, group);
+    }
   }
+
   const nRows = lines.length - 1;
   const healthyN = nRows - diabeticN;
   return {
-    nRows,
-    nFeatures: headers.length - 1,
-    healthyN,
-    diabeticN,
-    healthyPct: Number(((healthyN / nRows) * 100).toFixed(1)),
-    diabeticPct: Number(((diabeticN / nRows) * 100).toFixed(1)),
+    profile: {
+      nRows,
+      nFeatures: headers.length - 1,
+      healthyN,
+      diabeticN,
+      healthyPct: Number(((healthyN / nRows) * 100).toFixed(1)),
+      diabeticPct: Number(((diabeticN / nRows) * 100).toFixed(1)),
+    },
+    cohortCube: [...cohortCells.values()].sort((a, b) => a.age - b.age || a.sex - b.sex || a.highBP - b.highBP),
+    categoryLevels: Object.fromEntries(
+      CATEGORICAL_VARIABLES.map((variable) => [
+        variable,
+        [...categoryCells[variable].values()]
+          .sort((a, b) => Number(a.value) - Number(b.value))
+          .map((group) => ({
+            ...group,
+            label: levelLabel(variable, group.value),
+            prevalencePct: Number(((group.diabeticN / group.n) * 100).toFixed(2)),
+          })),
+      ]),
+    ),
   };
 }
 
-function categoricalRows(rows) {
+function categoricalRows(rows, categoryLevels) {
   return rows
     .map((row) => ({
       variable: row.Variable,
@@ -92,6 +222,7 @@ function categoricalRows(rows) {
       minRatePct: number(row, "Min Diabetes Rate (%)"),
       maxRatePct: number(row, "Max Diabetes Rate (%)"),
       maxDiffPct: number(row, "Max Difference (%)"),
+      levels: categoryLevels[row.Variable] ?? [],
     }))
     .sort((a, b) => b.cramersV - a.cramersV);
 }
@@ -168,8 +299,8 @@ async function main() {
   await mkdir(generatedRoot, { recursive: true });
   await mkdir(figuresRoot, { recursive: true });
 
-  const [profile, categoricalCsv, numericCsv, modelsCsv, thresholdsCsv, consistencyCsv] = await Promise.all([
-    datasetProfile(),
+  const [dataset, categoricalCsv, numericCsv, modelsCsv, thresholdsCsv, consistencyCsv] = await Promise.all([
+    datasetAnalytics(),
     parseCsv(path.join("results", "statistical_analysis", "chi_square_results.csv")),
     parseCsv(path.join("results", "statistical_analysis", "numerical_results.csv")),
     parseCsv(path.join("results", "modeling", "model_comparison.csv")),
@@ -177,7 +308,8 @@ async function main() {
     parseCsv(path.join("results", "xai", "explanation_consistency.csv")),
   ]);
 
-  const categorical = categoricalRows(categoricalCsv);
+  const profile = dataset.profile;
+  const categorical = categoricalRows(categoricalCsv, dataset.categoryLevels);
   const numeric = numericRows(numericCsv);
   const models = modelRows(modelsCsv);
   const thresholds = thresholdRows(thresholdsCsv);
@@ -200,6 +332,7 @@ async function main() {
       healthyN: profile.healthyN,
       diabeticN: profile.diabeticN,
     },
+    cohortCube: dataset.cohortCube,
     bestModel: { name: bestModel.name, rocAuc: bestModel.rocAuc, prAuc: bestModel.prAuc },
     topAssociations: categorical.slice(0, 6).map(({ variable, label, cramersV }) => ({ variable, label, cramersV })),
     rqSummaries: [

@@ -13,6 +13,1672 @@
     "healthyN": 194377,
     "diabeticN": 35097
   },
+  "cohortCube": [
+    {
+      "sex": 0,
+      "age": 1,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1249,
+      "diabeticN": 8
+    },
+    {
+      "sex": 0,
+      "age": 1,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 652,
+      "diabeticN": 13
+    },
+    {
+      "sex": 0,
+      "age": 1,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 506,
+      "diabeticN": 14
+    },
+    {
+      "sex": 0,
+      "age": 1,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 105,
+      "diabeticN": 0
+    },
+    {
+      "sex": 0,
+      "age": 1,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 39,
+      "diabeticN": 1
+    },
+    {
+      "sex": 0,
+      "age": 1,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 46,
+      "diabeticN": 1
+    },
+    {
+      "sex": 0,
+      "age": 1,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 66,
+      "diabeticN": 8
+    },
+    {
+      "sex": 0,
+      "age": 1,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 3,
+      "diabeticN": 0
+    },
+    {
+      "sex": 1,
+      "age": 1,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 781,
+      "diabeticN": 10
+    },
+    {
+      "sex": 1,
+      "age": 1,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1156,
+      "diabeticN": 9
+    },
+    {
+      "sex": 1,
+      "age": 1,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 512,
+      "diabeticN": 4
+    },
+    {
+      "sex": 1,
+      "age": 1,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 58,
+      "diabeticN": 0
+    },
+    {
+      "sex": 1,
+      "age": 1,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 147,
+      "diabeticN": 4
+    },
+    {
+      "sex": 1,
+      "age": 1,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 106,
+      "diabeticN": 4
+    },
+    {
+      "sex": 1,
+      "age": 1,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 77,
+      "diabeticN": 1
+    },
+    {
+      "sex": 1,
+      "age": 1,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 8,
+      "diabeticN": 1
+    },
+    {
+      "sex": 0,
+      "age": 2,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1357,
+      "diabeticN": 8
+    },
+    {
+      "sex": 0,
+      "age": 2,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 961,
+      "diabeticN": 21
+    },
+    {
+      "sex": 0,
+      "age": 2,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1005,
+      "diabeticN": 34
+    },
+    {
+      "sex": 0,
+      "age": 2,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 99,
+      "diabeticN": 0
+    },
+    {
+      "sex": 0,
+      "age": 2,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 168,
+      "diabeticN": 24
+    },
+    {
+      "sex": 0,
+      "age": 2,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 65,
+      "diabeticN": 0
+    },
+    {
+      "sex": 0,
+      "age": 2,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 62,
+      "diabeticN": 2
+    },
+    {
+      "sex": 0,
+      "age": 2,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 1,
+      "diabeticN": 0
+    },
+    {
+      "sex": 1,
+      "age": 2,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 723,
+      "diabeticN": 8
+    },
+    {
+      "sex": 1,
+      "age": 2,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 950,
+      "diabeticN": 12
+    },
+    {
+      "sex": 1,
+      "age": 2,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1058,
+      "diabeticN": 8
+    },
+    {
+      "sex": 1,
+      "age": 2,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 33,
+      "diabeticN": 0
+    },
+    {
+      "sex": 1,
+      "age": 2,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 122,
+      "diabeticN": 5
+    },
+    {
+      "sex": 1,
+      "age": 2,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 270,
+      "diabeticN": 13
+    },
+    {
+      "sex": 1,
+      "age": 2,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 183,
+      "diabeticN": 5
+    },
+    {
+      "sex": 1,
+      "age": 2,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 7,
+      "diabeticN": 0
+    },
+    {
+      "sex": 0,
+      "age": 3,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1712,
+      "diabeticN": 20
+    },
+    {
+      "sex": 0,
+      "age": 3,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1599,
+      "diabeticN": 74
+    },
+    {
+      "sex": 0,
+      "age": 3,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1366,
+      "diabeticN": 21
+    },
+    {
+      "sex": 0,
+      "age": 3,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 106,
+      "diabeticN": 2
+    },
+    {
+      "sex": 0,
+      "age": 3,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 407,
+      "diabeticN": 60
+    },
+    {
+      "sex": 0,
+      "age": 3,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 109,
+      "diabeticN": 4
+    },
+    {
+      "sex": 0,
+      "age": 3,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 146,
+      "diabeticN": 10
+    },
+    {
+      "sex": 0,
+      "age": 3,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 6,
+      "diabeticN": 0
+    },
+    {
+      "sex": 1,
+      "age": 3,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1448,
+      "diabeticN": 24
+    },
+    {
+      "sex": 1,
+      "age": 3,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1048,
+      "diabeticN": 17
+    },
+    {
+      "sex": 1,
+      "age": 3,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1102,
+      "diabeticN": 35
+    },
+    {
+      "sex": 1,
+      "age": 3,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 20,
+      "diabeticN": 1
+    },
+    {
+      "sex": 1,
+      "age": 3,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 524,
+      "diabeticN": 39
+    },
+    {
+      "sex": 1,
+      "age": 3,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 112,
+      "diabeticN": 2
+    },
+    {
+      "sex": 1,
+      "age": 3,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 316,
+      "diabeticN": 5
+    },
+    {
+      "sex": 1,
+      "age": 3,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 2,
+      "diabeticN": 0
+    },
+    {
+      "sex": 0,
+      "age": 4,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1947,
+      "diabeticN": 118
+    },
+    {
+      "sex": 0,
+      "age": 4,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1699,
+      "diabeticN": 42
+    },
+    {
+      "sex": 0,
+      "age": 4,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1972,
+      "diabeticN": 28
+    },
+    {
+      "sex": 0,
+      "age": 4,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 101,
+      "diabeticN": 1
+    },
+    {
+      "sex": 0,
+      "age": 4,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 12,
+      "diabeticN": 3
+    },
+    {
+      "sex": 0,
+      "age": 4,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 671,
+      "diabeticN": 143
+    },
+    {
+      "sex": 0,
+      "age": 4,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 255,
+      "diabeticN": 17
+    },
+    {
+      "sex": 0,
+      "age": 4,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 152,
+      "diabeticN": 14
+    },
+    {
+      "sex": 1,
+      "age": 4,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1636,
+      "diabeticN": 25
+    },
+    {
+      "sex": 1,
+      "age": 4,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1383,
+      "diabeticN": 59
+    },
+    {
+      "sex": 1,
+      "age": 4,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 936,
+      "diabeticN": 20
+    },
+    {
+      "sex": 1,
+      "age": 4,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 27,
+      "diabeticN": 0
+    },
+    {
+      "sex": 1,
+      "age": 4,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 824,
+      "diabeticN": 124
+    },
+    {
+      "sex": 1,
+      "age": 4,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 440,
+      "diabeticN": 23
+    },
+    {
+      "sex": 1,
+      "age": 4,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 167,
+      "diabeticN": 8
+    },
+    {
+      "sex": 1,
+      "age": 4,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 7,
+      "diabeticN": 0
+    },
+    {
+      "sex": 0,
+      "age": 5,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 2067,
+      "diabeticN": 167
+    },
+    {
+      "sex": 0,
+      "age": 5,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 2007,
+      "diabeticN": 17
+    },
+    {
+      "sex": 0,
+      "age": 5,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1977,
+      "diabeticN": 64
+    },
+    {
+      "sex": 0,
+      "age": 5,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 97,
+      "diabeticN": 3
+    },
+    {
+      "sex": 0,
+      "age": 5,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 424,
+      "diabeticN": 52
+    },
+    {
+      "sex": 0,
+      "age": 5,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 224,
+      "diabeticN": 10
+    },
+    {
+      "sex": 0,
+      "age": 5,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 1089,
+      "diabeticN": 262
+    },
+    {
+      "sex": 0,
+      "age": 5,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 9,
+      "diabeticN": 1
+    },
+    {
+      "sex": 1,
+      "age": 5,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1751,
+      "diabeticN": 59
+    },
+    {
+      "sex": 1,
+      "age": 5,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1511,
+      "diabeticN": 108
+    },
+    {
+      "sex": 1,
+      "age": 5,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 934,
+      "diabeticN": 28
+    },
+    {
+      "sex": 1,
+      "age": 5,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 28,
+      "diabeticN": 0
+    },
+    {
+      "sex": 1,
+      "age": 5,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 1131,
+      "diabeticN": 213
+    },
+    {
+      "sex": 1,
+      "age": 5,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 596,
+      "diabeticN": 53
+    },
+    {
+      "sex": 1,
+      "age": 5,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 5,
+      "diabeticN": 1
+    },
+    {
+      "sex": 1,
+      "age": 5,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 190,
+      "diabeticN": 11
+    },
+    {
+      "sex": 0,
+      "age": 6,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 2281,
+      "diabeticN": 40
+    },
+    {
+      "sex": 0,
+      "age": 6,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 2203,
+      "diabeticN": 85
+    },
+    {
+      "sex": 0,
+      "age": 6,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 2207,
+      "diabeticN": 202
+    },
+    {
+      "sex": 0,
+      "age": 6,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 109,
+      "diabeticN": 4
+    },
+    {
+      "sex": 0,
+      "age": 6,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 1607,
+      "diabeticN": 435
+    },
+    {
+      "sex": 0,
+      "age": 6,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 763,
+      "diabeticN": 112
+    },
+    {
+      "sex": 0,
+      "age": 6,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 323,
+      "diabeticN": 23
+    },
+    {
+      "sex": 0,
+      "age": 6,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 14,
+      "diabeticN": 1
+    },
+    {
+      "sex": 1,
+      "age": 6,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1773,
+      "diabeticN": 165
+    },
+    {
+      "sex": 1,
+      "age": 6,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 2119,
+      "diabeticN": 105
+    },
+    {
+      "sex": 1,
+      "age": 6,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 998,
+      "diabeticN": 29
+    },
+    {
+      "sex": 1,
+      "age": 6,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 33,
+      "diabeticN": 1
+    },
+    {
+      "sex": 1,
+      "age": 6,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 1670,
+      "diabeticN": 389
+    },
+    {
+      "sex": 1,
+      "age": 6,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 876,
+      "diabeticN": 110
+    },
+    {
+      "sex": 1,
+      "age": 6,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 9,
+      "diabeticN": 1
+    },
+    {
+      "sex": 1,
+      "age": 6,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 295,
+      "diabeticN": 39
+    },
+    {
+      "sex": 0,
+      "age": 7,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 2853,
+      "diabeticN": 144
+    },
+    {
+      "sex": 0,
+      "age": 7,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 2540,
+      "diabeticN": 304
+    },
+    {
+      "sex": 0,
+      "age": 7,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 2794,
+      "diabeticN": 75
+    },
+    {
+      "sex": 0,
+      "age": 7,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 179,
+      "diabeticN": 5
+    },
+    {
+      "sex": 0,
+      "age": 7,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 681,
+      "diabeticN": 74
+    },
+    {
+      "sex": 0,
+      "age": 7,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 2580,
+      "diabeticN": 803
+    },
+    {
+      "sex": 0,
+      "age": 7,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 1337,
+      "diabeticN": 232
+    },
+    {
+      "sex": 0,
+      "age": 7,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 35,
+      "diabeticN": 2
+    },
+    {
+      "sex": 1,
+      "age": 7,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1236,
+      "diabeticN": 59
+    },
+    {
+      "sex": 1,
+      "age": 7,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1941,
+      "diabeticN": 223
+    },
+    {
+      "sex": 1,
+      "age": 7,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 2459,
+      "diabeticN": 138
+    },
+    {
+      "sex": 1,
+      "age": 7,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 22,
+      "diabeticN": 2
+    },
+    {
+      "sex": 1,
+      "age": 7,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 1506,
+      "diabeticN": 256
+    },
+    {
+      "sex": 1,
+      "age": 7,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 2461,
+      "diabeticN": 695
+    },
+    {
+      "sex": 1,
+      "age": 7,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 481,
+      "diabeticN": 58
+    },
+    {
+      "sex": 1,
+      "age": 7,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 16,
+      "diabeticN": 2
+    },
+    {
+      "sex": 0,
+      "age": 8,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 2514,
+      "diabeticN": 330
+    },
+    {
+      "sex": 0,
+      "age": 8,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 3056,
+      "diabeticN": 72
+    },
+    {
+      "sex": 0,
+      "age": 8,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 3095,
+      "diabeticN": 180
+    },
+    {
+      "sex": 0,
+      "age": 8,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 200,
+      "diabeticN": 6
+    },
+    {
+      "sex": 0,
+      "age": 8,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 1987,
+      "diabeticN": 369
+    },
+    {
+      "sex": 0,
+      "age": 8,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 3536,
+      "diabeticN": 1175
+    },
+    {
+      "sex": 0,
+      "age": 8,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 63,
+      "diabeticN": 4
+    },
+    {
+      "sex": 0,
+      "age": 8,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 1006,
+      "diabeticN": 114
+    },
+    {
+      "sex": 1,
+      "age": 8,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1350,
+      "diabeticN": 70
+    },
+    {
+      "sex": 1,
+      "age": 8,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 2503,
+      "diabeticN": 184
+    },
+    {
+      "sex": 1,
+      "age": 8,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1894,
+      "diabeticN": 248
+    },
+    {
+      "sex": 1,
+      "age": 8,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 40,
+      "diabeticN": 2
+    },
+    {
+      "sex": 1,
+      "age": 8,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 715,
+      "diabeticN": 98
+    },
+    {
+      "sex": 1,
+      "age": 8,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 3245,
+      "diabeticN": 1026
+    },
+    {
+      "sex": 1,
+      "age": 8,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 2044,
+      "diabeticN": 361
+    },
+    {
+      "sex": 1,
+      "age": 8,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 24,
+      "diabeticN": 2
+    },
+    {
+      "sex": 0,
+      "age": 9,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 2922,
+      "diabeticN": 94
+    },
+    {
+      "sex": 0,
+      "age": 9,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 2835,
+      "diabeticN": 207
+    },
+    {
+      "sex": 0,
+      "age": 9,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 2278,
+      "diabeticN": 356
+    },
+    {
+      "sex": 0,
+      "age": 9,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 171,
+      "diabeticN": 4
+    },
+    {
+      "sex": 0,
+      "age": 9,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 4226,
+      "diabeticN": 1605
+    },
+    {
+      "sex": 0,
+      "age": 9,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 2476,
+      "diabeticN": 531
+    },
+    {
+      "sex": 0,
+      "age": 9,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 1361,
+      "diabeticN": 154
+    },
+    {
+      "sex": 0,
+      "age": 9,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 65,
+      "diabeticN": 4
+    },
+    {
+      "sex": 1,
+      "age": 9,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1702,
+      "diabeticN": 289
+    },
+    {
+      "sex": 1,
+      "age": 9,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1508,
+      "diabeticN": 74
+    },
+    {
+      "sex": 1,
+      "age": 9,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 2605,
+      "diabeticN": 247
+    },
+    {
+      "sex": 1,
+      "age": 9,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 52,
+      "diabeticN": 2
+    },
+    {
+      "sex": 1,
+      "age": 9,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 965,
+      "diabeticN": 139
+    },
+    {
+      "sex": 1,
+      "age": 9,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 3707,
+      "diabeticN": 1344
+    },
+    {
+      "sex": 1,
+      "age": 9,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 2767,
+      "diabeticN": 621
+    },
+    {
+      "sex": 1,
+      "age": 9,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 38,
+      "diabeticN": 10
+    },
+    {
+      "sex": 0,
+      "age": 10,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1784,
+      "diabeticN": 323
+    },
+    {
+      "sex": 0,
+      "age": 10,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 2570,
+      "diabeticN": 118
+    },
+    {
+      "sex": 0,
+      "age": 10,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 2465,
+      "diabeticN": 184
+    },
+    {
+      "sex": 0,
+      "age": 10,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 175,
+      "diabeticN": 8
+    },
+    {
+      "sex": 0,
+      "age": 10,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 4405,
+      "diabeticN": 1691
+    },
+    {
+      "sex": 0,
+      "age": 10,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 1615,
+      "diabeticN": 210
+    },
+    {
+      "sex": 0,
+      "age": 10,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 3027,
+      "diabeticN": 673
+    },
+    {
+      "sex": 0,
+      "age": 10,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 109,
+      "diabeticN": 13
+    },
+    {
+      "sex": 1,
+      "age": 10,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 1469,
+      "diabeticN": 325
+    },
+    {
+      "sex": 1,
+      "age": 10,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1291,
+      "diabeticN": 93
+    },
+    {
+      "sex": 1,
+      "age": 10,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 2165,
+      "diabeticN": 253
+    },
+    {
+      "sex": 1,
+      "age": 10,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 37,
+      "diabeticN": 5
+    },
+    {
+      "sex": 1,
+      "age": 10,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 3038,
+      "diabeticN": 778
+    },
+    {
+      "sex": 1,
+      "age": 10,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 3863,
+      "diabeticN": 1612
+    },
+    {
+      "sex": 1,
+      "age": 10,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 1042,
+      "diabeticN": 188
+    },
+    {
+      "sex": 1,
+      "age": 10,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 38,
+      "diabeticN": 9
+    },
+    {
+      "sex": 0,
+      "age": 11,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1752,
+      "diabeticN": 170
+    },
+    {
+      "sex": 0,
+      "age": 11,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1851,
+      "diabeticN": 89
+    },
+    {
+      "sex": 0,
+      "age": 11,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 993,
+      "diabeticN": 183
+    },
+    {
+      "sex": 0,
+      "age": 11,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 116,
+      "diabeticN": 3
+    },
+    {
+      "sex": 0,
+      "age": 11,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 2782,
+      "diabeticN": 622
+    },
+    {
+      "sex": 0,
+      "age": 11,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 1603,
+      "diabeticN": 220
+    },
+    {
+      "sex": 0,
+      "age": 11,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 3221,
+      "diabeticN": 1242
+    },
+    {
+      "sex": 0,
+      "age": 11,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 98,
+      "diabeticN": 11
+    },
+    {
+      "sex": 1,
+      "age": 11,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1519,
+      "diabeticN": 218
+    },
+    {
+      "sex": 1,
+      "age": 11,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 932,
+      "diabeticN": 92
+    },
+    {
+      "sex": 1,
+      "age": 11,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 872,
+      "diabeticN": 229
+    },
+    {
+      "sex": 1,
+      "age": 11,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 32,
+      "diabeticN": 2
+    },
+    {
+      "sex": 1,
+      "age": 11,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 2677,
+      "diabeticN": 1142
+    },
+    {
+      "sex": 1,
+      "age": 11,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 2561,
+      "diabeticN": 664
+    },
+    {
+      "sex": 1,
+      "age": 11,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 966,
+      "diabeticN": 202
+    },
+    {
+      "sex": 1,
+      "age": 11,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 18,
+      "diabeticN": 1
+    },
+    {
+      "sex": 0,
+      "age": 12,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1280,
+      "diabeticN": 75
+    },
+    {
+      "sex": 0,
+      "age": 12,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1058,
+      "diabeticN": 112
+    },
+    {
+      "sex": 0,
+      "age": 12,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 626,
+      "diabeticN": 130
+    },
+    {
+      "sex": 0,
+      "age": 12,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 104,
+      "diabeticN": 3
+    },
+    {
+      "sex": 0,
+      "age": 12,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 1539,
+      "diabeticN": 203
+    },
+    {
+      "sex": 0,
+      "age": 12,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 2311,
+      "diabeticN": 555
+    },
+    {
+      "sex": 0,
+      "age": 12,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 2106,
+      "diabeticN": 744
+    },
+    {
+      "sex": 0,
+      "age": 12,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 94,
+      "diabeticN": 10
+    },
+    {
+      "sex": 1,
+      "age": 12,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 473,
+      "diabeticN": 120
+    },
+    {
+      "sex": 1,
+      "age": 12,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 652,
+      "diabeticN": 74
+    },
+    {
+      "sex": 1,
+      "age": 12,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1015,
+      "diabeticN": 151
+    },
+    {
+      "sex": 1,
+      "age": 12,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 24,
+      "diabeticN": 2
+    },
+    {
+      "sex": 1,
+      "age": 12,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 1834,
+      "diabeticN": 486
+    },
+    {
+      "sex": 1,
+      "age": 12,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 801,
+      "diabeticN": 153
+    },
+    {
+      "sex": 1,
+      "age": 12,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 1432,
+      "diabeticN": 561
+    },
+    {
+      "sex": 1,
+      "age": 12,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 30,
+      "diabeticN": 4
+    },
+    {
+      "sex": 0,
+      "age": 13,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 478,
+      "diabeticN": 97
+    },
+    {
+      "sex": 0,
+      "age": 13,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 1540,
+      "diabeticN": 88
+    },
+    {
+      "sex": 0,
+      "age": 13,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1144,
+      "diabeticN": 143
+    },
+    {
+      "sex": 0,
+      "age": 13,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 149,
+      "diabeticN": 5
+    },
+    {
+      "sex": 0,
+      "age": 13,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 1595,
+      "diabeticN": 501
+    },
+    {
+      "sex": 0,
+      "age": 13,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 2722,
+      "diabeticN": 576
+    },
+    {
+      "sex": 0,
+      "age": 13,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 2402,
+      "diabeticN": 310
+    },
+    {
+      "sex": 0,
+      "age": 13,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 166,
+      "diabeticN": 20
+    },
+    {
+      "sex": 1,
+      "age": 13,
+      "bmiBand": "overweight",
+      "highBP": 0,
+      "n": 1136,
+      "diabeticN": 171
+    },
+    {
+      "sex": 1,
+      "age": 13,
+      "bmiBand": "healthy",
+      "highBP": 0,
+      "n": 968,
+      "diabeticN": 108
+    },
+    {
+      "sex": 1,
+      "age": 13,
+      "bmiBand": "obesity",
+      "highBP": 0,
+      "n": 363,
+      "diabeticN": 90
+    },
+    {
+      "sex": 1,
+      "age": 13,
+      "bmiBand": "underweight",
+      "highBP": 0,
+      "n": 30,
+      "diabeticN": 0
+    },
+    {
+      "sex": 1,
+      "age": 13,
+      "bmiBand": "obesity",
+      "highBP": 1,
+      "n": 967,
+      "diabeticN": 363
+    },
+    {
+      "sex": 1,
+      "age": 13,
+      "bmiBand": "healthy",
+      "highBP": 1,
+      "n": 1233,
+      "diabeticN": 252
+    },
+    {
+      "sex": 1,
+      "age": 13,
+      "bmiBand": "overweight",
+      "highBP": 1,
+      "n": 1870,
+      "diabeticN": 468
+    },
+    {
+      "sex": 1,
+      "age": 13,
+      "bmiBand": "underweight",
+      "highBP": 1,
+      "n": 28,
+      "diabeticN": 8
+    }
+  ],
   "bestModel": {
     "name": "XGBoost",
     "rocAuc": 0.8183843935223754,

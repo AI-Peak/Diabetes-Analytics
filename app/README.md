@@ -53,14 +53,14 @@ scripts/build-data.mjs
 src/lib/data/load.ts -> Zod validation -> server-rendered pages
 ```
 
-The browser never trains a model or runs statistical tests. It performs only local interaction over precomputed threshold and ranking rows.
+The browser never trains a model or runs statistical tests. It performs local interaction over 208 anonymous cohort cells, category-level prevalence summaries, threshold rows, model metrics, and SHAP/statistical ranks.
 
 ## Routes
 
-- `/overview` - study scope, evidence chain, class balance, and CRISP-DM pipeline
-- `/rq1` - Chi-square/Cramer's V and numeric effect-size explorer
-- `/rq2` - four-model comparison and interactive screening threshold
-- `/rq3` - global/local SHAP and rank consistency with statistics
+- `/overview` - study scope plus linked cohort slicers for sex, age, BMI band, and blood pressure
+- `/rq1` - selectable association ranking linked to category-level prevalence profiles
+- `/rq2` - linked model scorecard and interactive screening-threshold lab
+- `/rq3` - linked SHAP ranking, rank scatter, feature profile, and consistency table
 - `/assistant` - grounded bilingual study assistant with an offline fallback
 
 ## Folder map

@@ -10,7 +10,44 @@
       "interpretation": "Moderate",
       "minRatePct": 3.256441154530326,
       "maxRatePct": 37.895346911740354,
-      "maxDiffPct": 34.638905757210026
+      "maxDiffPct": 34.638905757210026,
+      "levels": [
+        {
+          "value": "1",
+          "n": 34854,
+          "diabeticN": 1135,
+          "label": "Excellent",
+          "prevalencePct": 3.26
+        },
+        {
+          "value": "2",
+          "n": 77365,
+          "diabeticN": 6280,
+          "label": "Very good",
+          "prevalencePct": 8.12
+        },
+        {
+          "value": "3",
+          "n": 73632,
+          "diabeticN": 13324,
+          "label": "Good",
+          "prevalencePct": 18.1
+        },
+        {
+          "value": "4",
+          "n": 31545,
+          "diabeticN": 9781,
+          "label": "Fair",
+          "prevalencePct": 31.01
+        },
+        {
+          "value": "5",
+          "n": 12078,
+          "diabeticN": 4577,
+          "label": "Poor",
+          "prevalencePct": 37.9
+        }
+      ]
     },
     {
       "variable": "HighBP",
@@ -22,7 +59,23 @@
       "interpretation": "Moderate",
       "minRatePct": 6.941715782580222,
       "maxRatePct": 25.32610780740456,
-      "maxDiffPct": 18.38439202482434
+      "maxDiffPct": 18.38439202482434,
+      "levels": [
+        {
+          "value": "0",
+          "n": 125214,
+          "diabeticN": 8692,
+          "label": "No",
+          "prevalencePct": 6.94
+        },
+        {
+          "value": "1",
+          "n": 104260,
+          "diabeticN": 26405,
+          "label": "Yes",
+          "prevalencePct": 25.33
+        }
+      ]
     },
     {
       "variable": "DiffWalk",
@@ -34,7 +87,23 @@
       "interpretation": "Moderate",
       "minRatePct": 11.765115146455159,
       "maxRatePct": 30.765982404692082,
-      "maxDiffPct": 19.000867258236923
+      "maxDiffPct": 19.000867258236923,
+      "levels": [
+        {
+          "value": "0",
+          "n": 186849,
+          "diabeticN": 21983,
+          "label": "No",
+          "prevalencePct": 11.77
+        },
+        {
+          "value": "1",
+          "n": 42625,
+          "diabeticN": 13114,
+          "label": "Yes",
+          "prevalencePct": 30.77
+        }
+      ]
     },
     {
       "variable": "HighChol",
@@ -46,7 +115,23 @@
       "interpretation": "Small",
       "minRatePct": 9.054156358045407,
       "maxRatePct": 23.18417287483349,
-      "maxDiffPct": 14.130016516788082
+      "maxDiffPct": 14.130016516788082,
+      "levels": [
+        {
+          "value": "0",
+          "n": 128129,
+          "diabeticN": 11601,
+          "label": "No",
+          "prevalencePct": 9.05
+        },
+        {
+          "value": "1",
+          "n": 101345,
+          "diabeticN": 23496,
+          "label": "Yes",
+          "prevalencePct": 23.18
+        }
+      ]
     },
     {
       "variable": "Age",
@@ -58,7 +143,100 @@
       "interpretation": "Small",
       "minRatePct": 1.4153511159499184,
       "maxRatePct": 23.143727549674896,
-      "maxDiffPct": 21.72837643372498
+      "maxDiffPct": 21.72837643372498,
+      "levels": [
+        {
+          "value": "1",
+          "n": 5511,
+          "diabeticN": 78,
+          "label": "18-24",
+          "prevalencePct": 1.42
+        },
+        {
+          "value": "2",
+          "n": 7064,
+          "diabeticN": 140,
+          "label": "25-29",
+          "prevalencePct": 1.98
+        },
+        {
+          "value": "3",
+          "n": 10023,
+          "diabeticN": 314,
+          "label": "30-34",
+          "prevalencePct": 3.13
+        },
+        {
+          "value": "4",
+          "n": 12229,
+          "diabeticN": 625,
+          "label": "35-39",
+          "prevalencePct": 5.11
+        },
+        {
+          "value": "5",
+          "n": 14040,
+          "diabeticN": 1049,
+          "label": "40-44",
+          "prevalencePct": 7.47
+        },
+        {
+          "value": "6",
+          "n": 17280,
+          "diabeticN": 1741,
+          "label": "45-49",
+          "prevalencePct": 10.08
+        },
+        {
+          "value": "7",
+          "n": 23121,
+          "diabeticN": 3072,
+          "label": "50-54",
+          "prevalencePct": 13.29
+        },
+        {
+          "value": "8",
+          "n": 27272,
+          "diabeticN": 4241,
+          "label": "55-59",
+          "prevalencePct": 15.55
+        },
+        {
+          "value": "9",
+          "n": 29678,
+          "diabeticN": 5681,
+          "label": "60-64",
+          "prevalencePct": 19.14
+        },
+        {
+          "value": "10",
+          "n": 29093,
+          "diabeticN": 6483,
+          "label": "65-69",
+          "prevalencePct": 22.28
+        },
+        {
+          "value": "11",
+          "n": 21993,
+          "diabeticN": 5090,
+          "label": "70-74",
+          "prevalencePct": 23.14
+        },
+        {
+          "value": "12",
+          "n": 15379,
+          "diabeticN": 3383,
+          "label": "75-79",
+          "prevalencePct": 22
+        },
+        {
+          "value": "13",
+          "n": 16791,
+          "diabeticN": 3200,
+          "label": "80+",
+          "prevalencePct": 19.06
+        }
+      ]
     },
     {
       "variable": "HeartDiseaseorAttack",
@@ -70,7 +248,23 @@
       "interpretation": "Small",
       "minRatePct": 13.23914638828544,
       "maxRatePct": 33.129507021465024,
-      "maxDiffPct": 19.890360633179583
+      "maxDiffPct": 19.890360633179583,
+      "levels": [
+        {
+          "value": "0",
+          "n": 205761,
+          "diabeticN": 27241,
+          "label": "No",
+          "prevalencePct": 13.24
+        },
+        {
+          "value": "1",
+          "n": 23713,
+          "diabeticN": 7856,
+          "label": "Yes",
+          "prevalencePct": 33.13
+        }
+      ]
     },
     {
       "variable": "Income",
@@ -82,7 +276,65 @@
       "interpretation": "Small",
       "minRatePct": 9.829704075935233,
       "maxRatePct": 26.2504253147329,
-      "maxDiffPct": 16.420721238797668
+      "maxDiffPct": 16.420721238797668,
+      "levels": [
+        {
+          "value": "1",
+          "n": 9791,
+          "diabeticN": 2383,
+          "label": "< $10k",
+          "prevalencePct": 24.34
+        },
+        {
+          "value": "2",
+          "n": 11756,
+          "diabeticN": 3086,
+          "label": "$10k-$15k",
+          "prevalencePct": 26.25
+        },
+        {
+          "value": "3",
+          "n": 15920,
+          "diabeticN": 3564,
+          "label": "$15k-$20k",
+          "prevalencePct": 22.39
+        },
+        {
+          "value": "4",
+          "n": 19953,
+          "diabeticN": 4047,
+          "label": "$20k-$25k",
+          "prevalencePct": 20.28
+        },
+        {
+          "value": "5",
+          "n": 25326,
+          "diabeticN": 4489,
+          "label": "$25k-$35k",
+          "prevalencePct": 17.72
+        },
+        {
+          "value": "6",
+          "n": 34957,
+          "diabeticN": 5260,
+          "label": "$35k-$50k",
+          "prevalencePct": 15.05
+        },
+        {
+          "value": "7",
+          "n": 40131,
+          "diabeticN": 5226,
+          "label": "$50k-$75k",
+          "prevalencePct": 13.02
+        },
+        {
+          "value": "8",
+          "n": 71640,
+          "diabeticN": 7042,
+          "label": "$75k+",
+          "prevalencePct": 9.83
+        }
+      ]
     },
     {
       "variable": "Education",
@@ -94,7 +346,51 @@
       "interpretation": "Small",
       "minRatePct": 11.593085860017002,
       "maxRatePct": 29.28217821782178,
-      "maxDiffPct": 17.68909235780478
+      "maxDiffPct": 17.68909235780478,
+      "levels": [
+        {
+          "value": "1",
+          "n": 174,
+          "diabeticN": 47,
+          "label": "Never / kindergarten",
+          "prevalencePct": 27.01
+        },
+        {
+          "value": "2",
+          "n": 4040,
+          "diabeticN": 1183,
+          "label": "Grades 1-8",
+          "prevalencePct": 29.28
+        },
+        {
+          "value": "3",
+          "n": 9467,
+          "diabeticN": 2296,
+          "label": "Grades 9-11",
+          "prevalencePct": 24.25
+        },
+        {
+          "value": "4",
+          "n": 61124,
+          "diabeticN": 11032,
+          "label": "High school graduate",
+          "prevalencePct": 18.05
+        },
+        {
+          "value": "5",
+          "n": 66444,
+          "diabeticN": 10311,
+          "label": "Some college",
+          "prevalencePct": 15.52
+        },
+        {
+          "value": "6",
+          "n": 88225,
+          "diabeticN": 10228,
+          "label": "College graduate",
+          "prevalencePct": 11.59
+        }
+      ]
     },
     {
       "variable": "PhysActivity",
@@ -106,7 +402,23 @@
       "interpretation": "Small",
       "minRatePct": 13.113652846968742,
       "maxRatePct": 21.283055827619982,
-      "maxDiffPct": 8.16940298065124
+      "maxDiffPct": 8.16940298065124,
+      "levels": [
+        {
+          "value": "0",
+          "n": 61260,
+          "diabeticN": 13038,
+          "label": "No",
+          "prevalencePct": 21.28
+        },
+        {
+          "value": "1",
+          "n": 168214,
+          "diabeticN": 22059,
+          "label": "Yes",
+          "prevalencePct": 13.11
+        }
+      ]
     },
     {
       "variable": "Stroke",
@@ -118,7 +430,23 @@
       "interpretation": "Weak / Very Small",
       "minRatePct": 14.521191660203476,
       "maxRatePct": 31.77751847530144,
-      "maxDiffPct": 17.256326815097964
+      "maxDiffPct": 17.256326815097964,
+      "levels": [
+        {
+          "value": "0",
+          "n": 219190,
+          "diabeticN": 31829,
+          "label": "No",
+          "prevalencePct": 14.52
+        },
+        {
+          "value": "1",
+          "n": 10284,
+          "diabeticN": 3268,
+          "label": "Yes",
+          "prevalencePct": 31.78
+        }
+      ]
     },
     {
       "variable": "CholCheck",
@@ -130,7 +458,23 @@
       "interpretation": "Weak / Very Small",
       "minRatePct": 2.591955259195526,
       "maxRatePct": 15.830971586367271,
-      "maxDiffPct": 13.239016327171745
+      "maxDiffPct": 13.239016327171745,
+      "levels": [
+        {
+          "value": "0",
+          "n": 9298,
+          "diabeticN": 241,
+          "label": "No",
+          "prevalencePct": 2.59
+        },
+        {
+          "value": "1",
+          "n": 220176,
+          "diabeticN": 34856,
+          "label": "Yes",
+          "prevalencePct": 15.83
+        }
+      ]
     },
     {
       "variable": "HvyAlcoholConsump",
@@ -142,7 +486,23 @@
       "interpretation": "Weak / Very Small",
       "minRatePct": 5.96415770609319,
       "maxRatePct": 15.898461424249735,
-      "maxDiffPct": 9.934303718156546
+      "maxDiffPct": 9.934303718156546,
+      "levels": [
+        {
+          "value": "0",
+          "n": 215524,
+          "diabeticN": 34265,
+          "label": "No",
+          "prevalencePct": 15.9
+        },
+        {
+          "value": "1",
+          "n": 13950,
+          "diabeticN": 832,
+          "label": "Yes",
+          "prevalencePct": 5.96
+        }
+      ]
     },
     {
       "variable": "Smoker",
@@ -154,7 +514,23 @@
       "interpretation": "Negligible",
       "minRatePct": 13.765142554146104,
       "maxRatePct": 17.048526976583183,
-      "maxDiffPct": 3.283384422437079
+      "maxDiffPct": 3.283384422437079,
+      "levels": [
+        {
+          "value": "0",
+          "n": 122585,
+          "diabeticN": 16874,
+          "label": "No",
+          "prevalencePct": 13.77
+        },
+        {
+          "value": "1",
+          "n": 106889,
+          "diabeticN": 18223,
+          "label": "Yes",
+          "prevalencePct": 17.05
+        }
+      ]
     },
     {
       "variable": "Veggies",
@@ -166,7 +542,23 @@
       "interpretation": "Negligible",
       "minRatePct": 14.530786401004733,
       "maxRatePct": 18.248933958461507,
-      "maxDiffPct": 3.718147557456774
+      "maxDiffPct": 3.718147557456774,
+      "levels": [
+        {
+          "value": "0",
+          "n": 47137,
+          "diabeticN": 8602,
+          "label": "No",
+          "prevalencePct": 18.25
+        },
+        {
+          "value": "1",
+          "n": 182337,
+          "diabeticN": 26495,
+          "label": "Yes",
+          "prevalencePct": 14.53
+        }
+      ]
     },
     {
       "variable": "Sex",
@@ -178,7 +570,23 @@
       "interpretation": "Negligible",
       "minRatePct": 14.25241813308472,
       "maxRatePct": 16.6258101013309,
-      "maxDiffPct": 2.373391968246178
+      "maxDiffPct": 2.373391968246178,
+      "levels": [
+        {
+          "value": "0",
+          "n": 128715,
+          "diabeticN": 18345,
+          "label": "Female",
+          "prevalencePct": 14.25
+        },
+        {
+          "value": "1",
+          "n": 100759,
+          "diabeticN": 16752,
+          "label": "Male",
+          "prevalencePct": 16.63
+        }
+      ]
     },
     {
       "variable": "AnyHealthcare",
@@ -190,7 +598,23 @@
       "interpretation": "Negligible",
       "minRatePct": 11.477923964807491,
       "maxRatePct": 15.51235691088744,
-      "maxDiffPct": 4.034432946079949
+      "maxDiffPct": 4.034432946079949,
+      "levels": [
+        {
+          "value": "0",
+          "n": 12389,
+          "diabeticN": 1422,
+          "label": "No",
+          "prevalencePct": 11.48
+        },
+        {
+          "value": "1",
+          "n": 217085,
+          "diabeticN": 33675,
+          "label": "Yes",
+          "prevalencePct": 15.51
+        }
+      ]
     },
     {
       "variable": "Fruits",
@@ -202,7 +626,23 @@
       "interpretation": "Negligible",
       "minRatePct": 14.584652151956357,
       "maxRatePct": 16.41745704931313,
-      "maxDiffPct": 1.8328048973567714
+      "maxDiffPct": 1.8328048973567714,
+      "levels": [
+        {
+          "value": "0",
+          "n": 88881,
+          "diabeticN": 14592,
+          "label": "No",
+          "prevalencePct": 16.42
+        },
+        {
+          "value": "1",
+          "n": 140593,
+          "diabeticN": 20505,
+          "label": "Yes",
+          "prevalencePct": 14.58
+        }
+      ]
     },
     {
       "variable": "NoDocbcCost",
@@ -214,7 +654,23 @@
       "interpretation": "Negligible",
       "minRatePct": 15.063583648409088,
       "maxRatePct": 17.549125357595084,
-      "maxDiffPct": 2.4855417091859966
+      "maxDiffPct": 2.4855417091859966,
+      "levels": [
+        {
+          "value": "0",
+          "n": 208151,
+          "diabeticN": 31355,
+          "label": "No",
+          "prevalencePct": 15.06
+        },
+        {
+          "value": "1",
+          "n": 21323,
+          "diabeticN": 3742,
+          "label": "Yes",
+          "prevalencePct": 17.55
+        }
+      ]
     }
   ],
   "numeric": [

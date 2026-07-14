@@ -3,13 +3,9 @@
 import Image from "next/image";
 import { useMemo, useState } from "react";
 import { HBarChart } from "@/components/charts";
-import { ChartCard, Chip, DataTable, Select, SliderControl, StatBadge, type TableColumn } from "@/components/primitives";
+import { Callout, ChartCard, Chip, DataTable, Select, SliderControl, StatBadge, type TableColumn } from "@/components/primitives";
 import type { Rq1Data } from "@/lib/data/schemas";
-import { fmtFloat } from "@/lib/format";
-
-function badgeTone(interpretation: string): "neutral" | "moderate" {
-  return interpretation.toLowerCase().includes("moderate") ? "moderate" : "neutral";
-}
+import { fmtFloat, fmtInt } from "@/lib/format";
 
 function numericMagnitude(value: number): string {
   const magnitude = Math.abs(value);
@@ -30,6 +26,11 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
   }, [data.categorical, minEffect, sortBy]);
 
   const selected = data.categorical.find((item) => item.variable === selectedVariable) ?? data.categorical[0];
+  const orderedLevels = selected.levels.toSorted((a, b) => b.prevalencePct - a.prevalencePct);
+  const highest = orderedLevels[0];
+  const lowest = orderedLevels.at(-1) ?? orderedLevels[0];
+  const selectedN = selected.levels.reduce((sum, level) => sum + level.n, 0);
+
   const numericColumns: TableColumn<Rq1Data["numeric"][number]>[] = [
     { id: "variable", header: "Variable", render: (row) => <><strong>{row.variable}</strong><br /><span className="card-source">numeric factor</span></> },
     { id: "healthy", header: "Healthy mean", align: "right", render: (row) => fmtFloat(row.healthyMean, 2) },
@@ -43,19 +44,26 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
   return (
     <>
       <ChartCard
-        title="Categorical association ranking"
-        subtitle={`${visible.length} of ${data.categorical.length} variables shown. Sort and filter are computed locally over precomputed effect sizes.`}
-        source="results/statistical_analysis/chi_square_results.csv"
+        title="Linked categorical association explorer"
+        subtitle={`${visible.length} of ${data.categorical.length} variables shown. Click a bar or use the factor selector; the category chart and profile update together.`}
+        source="chi_square_results.csv + diabetes_cleaned.csv aggregate levels"
+        action={<StatBadge label={`selected · ${selected.variable}`} tone="moderate" />}
       >
         <div className="control-row">
           <Select
+            label="Selected factor"
+            value={selected.variable}
+            options={data.categorical.map((item) => ({ value: item.variable, label: `${item.variable} · ${item.label}` }))}
+            onChange={setSelectedVariable}
+          />
+          <Select
             label="Rank by"
             value={sortBy}
-            options={[{ value: "cramersV", label: "Cramér's V" }, { value: "maxDiffPct", label: "Max prevalence difference" }]}
+            options={[{ value: "cramersV", label: "Cramer's V" }, { value: "maxDiffPct", label: "Max prevalence difference" }]}
             onChange={setSortBy}
           />
           <SliderControl
-            label="Minimum Cramér's V"
+            label="Minimum Cramer's V"
             value={minEffect}
             min={0}
             max={0.25}
@@ -68,48 +76,60 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
           data={visible.map((item) => ({
             name: item.variable,
             value: sortBy === "maxDiffPct" ? item.maxDiffPct : item.cramersV,
+            detail: item.label,
             tone: item.interpretation.includes("Moderate") ? "accent" : item.interpretation.includes("Negligible") ? "track" : "blue",
           }))}
-          valueLabel={sortBy === "maxDiffPct" ? "Prevalence difference" : "Cramér's V"}
+          valueLabel={sortBy === "maxDiffPct" ? "Prevalence difference" : "Cramer's V"}
+          selectedName={selected.variable}
+          onSelect={(datum) => setSelectedVariable(datum.name)}
           formatValue={(value) => sortBy === "maxDiffPct" ? `${value.toFixed(1)} pp` : value.toFixed(3)}
-          ariaLabel="Interactive ranking of 18 categorical factors by effect size or prevalence range"
+          ariaLabel="Interactive ranking of categorical factors by effect size or prevalence range"
         />
-        <div className="chip-row" aria-label="Effect-size labels for visible variables">
-          {visible.map((item) => <span className="legend-item" key={item.variable}><span className="mono">{item.variable}</span><StatBadge label={item.interpretation} tone={badgeTone(item.interpretation)} /></span>)}
+        <div className="chip-row interaction-summary" aria-live="polite">
+          <Chip tone="accent">{selected.variable}</Chip>
+          <Chip>{selected.interpretation}</Chip>
+          <Chip>{selected.levels.length} levels</Chip>
+          <Chip>{fmtInt(selectedN)} records</Chip>
         </div>
       </ChartCard>
 
-      <div className="two-col section-block">
+      <div className="workbench-grid section-block">
         <ChartCard
-          title="Observed prevalence range"
-          subtitle="Only the minimum and maximum rates are available; this is a range, not a per-level curve."
-          source="chi_square_results.csv · min/max fields"
+          title={`Diabetes prevalence by ${selected.variable} level`}
+          subtitle="This chart is generated from category-level aggregates, replacing the previous min/max-only view."
+          source="data/processed/diabetes_cleaned.csv · grouped counts"
         >
-          <Select
-            label="Categorical variable"
-            value={selected.variable}
-            options={data.categorical.map((item) => ({ value: item.variable, label: `${item.variable} · ${item.label}` }))}
-            onChange={setSelectedVariable}
+          <HBarChart
+            data={selected.levels.map((level) => ({
+              name: level.label,
+              value: level.prevalencePct,
+              detail: `${fmtInt(level.diabeticN)} diabetic records of ${fmtInt(level.n)}`,
+              tone: level.prevalencePct === highest.prevalencePct ? "red" : "cyan",
+            }))}
+            valueLabel="Diabetes prevalence"
+            color="cyan"
+            formatValue={(value) => `${value.toFixed(1)}%`}
+            ariaLabel={`Diabetes prevalence across the observed levels of ${selected.variable}`}
           />
-          <div className="range-visual">
-            <div className="range-labels">
-              <div><strong>{selected.minRatePct.toFixed(1)}%</strong><span>minimum observed rate</span></div>
-              <div style={{ textAlign: "right" }}><strong>{selected.maxRatePct.toFixed(1)}%</strong><span>maximum observed rate</span></div>
-            </div>
-            <div className="range-track" aria-label={`${selected.variable}: ${selected.minRatePct.toFixed(1)} percent to ${selected.maxRatePct.toFixed(1)} percent`}>
-              <div className="range-fill" style={{ left: `${(selected.minRatePct / 40) * 100}%`, width: `${((selected.maxRatePct - selected.minRatePct) / 40) * 100}%` }} />
-              <span className="range-point" style={{ left: `${(selected.minRatePct / 40) * 100}%` }} />
-              <span className="range-point max" style={{ left: `${(selected.maxRatePct / 40) * 100}%` }} />
-            </div>
-            <div className="chip-row"><Chip tone="risk">Δ {selected.maxDiffPct.toFixed(1)} percentage points</Chip><Chip>{selected.interpretation}</Chip></div>
-          </div>
         </ChartCard>
 
-        <ChartCard title="Supporting prevalence figure" subtitle="Exported offline from the statistical analysis pipeline." source="public/figures/top_categorical_prevalence.png">
-          <figure>
-            <div className="figure-frame"><Image src="/figures/top_categorical_prevalence.png" alt="Diabetes prevalence for the leading categorical factors" width={1200} height={720} sizes="(max-width: 920px) 100vw, 45vw" /></div>
-            <figcaption className="figure-caption">Supporting figure · top_categorical_prevalence.png</figcaption>
-          </figure>
+        <ChartCard
+          title="Selected factor profile"
+          subtitle="Ranking selection, category prevalence and evidence summary share the same factor state."
+          source="rq1.json · selected variable"
+        >
+          <div className="metric-strip metric-strip-compact" aria-live="polite">
+            <div className="metric-mini"><span>Cramer&apos;s V</span><strong>{selected.cramersV.toFixed(3)}</strong></div>
+            <div className="metric-mini"><span>Rate spread</span><strong>{selected.maxDiffPct.toFixed(1)} pp</strong></div>
+            <div className="metric-mini"><span>Highest group</span><strong>{highest.prevalencePct.toFixed(1)}%</strong></div>
+            <div className="metric-mini"><span>Lowest group</span><strong>{lowest.prevalencePct.toFixed(1)}%</strong></div>
+          </div>
+          <div className="selection-panel">
+            <span className="eyebrow">Current selection</span>
+            <h3>{selected.label}</h3>
+            <p><strong>{highest.label}</strong> has the highest observed diabetes prevalence at {highest.prevalencePct.toFixed(1)}%, compared with {lowest.prevalencePct.toFixed(1)}% for <strong>{lowest.label}</strong>.</p>
+          </div>
+          <Callout><strong>Interpret carefully.</strong> This is a bivariate association profile. It supports exploration but does not estimate an adjusted or causal effect.</Callout>
         </ChartCard>
       </div>
 
@@ -120,7 +140,7 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
       </div>
 
       <div className="section-block">
-        <ChartCard title="BMI distribution by class" subtitle="The exported boxplot supports the numeric effect-size table without recomputing statistics in the browser." source="public/figures/bmi_boxplot.png">
+        <ChartCard title="BMI distribution by class" subtitle="The exported boxplot remains supporting evidence; the primary categorical analysis above is now fully interactive." source="public/figures/bmi_boxplot.png">
           <figure>
             <div className="figure-frame"><Image src="/figures/bmi_boxplot.png" alt="Boxplot comparing BMI between healthy and diabetic classes" width={1200} height={720} sizes="100vw" /></div>
             <figcaption className="figure-caption">Supporting figure · bmi_boxplot.png</figcaption>

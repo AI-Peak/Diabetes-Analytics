@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import { HBarChart, RankScatter } from "@/components/charts";
-import { Rq3ConsistencyTable } from "@/components/Rq3ConsistencyTable";
+import { Rq3Explorer } from "@/components/Rq3Explorer";
 import { ChartCard, Chip, KpiCard, PageHead, Reveal, Section } from "@/components/primitives";
 import { loadRq3 } from "@/lib/data/load";
 
@@ -36,31 +35,8 @@ export default function Rq3Page() {
         </div>
       </Section>
 
-      <Section label="Global SHAP evidence" source="results/xai/explanation_consistency.csv">
-        <div className="two-col-wide">
-          <ChartCard title="Mean absolute SHAP importance" subtitle="All 21 features, ordered by SHAP rank. Color and labels distinguish the two consistency groups." source="explanation_consistency.csv">
-            <HBarChart
-              data={data.features.map((feature) => ({ name: feature.variable, value: feature.shapImportance, tone: feature.group.startsWith("Group 1") ? "accent" : "cyan" }))}
-              valueLabel="mean|SHAP|"
-              ariaLabel="All 21 features ranked by mean absolute SHAP importance, colored by consistency group"
-            />
-            <div className="legend-row"><span className="legend-item"><span className="legend-swatch" /> Strong Agreement</span><span className="legend-item"><span className="legend-swatch teal" /> Under-represented</span></div>
-          </ChartCard>
-          <ChartCard title="SHAP beeswarm" subtitle="Each point encodes feature value, direction, and contribution magnitude across the offline explanation sample." source="public/figures/shap_summary_dot.png">
-            <figure><div className="figure-frame"><Image src={data.figures.beeswarm} alt="SHAP beeswarm showing feature contribution directions and magnitudes" width={1400} height={1000} sizes="(max-width: 920px) 100vw, 40vw" /></div><figcaption className="figure-caption">Exported TreeExplainer figure · shap_summary_dot.png</figcaption></figure>
-          </ChartCard>
-        </div>
-      </Section>
-
-      <Section label="SHAP vs statistics · consistency" source="results/xai/explanation_consistency.csv">
-        <div className="two-col">
-          <ChartCard title="Rank agreement map" subtitle="The dashed diagonal indicates perfect rank agreement. Distance from it reveals where multivariate model importance differs from univariate effect size." source="explanation_consistency.csv">
-            <RankScatter data={data.features.map((feature) => ({ variable: feature.variable, statRank: feature.statRank, shapRank: feature.shapRank, strong: feature.group.startsWith("Group 1") }))} />
-          </ChartCard>
-          <ChartCard title="Rank and effect-size comparison" subtitle="Sort the leading features by SHAP rank, statistical rank, or the absolute rank gap. BMI, Age, and DiffWalk are highlighted." source="explanation_consistency.csv">
-            <Rq3ConsistencyTable features={data.features} />
-          </ChartCard>
-        </div>
+      <Section label="Interactive feature lab" source="results/xai/explanation_consistency.csv">
+        <Rq3Explorer features={data.features} />
 
         <div className="group-cards section-block">
           {data.groups.map((group) => (
@@ -70,6 +46,17 @@ export default function Rq3Page() {
               <div className="member-list">{group.members.map((member) => <Chip tone={group.key === "strong-agreement" ? "accent" : "teal"} key={member}>{member}</Chip>)}</div>
             </article>
           ))}
+        </div>
+      </Section>
+
+      <Section label="Supporting global SHAP exports" source="results/xai/shap_summary_*.png">
+        <div className="chart-pair">
+          <ChartCard title="SHAP beeswarm" subtitle="Each point encodes feature value, direction, and contribution magnitude across the offline explanation sample." source="public/figures/shap_summary_dot.png">
+            <figure><div className="figure-frame"><Image src={data.figures.beeswarm} alt="SHAP beeswarm showing feature contribution directions and magnitudes" width={1400} height={1000} sizes="(max-width: 920px) 100vw, 45vw" /></div><figcaption className="figure-caption">Exported TreeExplainer figure · shap_summary_dot.png</figcaption></figure>
+          </ChartCard>
+          <ChartCard title="Global SHAP summary" subtitle="The static export remains a reproducibility artifact; selection and comparison now happen in the interactive feature lab above." source="public/figures/shap_summary_bar.png">
+            <figure><div className="figure-frame"><Image src={data.figures.bar} alt="Global mean absolute SHAP importance bar chart" width={1400} height={1000} sizes="(max-width: 920px) 100vw, 45vw" /></div><figcaption className="figure-caption">Exported TreeExplainer figure · shap_summary_bar.png</figcaption></figure>
+          </ChartCard>
         </div>
       </Section>
 
