@@ -1,0 +1,16 @@
+SHAP Local Explanation Metadata (Figure 8)
+===========================================
+
+Original Test Set Index: 7198
+Actual Class: Diabetes/Prediabetes (1)
+Predicted Probability: 85.5043%
+Predicted Class: Diabetes/Prediabetes (1)
+Model Output (Log-Odds): 1.7747
+Base Value (Log-Odds): -1.7398
+
+Top 5 Contributing Features:
+  - BMI (Value: 50, SHAP: 0.8987)
+  - GenHlth (Value: 5 (Poor), SHAP: 0.8055)
+  - HighBP (Value: Yes, SHAP: 0.4971)
+  - HighChol (Value: Yes, SHAP: 0.2574)
+  - HeartDiseaseorAttack (Value: Yes, SHAP: 0.2557)
