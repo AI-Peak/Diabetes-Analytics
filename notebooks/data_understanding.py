@@ -30,7 +30,7 @@ DOCS_DIR.mkdir(parents=True, exist_ok=True)
 
 # Define column categories and types
 COL_CLASSIFICATION = {
-    "Diabetes_binary": {"Category": "Target", "Type": "Binary", "Description": "Diabetes status (0 = no diabetes, 1 = prediabetes or diabetes)"},
+    "Diabetes_binary": {"Category": "Target", "Type": "Binary", "Description": "Diabetes status (0 = no reported diabetes, 1 = prediabetes or diabetes)"},
     "HighBP": {"Category": "Health Condition", "Type": "Binary", "Description": "High blood pressure indicator (0 = no high BP, 1 = high BP)"},
     "HighChol": {"Category": "Health Condition", "Type": "Binary", "Description": "High cholesterol indicator (0 = no high cholesterol, 1 = high cholesterol)"},
     "CholCheck": {"Category": "Healthcare Access", "Type": "Binary", "Description": "Cholesterol check in past 5 years (0 = no check, 1 = check)"},
@@ -169,13 +169,14 @@ def analyze_target_distribution(df: pd.DataFrame) -> pd.DataFrame:
     colors = ["#4A90E2", "#E94E77"]  # Premium blue and coral/red colors
     
     bars = plt.bar(
-        ["0: No Diabetes", "1: Prediabetes/Diabetes"],
+        ["0: No Reported Diabetes", "1: Prediabetes/Diabetes"],
         target_counts.values,
         color=colors,
         edgecolor="none",
         width=0.5,
         alpha=0.85
     )
+
     
     # Customize grid and spines
     plt.grid(axis="y", linestyle="--", alpha=0.5, color="#CCCCCC")

@@ -1,5 +1,14 @@
 {
   "title": "Predicting Diabetes Risk Using CDC Health Indicators - Final Results Summary",
+  "metadata": {
+    "generated_at_utc": "2026-07-20T17:50:10.948221+00:00",
+    "random_seed": 42,
+    "target_variable": "Diabetes_binary",
+    "class_definitions": {
+      "0": "No reported diabetes",
+      "1": "Prediabetes or diabetes"
+    }
+  },
   "dataset": {
     "n_records": 253680,
     "n_features": 21,
@@ -19,6 +28,7 @@
   "model_selection": {
     "selected_model": "XGBoost",
     "selection_criterion": "Primary = Mean 5-Fold CV PR-AUC on Development Set, Tie-break = Mean CV ROC-AUC",
+    "threshold_selection_criterion": "Recall >= 0.8 satisfied. Selected max Precision (0.3000), max F1 (0.4378).",
     "cross_validation_results": {
       "Logistic Regression": {
         "Mean_PR_AUC": 0.4163,
@@ -116,6 +126,31 @@
       "Evaluation_Split": "Untouched holdout test"
     }
   },
+  "adjusted_association": {
+    "top_5_odds_ratios": [
+      {
+        "Variable": "CholCheck",
+        "Odds_Ratio": 3.4694598255499005
+      },
+      {
+        "Variable": "HighBP",
+        "Odds_Ratio": 2.1330765833446623
+      },
+      {
+        "Variable": "HighChol",
+        "Odds_Ratio": 1.783389349089521
+      },
+      {
+        "Variable": "GenHlth",
+        "Odds_Ratio": 1.709064445044304
+      },
+      {
+        "Variable": "Sex",
+        "Odds_Ratio": 1.2945116545505035
+      }
+    ],
+    "max_vif": 1.8
+  },
   "xai_consistency": {
     "evidence_groups": {
       "Group 1 \u2014 Consistent high evidence": [
@@ -148,6 +183,29 @@
         "NoDocbcCost"
       ]
     },
-    "total_features": 21
+    "total_features": 21,
+    "rank_sensitivity": [
+      {
+        "Top_K": 5,
+        "SHAP_vs_Univariate_Overlap": 4,
+        "SHAP_vs_Univariate_Jaccard": 0.6667,
+        "SHAP_vs_AdjustedOR_Overlap": 3,
+        "SHAP_vs_AdjustedOR_Jaccard": 0.4286
+      },
+      {
+        "Top_K": 10,
+        "SHAP_vs_Univariate_Overlap": 7,
+        "SHAP_vs_Univariate_Jaccard": 0.5385,
+        "SHAP_vs_AdjustedOR_Overlap": 7,
+        "SHAP_vs_AdjustedOR_Jaccard": 0.5385
+      },
+      {
+        "Top_K": 15,
+        "SHAP_vs_Univariate_Overlap": 13,
+        "SHAP_vs_Univariate_Jaccard": 0.7222,
+        "SHAP_vs_AdjustedOR_Overlap": 11,
+        "SHAP_vs_AdjustedOR_Jaccard": 0.5789
+      }
+    ]
   }
 }

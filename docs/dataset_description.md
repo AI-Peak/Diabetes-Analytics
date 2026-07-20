@@ -40,8 +40,9 @@ The prediction target is **Diabetes_binary**, which indicates whether an individ
 
 | Value | Description |
 | ----- | ----------- |
-| 0     | No diabetes |
-| 1     | Diabetes    |
+| 0     | No reported diabetes |
+| 1     | Prediabetes or diabetes |
+
 
 This project uses the **original imbalanced dataset**, preserving the natural distribution of diabetes cases to better reflect real-world conditions.
 

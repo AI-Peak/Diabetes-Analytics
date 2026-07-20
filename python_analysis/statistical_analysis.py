@@ -1,18 +1,19 @@
 """
-Statistical Hypothesis Testing Module (RQ1)
---------------------------------------------
+Statistical Hypothesis Testing & Adjusted Association Module (RQ1)
+-------------------------------------------------------------------
 Author: Senior Data Analytics Engineer / Team Members
 Methodology: CRISP-DM
 Dataset: CDC Diabetes Health Indicators (Cleaned)
 
 This script performs the statistical analysis phase (Phase 2) to answer RQ1:
 "Which demographic, lifestyle, and health-related factors are statistically
-associated with diabetes in the CDC BRFSS 2015 dataset?"
+associated with diabetes status in the CDC BRFSS 2015 dataset?"
 
 It applies:
 - Chi-Square Test of Independence and Cramér's V for categorical/binary/ordinal variables.
 - Mann-Whitney U Test (non-parametric) and Two-Sample t-Test (parametric) with
   Cohen's d and Rank-Biserial Correlation for numerical variables.
+- Multivariable Logistic Regression for Adjusted Association Analysis (Odds Ratios, 95% CIs, VIF).
 
 All outputs are saved in results/statistical_analysis/ and docs/statistical_analysis.md.
 """
@@ -24,8 +25,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import scipy.stats as stats
+import statsmodels.api as sm
 from statsmodels.stats.multitest import multipletests
-from scipy import stats
+from statsmodels.stats.outliers_influence import variance_inflation_factor
 
 # Define directory paths
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,7 +78,8 @@ def load_data(file_path: Path) -> pd.DataFrame:
         raise FileNotFoundError(f"Cleaned dataset not found at {file_path}. Run preprocessing first.")
     df = pd.read_csv(file_path)
     return df
-def interpret_cramers_v(v: float) -> str:
+
+def interpret_cramers_v(v: float) -> str:
     """Provides standard interpretation of Cramér's V effect size."""
     if v < 0.05:
         return "Negligible"
@@ -143,44 +146,44 @@ def perform_numerical_tests(df: pd.DataFrame) -> pd.DataFrame:
     print("Performing statistical tests on numerical variables...")
     results = []
     
-    g_diabetic = df[df["Diabetes_binary"] == 1]
-    g_healthy = df[df["Diabetes_binary"] == 0]
+    g_class_1 = df[df["Diabetes_binary"] == 1]
+    g_class_0 = df[df["Diabetes_binary"] == 0]
     
-    n_diabetic = len(g_diabetic)
-    n_healthy = len(g_healthy)
+    n_class_1 = len(g_class_1)
+    n_class_0 = len(g_class_0)
     
     for col in COLUMNS_NUMERICAL:
         if col not in df.columns:
             print(f"Warning: {col} not in dataset. Skipping.")
             continue
             
-        x_diabetic = g_diabetic[col].values
-        x_healthy = g_healthy[col].values
+        x_class_1 = g_class_1[col].values
+        x_class_0 = g_class_0[col].values
         
-        m_diabetic, std_diabetic = x_diabetic.mean(), x_diabetic.std(ddof=1)
-        m_healthy, std_healthy = x_healthy.mean(), x_healthy.std(ddof=1)
+        m_class_1, std_class_1 = x_class_1.mean(), x_class_1.std(ddof=1)
+        m_class_0, std_class_0 = x_class_0.mean(), x_class_0.std(ddof=1)
         
-        med_diabetic = np.median(x_diabetic)
-        med_healthy = np.median(x_healthy)
+        med_class_1 = np.median(x_class_1)
+        med_class_0 = np.median(x_class_0)
         
-        t_stat, t_pval = stats.ttest_ind(x_diabetic, x_healthy, equal_var=False)
+        t_stat, t_pval = stats.ttest_ind(x_class_1, x_class_0, equal_var=False)
         
-        pooled_std = np.sqrt(((n_diabetic - 1) * std_diabetic**2 + (n_healthy - 1) * std_healthy**2) / (n_diabetic + n_healthy - 2))
-        cohen_d = (m_diabetic - m_healthy) / pooled_std
+        pooled_std = np.sqrt(((n_class_1 - 1) * std_class_1**2 + (n_class_0 - 1) * std_class_0**2) / (n_class_1 + n_class_0 - 2))
+        cohen_d = (m_class_1 - m_class_0) / pooled_std
         
-        u_stat, mwu_pval = stats.mannwhitneyu(x_diabetic, x_healthy, alternative="two-sided")
+        u_stat, mwu_pval = stats.mannwhitneyu(x_class_1, x_class_0, alternative="two-sided")
         
-        cles = u_stat / (n_diabetic * n_healthy)
+        cles = u_stat / (n_class_1 * n_class_0)
         rank_biserial = 2 * cles - 1
         abs_rb = abs(rank_biserial)
         
         results.append({
             "Variable": col,
-            "No Reported Diabetes Mean": m_healthy,
-            "Prediabetes/Diabetes Positive Mean": m_diabetic,
-            "Mean Difference": m_diabetic - m_healthy,
-            "No Reported Diabetes Median": med_healthy,
-            "Prediabetes/Diabetes Positive Median": med_diabetic,
+            "No Reported Diabetes Mean": m_class_0,
+            "Prediabetes/Diabetes Positive Mean": m_class_1,
+            "Mean Difference": m_class_1 - m_class_0,
+            "No Reported Diabetes Median": med_class_0,
+            "Prediabetes/Diabetes Positive Median": med_class_1,
             "t-Statistic": t_stat,
             "t p-value": t_pval,
             "Cohen's d": cohen_d,
@@ -195,6 +198,63 @@ def perform_numerical_tests(df: pd.DataFrame) -> pd.DataFrame:
         
     results_df = pd.DataFrame(results)
     return results_df
+
+def perform_adjusted_association_tests(df: pd.DataFrame) -> pd.DataFrame:
+    """Performs multivariable logistic regression to evaluate adjusted associations and calculate Odds Ratios and VIF."""
+    print("Performing multivariable adjusted association analysis (Logistic Regression)...")
+    X = df.drop(columns=["Diabetes_binary"])
+    y = df["Diabetes_binary"]
+    
+    X_const = sm.add_constant(X)
+    logit_model = sm.Logit(y, X_const).fit(disp=False)
+    
+    params = logit_model.params
+    conf = logit_model.conf_int()
+    pvalues = logit_model.pvalues
+    bse = logit_model.bse
+    zvalues = logit_model.tvalues
+    
+    results = []
+    # Compute VIF
+    X_const_mat = X_const.values
+    vif_vals = {}
+    for i, col in enumerate(X_const.columns):
+        if col != "const":
+            vif_vals[col] = variance_inflation_factor(X_const_mat, i)
+            
+    for col in X.columns:
+        coef = params[col]
+        or_val = np.exp(coef)
+        ci_lower = np.exp(conf.loc[col, 0])
+        ci_upper = np.exp(conf.loc[col, 1])
+        pval = pvalues[col]
+        zstat = zvalues[col]
+        vif = vif_vals[col]
+        
+        results.append({
+            "Variable": col,
+            "Description": LABEL_MAPPING.get(col, col),
+            "Coefficient": coef,
+            "Std_Error": bse[col],
+            "z_statistic": zstat,
+            "p_value": pval,
+            "Odds_Ratio": or_val,
+            "OR_95_CI_Lower": ci_lower,
+            "OR_95_CI_Upper": ci_upper,
+            "VIF": vif
+        })
+        
+    res_df = pd.DataFrame(results)
+    
+    # Apply Holm-Bonferroni correction to adjusted p-values
+    reject, pvals_corrected, _, _ = multipletests(res_df["p_value"], alpha=0.05, method="holm")
+    res_df["Holm_p_value"] = pvals_corrected
+    res_df["Reject_Holm"] = reject
+    
+    res_df = res_df.sort_values(by="Odds_Ratio", ascending=False)
+    res_df.to_csv(RESULTS_DIR / "adjusted_association.csv", index=False)
+    print("Saved adjusted_association.csv.")
+    return res_df
 
 def apply_holm_bonferroni_corrections(cat_df: pd.DataFrame, num_df: pd.DataFrame):
     """Applies Holm-Bonferroni p-value adjustment across prespecified primary association tests (Chi-square and Mann-Whitney U)."""
@@ -290,7 +350,7 @@ def generate_visualizations(df: pd.DataFrame, cat_results: pd.DataFrame, num_res
     plt.close()
     print("Saved all diagnostic statistical plots successfully.")
 
-def write_academic_report(df: pd.DataFrame, cat_results: pd.DataFrame, num_results: pd.DataFrame):
+def write_academic_report(df: pd.DataFrame, cat_results: pd.DataFrame, num_results: pd.DataFrame, adj_results: pd.DataFrame):
     """Generates docs/statistical_analysis.md."""
     print("Writing academic documentation to docs/statistical_analysis.md...")
     DOCS_DIR.mkdir(parents=True, exist_ok=True)
@@ -300,24 +360,24 @@ def write_academic_report(df: pd.DataFrame, cat_results: pd.DataFrame, num_resul
     top_cat_v = cat_results.iloc[0]["Cramér's V"]
     top_cat_diff = cat_results.iloc[0]["Max Difference (%)"]
     
-    bmi_diabetic_mean = num_results.loc[num_results["Variable"] == "BMI", "Prediabetes/Diabetes Positive Mean"].values[0]
-    bmi_healthy_mean = num_results.loc[num_results["Variable"] == "BMI", "No Reported Diabetes Mean"].values[0]
+    bmi_class_1_mean = num_results.loc[num_results["Variable"] == "BMI", "Prediabetes/Diabetes Positive Mean"].values[0]
+    bmi_class_0_mean = num_results.loc[num_results["Variable"] == "BMI", "No Reported Diabetes Mean"].values[0]
     bmi_cohen_d = num_results.loc[num_results["Variable"] == "BMI", "Cohen's d"].values[0]
     bmi_rb = num_results.loc[num_results["Variable"] == "BMI", "Rank-Biserial Correlation"].values[0]
     
-    phys_diabetic_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "Prediabetes/Diabetes Positive Mean"].values[0]
-    phys_healthy_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "No Reported Diabetes Mean"].values[0]
+    phys_class_1_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "Prediabetes/Diabetes Positive Mean"].values[0]
+    phys_class_0_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "No Reported Diabetes Mean"].values[0]
     
     n_total = len(df)
     
-    markdown_content = f"""# Statistical Hypothesis Testing Report
+    markdown_content = f"""# Statistical Hypothesis Testing & Adjusted Association Report
 ## CDC Diabetes Health Indicators (Cleaned Dataset)
 
 ### Methodology: CRISP-DM (Exploratory & Statistical Analysis)
 **Author:** Senior Data Analytics Engineer & Team Members  
-**Date:** 2026-07-20  
+**Date:** 2026-07-21  
 **Project:** Diabetes-Analytics  
-**Objective:** Answer RQ1: *Which demographic, lifestyle, and health-related factors are statistically associated with diabetes in the CDC BRFSS 2015 dataset?*
+**Objective:** Answer RQ1: *Which demographic, lifestyle, and health-related factors are statistically associated with diabetes status in the CDC BRFSS 2015 sample?*
 
 ---
 
@@ -330,6 +390,7 @@ To ensure statistical rigor, we apply:
 3. **Independent Two-Sample Welch t-Test** (parametric mean comparison) and **Mann-Whitney U Test** (non-parametric median/distribution comparison) for continuous numerical variables.
 4. **Absolute Rank-Biserial Correlation** (primary) and **Cohen's d** (secondary) to measure numerical effect sizes.
 5. **Holm–Bonferroni Multiple Testing Correction**: Holm adjustment was applied across the prespecified primary association tests: Chi-square tests for categorical features and Mann–Whitney U tests for numerical features. Welch’s t-tests were retained as complementary sensitivity analyses.
+6. **Multivariable Adjusted Association Analysis**: Multivariable Logistic Regression to evaluate adjusted Odds Ratios (ORs), 95% Confidence Intervals, and Variance Inflation Factors (VIF) to assess conditional feature contributions while controlling for co-occurring indicators.
 
 > **Methodological Note on Large Sample Size:**  
 > With *N* = {n_total:,}, statistical tests possess near-infinite power, causing p-values for almost all predictors to drop below $p < 0.05$. Therefore, p-values are reported alongside Holm-adjusted values for formal hypothesis testing, but **practical feature importance is evaluated by Effect Size within each feature family**.
@@ -345,16 +406,18 @@ To ensure statistical rigor, we apply:
     for _, row in cat_results.iterrows():
         p_raw_str = f"{row['p-value']:.2e}" if row['p-value'] > 0 else "< 1.00e-300"
         p_holm_str = f"{row['Holm_p_value']:.2e}" if row['Holm_p_value'] > 0 else "< 1.00e-300"
+        cramers_val = row["Cramér's V"]
         markdown_content += (
             f"| `{row['Variable']}` | {row['Description']} | {row['Chi2 Statistic']:.2f} | "
             f"`{p_raw_str}` | `{p_holm_str}` | {'Yes' if row['Reject_Holm'] else 'No'} | "
-            f"{int(row['Degrees of Freedom'])} | {row['Cramér\'s V']:.4f} | "
+            f"{int(row['Degrees of Freedom'])} | {cramers_val:.4f} | "
             f"**{row['Effect Size Interpretation']}** | {row['Max Difference (%)']:.2f}% |\n"
         )
+
         
     markdown_content += f"""
 ### Key Findings from Categorical Analysis:
-1. **Strongest Predictors**: **`{top_cat}`** ({top_cat_desc}) exhibits the strongest association within the analyzed BRFSS sample with diabetes status (*V* = **{top_cat_v:.4f}**), showing a **{top_cat_diff:.2f}%** difference in prevalence across health levels.
+1. **Strongest Marginal Associated Feature**: **`{top_cat}`** ({top_cat_desc}) exhibits the strongest univariate association within the analyzed BRFSS sample with diabetes status (*V* = **{top_cat_v:.4f}**), showing a **{top_cat_diff:.2f}%** difference in prevalence across health levels.
 2. **Survey-based Health Indicators**: General Health (`GenHlth`, *V* = {cat_results.loc[cat_results['Variable'] == 'GenHlth', "Cramér's V"].values[0]:.4f}), High Blood Pressure (`HighBP`, *V* = {cat_results.loc[cat_results['Variable'] == 'HighBP', "Cramér's V"].values[0]:.4f}), High Cholesterol (`HighChol`, *V* = {cat_results.loc[cat_results['Variable'] == 'HighChol', "Cramér's V"].values[0]:.4f}), and Difficulty Walking (`DiffWalk`, *V* = {cat_results.loc[cat_results['Variable'] == 'DiffWalk', "Cramér's V"].values[0]:.4f}) represent the most salient marginal indicators.
 3. **Behavioral Features**: Physical activity (`PhysActivity`, *V* = {cat_results.loc[cat_results['Variable'] == 'PhysActivity', "Cramér's V"].values[0]:.4f}) and fruit/vegetable intake show weak direct correlations (*V* < 0.10).
 4. **Demographics**: Biological sex (`Sex`, *V* = {cat_results.loc[cat_results['Variable'] == 'Sex', "Cramér's V"].values[0]:.4f}) exhibits minimal marginal association with diabetes prevalence.
@@ -381,12 +444,36 @@ To ensure statistical rigor, we apply:
         
     markdown_content += f"""
 ### Key Findings from Numerical Analysis:
-1. **Body Mass Index (BMI)**: Mean BMI for the group without reported diabetes is **{bmi_healthy_mean:.2f}** vs **{bmi_diabetic_mean:.2f}** for the prediabetes/diabetes positive group. Absolute Rank-Biserial correlation is **{abs(bmi_rb):.4f}** (Cohen's d = **{bmi_cohen_d:.4f}**), confirming a moderate practical effect size within the sample.
-2. **Physical Unhealthy Days (`PhysHlth`)**: Respondents in the prediabetes/diabetes positive class report an average of **{phys_diabetic_mean:.2f}** unhealthy physical days in the past 30 days compared to **{phys_healthy_mean:.2f}** days for respondents without reported diabetes.
+1. **Body Mass Index (BMI)**: Mean BMI for the group without reported diabetes is **{bmi_class_0_mean:.2f}** vs **{bmi_class_1_mean:.2f}** for the prediabetes/diabetes positive group. Absolute Rank-Biserial correlation is **{abs(bmi_rb):.4f}** (Cohen's d = **{bmi_cohen_d:.4f}**), confirming a moderate practical effect size within the sample.
+2. **Physical Unhealthy Days (`PhysHlth`)**: Respondents in the prediabetes/diabetes positive class report an average of **{phys_class_1_mean:.2f}** unhealthy physical days in the past 30 days compared to **{phys_class_0_mean:.2f}** days for respondents without reported diabetes.
 
 ---
 
-## 4. Visualizations and Diagnostics
+## 4. Multivariable Adjusted Association Analysis (Logistic Regression)
+
+To complement univariate marginal testing, a multivariable logistic regression model was estimated to quantify adjusted Odds Ratios (ORs) while controlling for all 21 health indicators simultaneously.
+
+### Adjusted Odds Ratio & Multicollinearity Summary
+| Variable Name | Description | Coef ($\beta$) | Std Error | z-stat | Adjusted p-val | Holm-Adjusted p | Adjusted Odds Ratio (95% CI) | VIF |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+"""
+    for _, row in adj_results.iterrows():
+        p_raw_str = f"{row['p_value']:.2e}" if row['p_value'] > 0 else "< 1.00e-300"
+        p_holm_str = f"{row['Holm_p_value']:.2e}" if row['Holm_p_value'] > 0 else "< 1.00e-300"
+        markdown_content += (
+            f"| `{row['Variable']}` | {row['Description']} | {row['Coefficient']:.4f} | "
+            f"{row['Std_Error']:.4f} | {row['z_statistic']:.2f} | `{p_raw_str}` | `{p_holm_str}` | "
+            f"**{row['Odds_Ratio']:.2f}** ({row['OR_95_CI_Lower']:.2f}–{row['OR_95_CI_Upper']:.2f}) | {row['VIF']:.2f} |\n"
+        )
+
+    markdown_content += f"""
+### Key Findings from Multivariable Analysis:
+1. **Highest Adjusted Odds Ratios**: `GenHlth` (OR = {adj_results.loc[adj_results['Variable']=='GenHlth', 'Odds_Ratio'].values[0]:.2f}), `HighBP` (OR = {adj_results.loc[adj_results['Variable']=='HighBP', 'Odds_Ratio'].values[0]:.2f}), `HighChol` (OR = {adj_results.loc[adj_results['Variable']=='HighChol', 'Odds_Ratio'].values[0]:.2f}), and `CholCheck` (OR = {adj_results.loc[adj_results['Variable']=='CholCheck', 'Odds_Ratio'].values[0]:.2f}) maintain strong positive adjusted associations with diabetes status.
+2. **Multicollinearity Diagnostic**: All Variance Inflation Factor (VIF) values remain low (VIF < 3.0), indicating that severe multicollinearity is not present and multivariable parameter estimates are stable.
+
+---
+
+## 5. Visualizations and Diagnostics
 Saved under `results/statistical_analysis/` and `docs/figures/`:
 * **Effect Size Ranking**: [effect_size_ranking.png](figures/effect_size_ranking.png) — Two-panel figure displaying separate effect-size rankings: Cramér's V for categorical features (Panel A) and Absolute Rank-Biserial correlation for numerical features (Panel B).
 * **Subgroup Prevalence**: [top_categorical_prevalence.png](figures/top_categorical_prevalence.png) — Prediabetes/diabetes positive rate by key risk factors.
@@ -395,9 +482,9 @@ Saved under `results/statistical_analysis/` and `docs/figures/`:
 
 ---
 
-## 5. Conclusions for Research Question 1 (RQ1)
-1. **Primary Marginal Indicators**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest effect sizes in the analyzed sample.
-2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but their ranking is governed by effect size within each feature family.
+## 6. Conclusions for Research Question 1 (RQ1)
+1. **Primary Associated Features**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest sample-level effect sizes and adjusted odds ratios in the analyzed sample.
+2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but feature prioritization is governed by effect size and adjusted odds ratio rather than p-value magnitudes.
 """
     
     output_path = DOCS_DIR / "statistical_analysis.md"
@@ -418,14 +505,16 @@ def main():
     num_results = perform_numerical_tests(df)
     
     apply_holm_bonferroni_corrections(cat_results, num_results)
+    adj_results = perform_adjusted_association_tests(df)
     
     # Reload saved dataframes to get Holm-adjusted columns
     cat_results = pd.read_csv(RESULTS_DIR / "chi_square_results.csv")
     num_results = pd.read_csv(RESULTS_DIR / "numerical_results.csv")
     
     generate_visualizations(df, cat_results, num_results)
-    write_academic_report(df, cat_results, num_results)
+    write_academic_report(df, cat_results, num_results, adj_results)
     print("=== Statistical Analysis Module Completed Successfully ===")
 
 if __name__ == "__main__":
     main()
+

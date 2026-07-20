@@ -257,6 +257,8 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
     final_pipeline = pipelines[best_model_name]
     
     final_pipeline.fit(X_dev, y_dev)
+    joblib.dump(final_pipeline, RESULTS_DIR / "final_model.joblib")
+    print(f"Saved fitted final model pipeline to: {RESULTS_DIR / 'final_model.joblib'}")
     
     y_test_pred_default = final_pipeline.predict(X_test)
     y_test_prob = final_pipeline.predict_proba(X_test)[:, 1]
@@ -342,8 +344,8 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
     ])
     
     test_metrics_df.to_csv(RESULTS_DIR / "final_test_metrics.csv", index=False)
-    # Calibration Analysis (Cox Logistic Calibration: logit(P) = intercept + slope * logit(p_hat))
-    print("\nExecuting Holdout Calibration Analysis...")
+    # Post-hoc Holdout Calibration Assessment (Cox Logistic Calibration Assessment: logit(P) = intercept + slope * logit(p_hat))
+    print("\nExecuting Holdout Calibration Assessment...")
     brier = brier_score_loss(y_test, y_test_prob)
     eps = 1e-15
     probs_clipped = np.clip(y_test_prob, eps, 1 - eps)
@@ -362,6 +364,7 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
     calib_df.to_csv(RESULTS_DIR / "calibration_metrics.csv", index=False)
     
     return final_pipeline, m_default, m_selected, ci_results, test_metrics_df, calib_df, y_test_prob
+
 
 def generate_canonical_figures(cv_results, best_model_name, selected_threshold, y_dev, X_test, y_test, final_pipeline, y_test_prob):
     """Generates the 4 canonical modeling figures required by the study guidelines."""

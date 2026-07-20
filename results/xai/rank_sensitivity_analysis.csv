@@ -1,0 +1,4 @@
+Top_K,SHAP_vs_Univariate_Overlap,SHAP_vs_Univariate_Jaccard,SHAP_vs_AdjustedOR_Overlap,SHAP_vs_AdjustedOR_Jaccard
+5,4,0.6667,3,0.4286
+10,7,0.5385,7,0.5385
+15,13,0.7222,11,0.5789

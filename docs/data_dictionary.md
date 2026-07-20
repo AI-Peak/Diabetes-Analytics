@@ -6,7 +6,7 @@ This document describes the variables contained in the **CDC Diabetes Health Ind
 
 | Variable             | Type            | Category             | Description                                                      | Values                                  |
 | -------------------- | --------------- | -------------------- | ---------------------------------------------------------------- | --------------------------------------- |
-| Diabetes_binary      | Binary (Target) | Target               | Diabetes status                                                  | 0 = No diabetes, 1 = Diabetes           |
+| Diabetes_binary      | Binary (Target) | Target               | Diabetes status                                                  | 0 = No reported diabetes, 1 = Prediabetes or diabetes |
 | HighBP               | Binary          | Health Condition     | High blood pressure                                              | 0 = No, 1 = Yes                         |
 | HighChol             | Binary          | Health Condition     | High cholesterol                                                 | 0 = No, 1 = Yes                         |
 | CholCheck            | Binary          | Health Condition     | Cholesterol checked within the past 5 years                      | 0 = No, 1 = Yes                         |
