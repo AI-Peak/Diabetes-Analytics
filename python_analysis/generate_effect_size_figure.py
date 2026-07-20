@@ -64,14 +64,13 @@ def generate_effect_size_figure():
     ax1.set_xlim(0, max(cat_df[cramers_col]) * 1.15)
     ax1.grid(axis='x', linestyle=':', alpha=0.5)
 
-    # Panel B: Absolute Rank-Biserial Correlation
+    # Panel B: Absolute Rank-Biserial Correlation (|r_rb| < 0.10: Negligible, 0.10–0.30: Small, 0.30–0.50: Moderate, >= 0.50: Large)
     y_pos_num = np.arange(len(num_df))
-    ax2.axvspan(0.00, 0.05, facecolor="#F8FAFC", alpha=0.9, zorder=1)
-    ax2.axvspan(0.05, 0.10, facecolor="#EFF6FF", alpha=0.9, zorder=1)
-    ax2.axvspan(0.10, 0.20, facecolor="#ECFDF5", alpha=0.9, zorder=1)
-    ax2.axvspan(0.20, 0.35, facecolor="#FEF3C7", alpha=0.9, zorder=1)
+    ax2.axvspan(0.00, 0.10, facecolor="#F8FAFC", alpha=0.9, zorder=1) # Negligible
+    ax2.axvspan(0.10, 0.30, facecolor="#EFF6FF", alpha=0.9, zorder=1) # Small
+    ax2.axvspan(0.30, 0.50, facecolor="#ECFDF5", alpha=0.9, zorder=1) # Moderate
 
-    for border in [0.05, 0.10, 0.20]:
+    for border in [0.10, 0.30]:
         ax2.axvline(border, color="#CBD5E1", linestyle="--", linewidth=0.8, zorder=2)
 
     ax2.hlines(y_pos_num, xmin=0, xmax=num_df[rb_col], color="#64748B", linewidth=1.2, zorder=3)
@@ -79,14 +78,14 @@ def generate_effect_size_figure():
 
     for y, (_, row) in zip(y_pos_num, num_df.iterrows()):
         val = row[rb_col]
-        ax2.text(val + 0.004, y, f"{val:.3f}", va="center", ha="left", fontsize=8.5, color="#1E293B", fontweight="medium")
+        ax2.text(val + 0.005, y, f"{val:.3f}", va="center", ha="left", fontsize=8.5, color="#1E293B", fontweight="medium")
 
     num_labels = num_df["Description"] if "Description" in num_df.columns else num_df["Variable"]
     ax2.set_yticks(y_pos_num)
     ax2.set_yticklabels(num_labels, fontsize=8.5, color="#1E293B")
     ax2.set_xlabel("Absolute Rank-Biserial Correlation", fontsize=9.5, fontweight="bold", color="#0F172A", labelpad=8)
     ax2.set_title("Panel B: Numerical Features (Rank-Biserial r)", fontsize=11, fontweight="bold", color="#0F172A")
-    ax2.set_xlim(0, max(num_df[rb_col]) * 1.20)
+    ax2.set_xlim(0, 0.45)
     ax2.grid(axis='x', linestyle=':', alpha=0.5)
 
     fig.suptitle("Effect-size evidence by feature family", fontsize=13, fontweight="bold", color="#0F172A", y=0.98)

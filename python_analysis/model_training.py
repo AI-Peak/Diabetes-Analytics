@@ -14,7 +14,7 @@ Rigorously adheres to:
 3. Out-Of-Fold (OOF) probability evaluation on Development set ONLY for Threshold Selection.
 4. Model-specific pipelines (Logistic Regression uses ColumnTransformer with StandardScaler for continuous,
    OneHotEncoder for ordinal; Tree-based models use raw features without scaling).
-5. Final Evaluation performed EXACTLY ONCE on untouched Holdout Test set after locking model and threshold.
+5. Holdout data were excluded from model, hyperparameter, feature, and threshold selection. They were reserved for final performance evaluation and post-hoc reliability, uncertainty, and explanation analyses.
 6. Calibration Analysis (Brier score & reliability diagram) on untouched Holdout Test set.
 
 All outputs are saved in results/modeling/ and docs/figures/.

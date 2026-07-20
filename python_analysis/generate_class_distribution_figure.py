@@ -10,15 +10,12 @@ Description:
     The diagram is saved as:
         - docs/figures/class_distribution.svg (Vector)
         - docs/figures/class_distribution.png (300 DPI Raster)
-        
-    Values:
-        - Healthy: 84.71%
-        - Diabetes/Prediabetes: 15.29%
 """
 
 import os
 from pathlib import Path
 import matplotlib.pyplot as plt
+import pandas as pd
 
 # Resolve paths relative to this script
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -39,17 +36,15 @@ def generate_pie_chart():
     
     # Load cleaned data dynamically
     data_path = BASE_DIR / "data" / "processed" / "diabetes_cleaned.csv"
-    if data_path.exists():
-        import pandas as pd
-        df = pd.read_csv(data_path)
-        counts = df["Diabetes_binary"].value_counts().sort_index()
-        total = len(df)
-        pcts = [counts[0] / total * 100, counts[1] / total * 100]
-        labels = [f"No Reported Diabetes\n(n={counts[0]:,})", f"Prediabetes / Diabetes\n(n={counts[1]:,})"]
-    else:
-        pcts = [86.07, 13.93]
-        labels = ["No Reported Diabetes", "Prediabetes / Diabetes"]
+    if not data_path.exists():
+        raise FileNotFoundError(f"Cleaned dataset not found at {data_path}")
         
+    df = pd.read_csv(data_path)
+    class_counts = df["Diabetes_binary"].astype(int).value_counts().sort_index()
+    total = len(df)
+    pcts = [class_counts[0] / total * 100, class_counts[1] / total * 100]
+    labels = [f"No Reported Diabetes\n(n={class_counts[0]:,})", f"Prediabetes / Diabetes\n(n={class_counts[1]:,})"]
+    
     colors = ['#2563EB', '#DC2626']
     
     fig, ax = plt.subplots(figsize=(6, 5))

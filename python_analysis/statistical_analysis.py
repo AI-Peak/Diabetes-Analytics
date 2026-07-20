@@ -197,7 +197,7 @@ def perform_numerical_tests(df: pd.DataFrame) -> pd.DataFrame:
     return results_df
 
 def apply_holm_bonferroni_corrections(cat_df: pd.DataFrame, num_df: pd.DataFrame):
-    """Applies Holm-Bonferroni p-value adjustment across all statistical hypothesis tests."""
+    """Applies Holm-Bonferroni p-value adjustment across prespecified primary association tests (Chi-square and Mann-Whitney U)."""
     all_pvals = list(cat_df["p-value"].values) + list(num_df["MWU p-value"].values)
     reject, pvals_corrected, _, _ = multipletests(all_pvals, alpha=0.05, method="holm")
     

@@ -21,6 +21,7 @@ To reproduce all dataset cleaning, statistical hypothesis testing, model selecti
 ```bash
 # 1. Data Preprocessing & Validation
 python notebooks/data_preprocessing.py
+python python_analysis/generate_class_distribution_figure.py
 
 # 2. Statistical Analysis & Hypothesis Testing (RQ1)
 python python_analysis/statistical_analysis.py
