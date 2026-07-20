@@ -5,11 +5,14 @@ import { HBarChart, RankScatter } from "@/components/charts";
 import { ChartCard, DataTable, RadioGroup, Select, StatBadge, type TableColumn } from "@/components/primitives";
 import type { FeatureResult } from "@/lib/data/schemas";
 
-type GroupFilter = "all" | "strong" | "under";
+type GroupFilter = "all" | "g1" | "g2" | "g3" | "g4";
 type SortKey = "shapRank" | "statRank" | "gap";
 
-function isStrong(feature: FeatureResult) {
-  return feature.group.startsWith("Group 1");
+function getGroupKey(feature: FeatureResult) {
+  if (feature.group.startsWith("Group 1")) return "g1";
+  if (feature.group.startsWith("Group 2")) return "g2";
+  if (feature.group.startsWith("Group 3")) return "g3";
+  return "g4";
 }
 
 export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
@@ -18,7 +21,7 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
   const [selectedVariable, setSelectedVariable] = useState(features[0]?.variable ?? "");
 
   const rows = useMemo(() => features
-    .filter((feature) => group === "all" || (group === "strong" ? isStrong(feature) : !isStrong(feature)))
+    .filter((feature) => group === "all" || getGroupKey(feature) === group)
     .toSorted((a, b) => {
       if (sort === "statRank") return a.statRank - b.statRank;
       if (sort === "gap") return Math.abs(b.shapRank - b.statRank) - Math.abs(a.shapRank - a.statRank);
@@ -38,7 +41,7 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
     { id: "statRank", header: "Stat rank", align: "right", render: (row) => `#${row.statRank}` },
     { id: "gap", header: "Rank gap", align: "right", render: (row) => String(Math.abs(row.shapRank - row.statRank)) },
     { id: "effect", header: "Effect size", align: "right", render: (row) => <>{row.effectSize.toFixed(3)}<br /><span className="card-source">{row.effectSizeType}</span></> },
-    { id: "group", header: "Consistency", render: (row) => <StatBadge label={isStrong(row) ? "Strong agreement" : "Under-represented"} tone={isStrong(row) ? "moderate" : "neutral"} /> },
+    { id: "group", header: "Consistency", render: (row) => <StatBadge label={row.group} tone={row.group.startsWith("Group 1") ? "moderate" : (row.group.startsWith("Group 2") ? "neutral" : (row.group.startsWith("Group 3") ? "best" : "risk"))} /> },
   ];
 
   return (
@@ -49,8 +52,10 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
           value={group}
           options={[
             { value: "all", label: "All features" },
-            { value: "strong", label: "Strong agreement" },
-            { value: "under", label: "Under-represented" },
+            { value: "g1", label: "Group 1 (Consistent)" },
+            { value: "g2", label: "Group 2 (Redundant)" },
+            { value: "g3", label: "Group 3 (Salient)" },
+            { value: "g4", label: "Group 4 (Weak)" },
           ]}
           onChange={(value) => setGroup(value as GroupFilter)}
         />
@@ -70,7 +75,7 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
         <div className="selection-panel">
           <span className="eyebrow">Selected feature</span>
           <h3>{selected.variable}</h3>
-          <p>{selected.label} · {isStrong(selected) ? "model importance and statistical evidence agree strongly" : "statistical evidence is stronger than its multivariate SHAP position"}.</p>
+          <p>{selected.label} · {selected.group}.</p>
         </div>
         <div className="metric-strip metric-strip-compact">
           <div className="metric-mini"><span>mean|SHAP|</span><strong>{selected.shapImportance.toFixed(3)}</strong></div>
@@ -92,7 +97,7 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
               name: feature.variable,
               value: feature.shapImportance,
               detail: `${feature.label} · SHAP #${feature.shapRank} · Stat #${feature.statRank}`,
-              tone: isStrong(feature) ? "accent" : "cyan",
+              tone: feature.group.startsWith("Group 1") ? "accent" : (feature.group.startsWith("Group 2") ? "cyan" : "orange"),
             }))}
             valueLabel="mean|SHAP|"
             selectedName={selected.variable}
@@ -107,7 +112,7 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
           source="explanation_consistency.csv · SHAP and statistical ranks"
         >
           <RankScatter
-            data={rows.map((feature) => ({ variable: feature.variable, statRank: feature.statRank, shapRank: feature.shapRank, strong: isStrong(feature) }))}
+            data={rows.map((feature) => ({ variable: feature.variable, statRank: feature.statRank, shapRank: feature.shapRank, strong: feature.group.startsWith("Group 1") }))}
             selectedVariable={selected.variable}
             onSelect={setSelectedVariable}
           />

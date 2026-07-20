@@ -1,0 +1,145 @@
+{
+  "title": "Predicting Diabetes Risk Using CDC Health Indicators - Final Results Summary",
+  "dataset": {
+    "n_records": 253680,
+    "n_features": 21,
+    "class_distribution": {
+      "healthy_count": 218334,
+      "healthy_pct": 86.07,
+      "diabetic_count": 35346,
+      "diabetic_pct": 13.93
+    },
+    "split": {
+      "development_size": 202944,
+      "holdout_test_size": 50736,
+      "cv_folds": 5
+    }
+  },
+  "model_selection": {
+    "selected_model": "XGBoost",
+    "selection_criterion": "Primary = Mean 5-Fold CV PR-AUC on Development Set, Tie-break = Mean CV ROC-AUC",
+    "cross_validation_results": {
+      "Logistic Regression": {
+        "Mean_PR_AUC": 0.4163,
+        "Std_PR_AUC": 0.0052,
+        "Mean_ROC_AUC": 0.825,
+        "Std_ROC_AUC": 0.0016,
+        "Mean_F1": 0.2444,
+        "Mean_Recall": 0.1561,
+        "Mean_Precision": 0.5628
+      },
+      "Decision Tree": {
+        "Mean_PR_AUC": 0.4015,
+        "Std_PR_AUC": 0.0065,
+        "Mean_ROC_AUC": 0.8169,
+        "Std_ROC_AUC": 0.0025,
+        "Mean_F1": 0.2254,
+        "Mean_Recall": 0.1417,
+        "Mean_Precision": 0.5509
+      },
+      "Random Forest": {
+        "Mean_PR_AUC": 0.4301,
+        "Std_PR_AUC": 0.007,
+        "Mean_ROC_AUC": 0.8271,
+        "Std_ROC_AUC": 0.0024,
+        "Mean_F1": 0.1913,
+        "Mean_Recall": 0.1133,
+        "Mean_Precision": 0.613
+      },
+      "XGBoost": {
+        "Mean_PR_AUC": 0.4359,
+        "Std_PR_AUC": 0.0077,
+        "Mean_ROC_AUC": 0.8305,
+        "Std_ROC_AUC": 0.0021,
+        "Mean_F1": 0.2587,
+        "Mean_Recall": 0.1665,
+        "Mean_Precision": 0.5805
+      }
+    }
+  },
+  "holdout_test_evaluation": {
+    "selected_threshold": 0.13,
+    "metrics_at_selected_threshold": {
+      "Accuracy": 0.7091,
+      "Precision": 0.2991,
+      "Recall": 0.8099,
+      "Specificity": 0.6928,
+      "F1-score": 0.4369,
+      "ROC-AUC": 0.8272,
+      "PR-AUC": 0.4238,
+      "TP": 5725,
+      "FP": 13416,
+      "TN": 30251,
+      "FN": 1344
+    },
+    "metrics_at_default_0.50": {
+      "Accuracy": 0.8655,
+      "Precision": 0.5583,
+      "Recall": 0.1654,
+      "Specificity": 0.9788,
+      "F1-score": 0.2552,
+      "ROC-AUC": 0.8272,
+      "PR-AUC": 0.4238,
+      "TP": 1169,
+      "FP": 925,
+      "TN": 42742,
+      "FN": 5900
+    },
+    "bootstrap_95_ci": {
+      "ROC-AUC": [
+        0.8223,
+        0.8322
+      ],
+      "PR-AUC": [
+        0.4135,
+        0.4347
+      ],
+      "Recall": [
+        0.8004,
+        0.8194
+      ],
+      "Precision": [
+        0.2953,
+        0.3028
+      ],
+      "F1-score": [
+        0.4317,
+        0.4418
+      ]
+    }
+  },
+  "xai_consistency": {
+    "evidence_groups": {
+      "Group 1 \u2014 Consistent high evidence": [
+        "GenHlth",
+        "HighBP",
+        "Age",
+        "BMI",
+        "HighChol",
+        "Income",
+        "CholCheck",
+        "HeartDiseaseorAttack",
+        "HvyAlcoholConsump"
+      ],
+      "Group 2 \u2014 Population-associated, model-redundant": [
+        "DiffWalk",
+        "Education",
+        "Stroke",
+        "PhysHlth",
+        "PhysActivity",
+        "Smoker",
+        "Veggies"
+      ],
+      "Group 3 \u2014 Model-salient, weak marginal association": [
+        "Sex"
+      ],
+      "Group 4 \u2014 Weak evidence": [
+        "MentHlth",
+        "Fruits",
+        "AnyHealthcare",
+        "NoDocbcCost"
+      ]
+    },
+    "total_features": 21
+  }
+}

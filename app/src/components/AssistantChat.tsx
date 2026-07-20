@@ -9,7 +9,7 @@ type Message = { id: number; role: "user" | "assistant"; content: string; mocked
 const welcome: Message = {
   id: 1,
   role: "assistant",
-  content: "Xin chào! Mình có thể giải thích kết quả RQ1–RQ3, metrics mô hình, threshold 0.15 và mức nhất quán giữa SHAP với thống kê. Mình chỉ dùng dữ liệu đã được kiểm chứng của nghiên cứu.",
+  content: "Xin chào! Mình có thể giải thích kết quả RQ1–RQ3, metrics mô hình, ngưỡng sàng lọc tối ưu và mức nhất quán giữa SHAP với thống kê. Mình chỉ dùng dữ liệu đã được kiểm chứng của nghiên cứu.",
 };
 
 export function AssistantChat() {

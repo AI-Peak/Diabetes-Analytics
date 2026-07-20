@@ -7,7 +7,7 @@ export const PAGES = [
 ] as const;
 
 export const STUDY = {
-  n: 229_474,
+  n: 253_680,
   testSize: 45_895,
   healthyPct: 84.7,
   diabeticPct: 15.3,

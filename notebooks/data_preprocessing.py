@@ -108,18 +108,20 @@ def run_preprocessing():
         "notes": "No missing value handling needed." if total_missing == 0 else f"Found missing values: {missing_counts[missing_counts > 0].to_dict()}"
     })
 
-    # Step: Duplicate rows removal
+    # Step: Inspect Repeated Feature Profiles
     cleaned_df = df.copy()
-    if duplicate_count > 0:
-        cleaned_df = cleaned_df.drop_duplicates()
-        result_duplicates = f"{duplicate_count} duplicates removed"
-        notes_duplicates = f"Exact duplicate rows removed. Cleaned shape is {cleaned_df.shape}."
-    else:
-        result_duplicates = "0 duplicates"
-        notes_duplicates = "No duplicate rows found."
+    repeated_profile_count = int(df.duplicated().sum())
+    print(f"Repeated feature profiles detected: {repeated_profile_count}")
+    print(f"Repeated feature profiles retained: {repeated_profile_count}")
+    
+    result_duplicates = f"{repeated_profile_count} retained"
+    notes_duplicates = (
+        f"Repeated feature profiles ({repeated_profile_count}) retained because "
+        f"dataset lacks respondent IDs to prove duplicate identity."
+    )
     
     steps_log.append({
-        "step": "Remove Duplicate Rows",
+        "step": "Inspect Repeated Feature Profiles",
         "result": result_duplicates,
         "notes": notes_duplicates
     })
@@ -138,6 +140,23 @@ def run_preprocessing():
         "result": "float64 -> int",
         "notes": "Converted categorical and binary float representations to integer types for clean formatting and memory efficiency."
     })
+
+    # Assertions
+    assert len(cleaned_df) == len(df), (
+        "Row count changed during preprocessing. "
+        "Repeated feature profiles must be retained."
+    )
+    assert list(cleaned_df.columns) == list(df.columns), (
+        "Column names or column order changed unexpectedly."
+    )
+
+    raw_class_counts = df["Diabetes_binary"].astype(int).value_counts().sort_index()
+    processed_class_counts = cleaned_df["Diabetes_binary"].astype(int).value_counts().sort_index()
+
+    assert raw_class_counts.equals(processed_class_counts), (
+        "Target class counts changed during preprocessing."
+    )
+    print("Preprocessing assertions passed successfully.")
 
     # Step: Save cleaned dataset
     cleaned_df.to_csv(CLEANED_DATA_PATH, index=False)
@@ -163,16 +182,18 @@ def run_preprocessing():
         "notes": notes_imbalance
     })
 
-    # Save summary table
+    # Save summary table to both results and notebooks dir
     summary_df = pd.DataFrame(steps_log)
     summary_df.to_csv(SUMMARY_PATH, index=False)
-    print(f"Summary table saved to: {SUMMARY_PATH}")
+    NOTEBOOK_SUMMARY_PATH = PROJECT_ROOT / "notebooks" / "preprocessing_summary.csv"
+    summary_df.to_csv(NOTEBOOK_SUMMARY_PATH, index=False)
+    print(f"Summary table saved to: {SUMMARY_PATH} and {NOTEBOOK_SUMMARY_PATH}")
 
     # Generate Markdown documentation
     markdown_content = f"""# Data Preprocessing Documentation
 
 ## Purpose of Preprocessing
-This document outlines the data preprocessing step for the **Diabetes-Analytics** project. The primary goal is to ensure the quality and integrity of the CDC Diabetes Health Indicators dataset, remove redundant duplicate rows, validate values against the codebook, and prepare the dataset for analysis and modeling. Importantly, the real-world class imbalance of the dataset is preserved, meaning no balancing techniques (like SMOTE or random under/oversampling) are applied.
+This document outlines the data preprocessing step for the **Diabetes-Analytics** project. The primary goal is to ensure the quality and integrity of the CDC Diabetes Health Indicators dataset, validate values against the codebook, inspect repeated feature profiles, and prepare the dataset for analysis and modeling. Importantly, the real-world class imbalance of the dataset is preserved, meaning no balancing techniques (like SMOTE or random under/oversampling) are applied.
 
 ## Datasets Directory Info
 * **Raw Dataset Path:** `data/raw/diabetes_binary_health_indicators_BRFSS2015.csv`
@@ -188,10 +209,10 @@ This document outlines the data preprocessing step for the **Diabetes-Analytics*
 * **Status:** {"No missing values found" if total_missing == 0 else f"Found {total_missing} missing values"}
 * **Notes:** All fields are fully populated in the original survey response file.
 
-### 3. Duplicate Rows
-* **Status:** {"Duplicates removed" if duplicate_count > 0 else "No duplicates found"}
-* **Number of duplicates:** {duplicate_count:,} rows (representing {duplicate_count / raw_shape[0]:.2%} of the raw dataset)
-* **Rationale:** Exact duplicate responses are dropped to prevent bias during downstream modeling, while keeping unique individual records intact.
+### 3. Repeated Feature Profiles
+* **Status:** Inspected and Retained
+* **Number of repeated profiles:** {repeated_profile_count:,} rows (representing {repeated_profile_count / raw_shape[0]:.2%} of the raw dataset)
+* **Rationale:** The dataset does not provide a respondent identifier. Exact repeated rows therefore cannot be verified as repeated observations of the same individual. They may represent different respondents sharing the same discretized demographic, lifestyle, and health profile. These profiles were retained to preserve the original sample frequencies and class distribution.
 
 ### 4. Invalid Values (Out of Expected Range)
 * **Status:** {"No invalid values found" if total_invalid == 0 else f"Found {total_invalid} invalid values"}
@@ -218,8 +239,6 @@ This document outlines the data preprocessing step for the **Diabetes-Analytics*
 |-------------------------|------------|---------|----------------|-------------|
 | **0 (No Diabetes)**      | {raw_class_counts.get(0.0, 0):,} | {raw_class_pct.get(0.0, 0):.2%} | {cleaned_class_counts.get(0, 0):,} | {cleaned_class_pct.get(0, 0):.2%} |
 | **1 (Diabetes)**         | {raw_class_counts.get(1.0, 0):,} | {raw_class_pct.get(1.0, 0):.2%} | {cleaned_class_counts.get(1, 0):,} | {cleaned_class_pct.get(1, 0):.2%} |
-
-*Note: The proportion of positive cases shifted slightly from {raw_class_pct.get(1.0, 0):.2%} to {cleaned_class_pct.get(1, 0):.2%} because non-diabetic records contained slightly more duplicate rows.*
 
 ## Preprocessing Summary Table
 Refer to the CSV summary at `results/data_preprocessing/preprocessing_summary.csv` for detailed steps.

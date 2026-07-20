@@ -121,14 +121,33 @@ function bmiBand(value) {
   return "obesity";
 }
 
+function splitCsvLine(line) {
+  const result = [];
+  let current = "";
+  let inQuotes = false;
+  for (let i = 0; i < line.length; i++) {
+    const char = line[i];
+    if (char === '"') {
+      inQuotes = !inQuotes;
+    } else if (char === ',' && !inQuotes) {
+      result.push(current.trim().replace(/^"|"$/g, ''));
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  result.push(current.trim().replace(/^"|"$/g, ''));
+  return result;
+}
+
 async function parseCsv(relativePath) {
   const inputPath = path.join(repoRoot, relativePath);
   const raw = await readFile(inputPath, "utf8");
   const lines = raw.replace(/^\uFEFF/, "").split(/\r?\n/).filter((line) => line.trim());
   if (lines.length < 2) throw new Error(`No data rows found in ${relativePath}`);
-  const headers = lines[0].split(",").map((cell) => cell.trim());
+  const headers = splitCsvLine(lines[0]);
   return lines.slice(1).map((line, rowIndex) => {
-    const cells = line.split(",").map((cell) => cell.trim());
+    const cells = splitCsvLine(line);
     if (cells.length !== headers.length) {
       throw new Error(`${relativePath}: row ${rowIndex + 2} has ${cells.length} cells; expected ${headers.length}`);
     }
@@ -279,12 +298,12 @@ function featureRows(rows) {
       variable: row.Variable,
       label: VARIABLE_LABELS[row.Variable] ?? row.Variable,
       shapImportance: number(row, "SHAP_Importance"),
-      pValue: number(row, "p-value"),
+      pValue: number(row, "p_value" in row ? "p_value" : "p-value"),
       effectSize: number(row, "Effect_Size"),
       effectSizeType: row.Effect_Size_Type,
-      statInterpretation: row.Stat_Interpretation,
+      statInterpretation: row.Stat_Interpretation ?? row.Consistency_Interpretation ?? "Non-negligible",
       shapRank: number(row, "SHAP_Rank"),
-      statRank: number(row, "Stat_Rank"),
+      statRank: number(row, "Stat_Rank" in row ? "Stat_Rank" : "Effect_Size_Rank"),
       group: row.Consistency_Group,
     }))
     .sort((a, b) => a.shapRank - b.shapRank);
@@ -299,13 +318,14 @@ async function main() {
   await mkdir(generatedRoot, { recursive: true });
   await mkdir(figuresRoot, { recursive: true });
 
-  const [dataset, categoricalCsv, numericCsv, modelsCsv, thresholdsCsv, consistencyCsv] = await Promise.all([
+  const [dataset, categoricalCsv, numericCsv, modelsCsv, thresholdsCsv, consistencyCsv, modelSelectionMeta] = await Promise.all([
     datasetAnalytics(),
     parseCsv(path.join("results", "statistical_analysis", "chi_square_results.csv")),
     parseCsv(path.join("results", "statistical_analysis", "numerical_results.csv")),
     parseCsv(path.join("results", "modeling", "model_comparison.csv")),
     parseCsv(path.join("results", "modeling", "threshold_analysis.csv")),
     parseCsv(path.join("results", "xai", "explanation_consistency.csv")),
+    readFile(path.join("results", "modeling", "model_selection.json"), "utf8").then(JSON.parse).catch(() => null),
   ]);
 
   const profile = dataset.profile;
@@ -316,6 +336,11 @@ async function main() {
   const features = featureRows(consistencyCsv);
   const bestModel = models.find((model) => model.isBest);
   if (!bestModel) throw new Error("Could not determine the best model");
+
+  const selectedThresholdVal = modelSelectionMeta ? Number(modelSelectionMeta.selected_threshold) : 0.13;
+  const defaultThreshold = thresholds.find((row) => Math.abs(row.t - 0.5) < 0.01);
+  const optimizedThreshold = thresholds.find((row) => Math.abs(row.t - selectedThresholdVal) < 0.01) || thresholds.reduce((closest, row) => (Math.abs(row.t - selectedThresholdVal) < Math.abs(closest.t - selectedThresholdVal) ? row : closest));
+  if (!defaultThreshold || !optimizedThreshold) throw new Error("Required threshold rows are missing");
 
   const overview = {
     dataset: {
@@ -340,24 +365,24 @@ async function main() {
         id: "rq1",
         eyebrow: "Statistical association",
         title: "Which factors move with diabetes?",
-        finding: "General health and high blood pressure lead the categorical associations; BMI has the largest numeric effect.",
-        chips: ["Cramér's V", "Cohen's d", "N = 229,474"],
+        finding: "General health and high blood pressure lead categorical associations; BMI has the largest numeric rank-biserial effect.",
+        chips: ["Cramér's V", "Rank-Biserial", `N = ${profile.nRows.toLocaleString()}`],
         href: "/rq1",
       },
       {
         id: "rq2",
         eyebrow: "Prediction",
         title: "Which model and threshold fit screening?",
-        finding: "XGBoost leads on PR-AUC; lowering the threshold to 0.15 raises recall to about 80%.",
-        chips: ["XGBoost", "PR-AUC 0.445", "Recall 79.6%"],
+        finding: `${bestModel.name} leads on PR-AUC; adjusting the threshold to ${selectedThresholdVal.toFixed(2)} raises recall to ${(optimizedThreshold.recall * 100).toFixed(1)}%.`,
+        chips: [bestModel.name, `PR-AUC ${bestModel.prAuc.toFixed(3)}`, `Recall ${(optimizedThreshold.recall * 100).toFixed(1)}%`],
         href: "/rq2",
       },
       {
         id: "rq3",
         eyebrow: "Explainability",
         title: "Do SHAP and statistics tell the same story?",
-        finding: "The strongest model signals align with the study's statistical evidence, with correlated factors under-represented in SHAP.",
-        chips: ["TreeExplainer", "2 groups", "21 features"],
+        finding: "The strongest model signals align with statistical evidence, classified across four evidence alignment groups.",
+        chips: ["TreeExplainer", "4 groups", "21 features"],
         href: "/rq3",
       },
     ],
@@ -372,9 +397,6 @@ async function main() {
   };
 
   const rq1 = { categorical, numeric, notes: { largeN: true } };
-  const defaultThreshold = thresholds.find((row) => row.t === 0.5);
-  const optimizedThreshold = thresholds.find((row) => row.t === 0.15);
-  if (!defaultThreshold || !optimizedThreshold) throw new Error("Required threshold rows are missing");
   const highlight = (row) => ({
     t: row.t,
     accuracy: row.accuracy,
@@ -390,14 +412,14 @@ async function main() {
     highlights: { default: highlight(defaultThreshold), optimized: highlight(optimizedThreshold) },
   };
 
-  const strongGroup = "Group 1: Strong Agreement (Significant & High SHAP)";
-  const underGroup = "Group 2: Under-represented (Significant & Low SHAP)";
+  const uniqueGroups = [...new Set(features.map((f) => f.group))];
   const rq3 = {
     features,
-    groups: [
-      { key: "strong-agreement", label: "Strong Agreement", members: features.filter((item) => item.group === strongGroup).map((item) => item.variable) },
-      { key: "under-represented", label: "Under-represented", members: features.filter((item) => item.group === underGroup).map((item) => item.variable) },
-    ],
+    groups: uniqueGroups.map((grp) => ({
+      key: grp.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+      label: grp,
+      members: features.filter((item) => item.group === grp).map((item) => item.variable),
+    })),
     figures: {
       beeswarm: "/figures/shap_summary_dot.png",
       bar: "/figures/shap_summary_bar.png",

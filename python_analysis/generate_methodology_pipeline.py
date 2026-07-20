@@ -210,10 +210,10 @@ def generate_pipeline():
             'x': x_centers[1] - card_w/2, 'y': y_row2,
             'title': "6. Model Eval & Screening Opt",
             'items': [
-                "• Recall-focused metrics",
-                "• Default: Low Recall (High FN)",
-                "• Adjusted: High Recall (Low FN)",
-                "• Decision-threshold tuning"
+                "• 5-fold Stratified CV on Dev",
+                "• PR-AUC model selection",
+                "• OOF threshold optimization",
+                "• Locked holdout test evaluation"
             ],
             'colors': colors_scheme['orange']
         },
@@ -224,8 +224,8 @@ def generate_pipeline():
             'items': [
                 "• Global feature importances",
                 "• Feature-effect directions",
-                "• SHAP value explanations",
-                "• Patient-level risk breakdowns"
+                "• Post-hoc SHAP explanations",
+                "• Respondent-level risk profiles"
             ],
             'colors': colors_scheme['purple']
         },
@@ -235,7 +235,7 @@ def generate_pipeline():
             'title': "8. Integration & Insights",
             'items': [
                 "• Statistical vs. SHAP ranking",
-                "• Agreement & discrepancy checks",
+                "• Four evidence alignment groups",
                 "• Key risk-factor identification",
                 "• Actionable screening insights"
             ],

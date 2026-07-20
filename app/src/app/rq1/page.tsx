@@ -33,7 +33,7 @@ export default function Rq1Page() {
 
       {data.notes.largeN ? (
         <div className="section-block">
-          <Callout variant="warn"><strong>Large-N caution.</strong> With N = 229,474, nearly all p-values are approximately zero. Rank findings by <strong>effect size</strong>, not significance alone.</Callout>
+          <Callout variant="warn"><strong>Large-N caution.</strong> With N = 253,680, nearly all p-values are approximately zero. Rank findings by <strong>effect size</strong>, not significance alone.</Callout>
         </div>
       ) : null}
 

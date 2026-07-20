@@ -26,8 +26,8 @@ export default function Rq2Page() {
         <div className="kpi-grid">
           <KpiCard label="Winner" value={winner.name} note={`PR-AUC ${winner.prAuc.toFixed(3)} · highest of four`} tone="accent" />
           <KpiCard label="Accuracy @ 0.50" value={fmtPct(data.highlights.default.accuracy)} note={`Recall ${fmtPct(data.highlights.default.recall)}`} />
-          <KpiCard label="Recall @ 0.15" value={fmtPct(data.highlights.optimized.recall)} note={`${data.highlights.optimized.cm.fn.toLocaleString("en-US")} false negatives`} tone="risk" />
-          <KpiCard label="F1 @ 0.15" value={data.highlights.optimized.f1.toFixed(3)} note={`vs ${data.highlights.default.f1.toFixed(3)} at t=0.50`} tone="accent" />
+          <KpiCard label={`Recall @ ${data.highlights.optimized.t.toFixed(2)}`} value={fmtPct(data.highlights.optimized.recall)} note={`${data.highlights.optimized.cm.fn.toLocaleString("en-US")} false negatives`} tone="risk" />
+          <KpiCard label={`F1 @ ${data.highlights.optimized.t.toFixed(2)}`} value={data.highlights.optimized.f1.toFixed(3)} note={`vs ${data.highlights.default.f1.toFixed(3)} at t=0.50`} tone="accent" />
         </div>
       </Section>
 

@@ -20,7 +20,7 @@ export function Rq3ConsistencyTable({ features }: { features: FeatureResult[] })
     { id: "shapRank", header: "SHAP rank", align: "right", render: (row) => `#${row.shapRank}` },
     { id: "statRank", header: "Stat rank", align: "right", render: (row) => `#${row.statRank}` },
     { id: "effect", header: "Effect size", align: "right", render: (row) => <>{row.effectSize.toFixed(3)}<br /><span className="card-source">{row.effectSizeType}</span></> },
-    { id: "group", header: "Consistency", render: (row) => <StatBadge label={row.group.startsWith("Group 1") ? "Strong agreement" : "Under-represented"} tone={row.group.startsWith("Group 1") ? "moderate" : "neutral"} /> },
+    { id: "group", header: "Consistency", render: (row) => <StatBadge label={row.group} tone={row.group.startsWith("Group 1") ? "moderate" : (row.group.startsWith("Group 2") ? "neutral" : (row.group.startsWith("Group 3") ? "best" : "risk"))} /> },
   ];
 
   return (

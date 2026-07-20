@@ -55,7 +55,7 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
       <div className="sidebar-footer">
         <div className="data-status" aria-label="Data status: ready">
           <div className="status-heading"><span>Data status</span><span className="status-dot" aria-hidden="true" /></div>
-          <div className="status-row"><span>records</span><span>229,474</span></div>
+          <div className="status-row"><span>records</span><span>253,680</span></div>
           <div className="status-row"><span>build</span><span>precomputed</span></div>
         </div>
         <a className="github-link" href="https://github.com/AI-Peak/Diabetes-Analytics" target="_blank" rel="noreferrer">

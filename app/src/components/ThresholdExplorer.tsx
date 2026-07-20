@@ -32,7 +32,7 @@ export function ThresholdExplorer({ data }: { data: Rq2Data }) {
           />
           <div className="quick-actions">
             <button className="quick-button secondary" type="button" onClick={() => setIndex(defaultIndex)}>Default 0.50</button>
-            <button className="quick-button" type="button" onClick={() => setIndex(optimizedIndex)}>Screening 0.15</button>
+            <button className="quick-button" type="button" onClick={() => setIndex(optimizedIndex)}>Screening {data.highlights.optimized.t.toFixed(2)}</button>
           </div>
         </div>
 

@@ -37,23 +37,31 @@ def generate_pie_chart():
     plt.rcParams['font.family'] = 'sans-serif'
     plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'Helvetica']
     
-    # Data values
-    classes = ['Healthy', 'Diabetes/Prediabetes']
-    percentages = [84.71, 15.29]
-    colors = ['#3182CE', '#E53E3E']  # Academic muted blue (Healthy) and red (Diabetes/Prediabetes)
+    # Load cleaned data dynamically
+    data_path = BASE_DIR / "data" / "processed" / "diabetes_cleaned.csv"
+    if data_path.exists():
+        import pandas as pd
+        df = pd.read_csv(data_path)
+        counts = df["Diabetes_binary"].value_counts().sort_index()
+        total = len(df)
+        pcts = [counts[0] / total * 100, counts[1] / total * 100]
+        labels = [f"Healthy\n(n={counts[0]:,})", f"Diabetes / Prediabetes\n(n={counts[1]:,})"]
+    else:
+        pcts = [86.07, 13.93]
+        labels = ["Healthy", "Diabetes / Prediabetes"]
+        
+    colors = ['#2563EB', '#DC2626']
     
-    # Create figure (widescreen square box)
     fig, ax = plt.subplots(figsize=(6, 5))
     
-    # Draw solid pie chart (pie without a center cut-out)
     wedges, texts, autotexts = ax.pie(
-        percentages,
-        labels=classes,
+        pcts,
+        labels=labels,
         autopct='%1.2f%%',
         startangle=140,
         colors=colors,
-        textprops=dict(color='#2D3748', fontsize=11, fontweight='bold'),
-        wedgeprops=dict(edgecolor='#2D3748', linewidth=1.2), # Solid slice borders
+        textprops=dict(color='#0F172A', fontsize=10.5, fontweight='bold'),
+        wedgeprops=dict(edgecolor='#0F172A', linewidth=1.2),
         pctdistance=0.65
     )
     

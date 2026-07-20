@@ -118,7 +118,7 @@ export const Rq2Schema = z.object({
     }),
   ).length(4),
   bestModelName: z.string(),
-  thresholds: z.array(ThresholdSchema).length(19),
+  thresholds: z.array(ThresholdSchema).min(1),
   highlights: z.object({ default: HighlightSchema, optimized: HighlightSchema }),
 });
 
@@ -139,11 +139,11 @@ export const Rq3Schema = z.object({
   features: z.array(FeatureSchema).length(21),
   groups: z.array(
     z.object({
-      key: z.enum(["strong-agreement", "under-represented"]),
+      key: z.string(),
       label: z.string(),
       members: z.array(z.string()),
     }),
-  ).length(2),
+  ).min(1),
   figures: z.object({
     beeswarm: z.string(),
     bar: z.string(),
