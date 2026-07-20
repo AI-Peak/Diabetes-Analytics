@@ -1160,5 +1160,12 @@
         "tp": 22897
       }
     }
+  },
+  "calibration": {
+    "brierScore": 0.0974,
+    "slope": 0.959,
+    "intercept": -0.0514,
+    "sampleSize": 50736,
+    "evaluationSplit": "Untouched holdout test"
   }
 }

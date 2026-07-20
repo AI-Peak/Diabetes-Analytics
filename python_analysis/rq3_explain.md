@@ -23,9 +23,9 @@ Không dựa vào các giá trị p-value ngây thơ ($p < 0.05$), chúng tôi p
 *   **Danh sách:** `['GenHlth', 'HighBP', 'Age', 'BMI', 'HighChol', 'Income', 'CholCheck', 'HeartDiseaseorAttack', 'HvyAlcoholConsump']`
 *   **Diễn giải:** Các đặc trưng này có liên hệ biên không đáng bỏ qua ở cấp độ quần thể và đồng thời đóng góp đáng kể trong mô hình đa biến.
 
-### Group 2 — Population-associated, model-redundant (Liên quan quần thể, dư thừa trong mô hình - 7 đặc trưng)
+### Group 2 — Meaningful marginal association, lower model salience (Liên hệ biên ý nghĩa, độ nổi bật mô hình thấp hơn - 7 đặc trưng)
 *   **Danh sách:** `['DiffWalk', 'Education', 'Stroke', 'PhysHlth', 'PhysActivity', 'Smoker', 'Veggies']`
-*   **Diễn giải:** Đặc trưng có liên hệ đơn biến nhưng cung cấp ít tín hiệu bổ sung sau khi mô hình đã xét các đặc trưng khác (ví dụ: `DiffWalk` và `PhysHlth` bị dư thừa sau khi mô hình đã học `GenHlth`).
+*   **Diễn giải:** Đặc trưng thể hiện liên hệ biên có ý nghĩa trong mẫu nghiên cứu nhưng không nằm trong nhóm dự báo hàng đầu của mô hình đa biến (ví dụ: `DiffWalk` và `PhysHlth` chia sẻ thông tin với `GenHlth`).
 
 ### Group 3 — Model-salient, weak marginal association (Đóng góp mô hình cao, liên hệ biên yếu - 1 đặc trưng)
 *   **Danh sách:** `['Sex']`

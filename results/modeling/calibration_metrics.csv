@@ -1,0 +1,2 @@
+Brier_Score,Calibration_Slope,Calibration_Intercept,Holdout_Sample_Size,Evaluation_Split
+0.0974,0.959,-0.0514,50736,Untouched holdout test

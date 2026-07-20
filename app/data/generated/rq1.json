@@ -15,35 +15,35 @@
         {
           "value": "1",
           "n": 45299,
-          "diabeticN": 1140,
+          "positiveClassN": 1140,
           "label": "Excellent",
           "prevalencePct": 2.52
         },
         {
           "value": "2",
           "n": 89084,
-          "diabeticN": 6381,
+          "positiveClassN": 6381,
           "label": "Very good",
           "prevalencePct": 7.16
         },
         {
           "value": "3",
           "n": 75646,
-          "diabeticN": 13457,
+          "positiveClassN": 13457,
           "label": "Good",
           "prevalencePct": 17.79
         },
         {
           "value": "4",
           "n": 31570,
-          "diabeticN": 9790,
+          "positiveClassN": 9790,
           "label": "Fair",
           "prevalencePct": 31.01
         },
         {
           "value": "5",
           "n": 12081,
-          "diabeticN": 4578,
+          "positiveClassN": 4578,
           "label": "Poor",
           "prevalencePct": 37.89
         }
@@ -64,14 +64,14 @@
         {
           "value": "0",
           "n": 144851,
-          "diabeticN": 8742,
+          "positiveClassN": 8742,
           "label": "No",
           "prevalencePct": 6.04
         },
         {
           "value": "1",
           "n": 108829,
-          "diabeticN": 26604,
+          "positiveClassN": 26604,
           "label": "Yes",
           "prevalencePct": 24.45
         }
@@ -92,14 +92,14 @@
         {
           "value": "0",
           "n": 211005,
-          "diabeticN": 22225,
+          "positiveClassN": 22225,
           "label": "No",
           "prevalencePct": 10.53
         },
         {
           "value": "1",
           "n": 42675,
-          "diabeticN": 13121,
+          "positiveClassN": 13121,
           "label": "Yes",
           "prevalencePct": 30.75
         }
@@ -120,14 +120,14 @@
         {
           "value": "0",
           "n": 146089,
-          "diabeticN": 11660,
+          "positiveClassN": 11660,
           "label": "No",
           "prevalencePct": 7.98
         },
         {
           "value": "1",
           "n": 107591,
-          "diabeticN": 23686,
+          "positiveClassN": 23686,
           "label": "Yes",
           "prevalencePct": 22.01
         }
@@ -148,91 +148,91 @@
         {
           "value": "1",
           "n": 5700,
-          "diabeticN": 78,
+          "positiveClassN": 78,
           "label": "18-24",
           "prevalencePct": 1.37
         },
         {
           "value": "2",
           "n": 7598,
-          "diabeticN": 140,
+          "positiveClassN": 140,
           "label": "25-29",
           "prevalencePct": 1.84
         },
         {
           "value": "3",
           "n": 11123,
-          "diabeticN": 314,
+          "positiveClassN": 314,
           "label": "30-34",
           "prevalencePct": 2.82
         },
         {
           "value": "4",
           "n": 13823,
-          "diabeticN": 626,
+          "positiveClassN": 626,
           "label": "35-39",
           "prevalencePct": 4.53
         },
         {
           "value": "5",
           "n": 16157,
-          "diabeticN": 1051,
+          "positiveClassN": 1051,
           "label": "40-44",
           "prevalencePct": 6.5
         },
         {
           "value": "6",
           "n": 19819,
-          "diabeticN": 1742,
+          "positiveClassN": 1742,
           "label": "45-49",
           "prevalencePct": 8.79
         },
         {
           "value": "7",
           "n": 26314,
-          "diabeticN": 3088,
+          "positiveClassN": 3088,
           "label": "50-54",
           "prevalencePct": 11.74
         },
         {
           "value": "8",
           "n": 30832,
-          "diabeticN": 4263,
+          "positiveClassN": 4263,
           "label": "55-59",
           "prevalencePct": 13.83
         },
         {
           "value": "9",
           "n": 33244,
-          "diabeticN": 5733,
+          "positiveClassN": 5733,
           "label": "60-64",
           "prevalencePct": 17.25
         },
         {
           "value": "10",
           "n": 32194,
-          "diabeticN": 6558,
+          "positiveClassN": 6558,
           "label": "65-69",
           "prevalencePct": 20.37
         },
         {
           "value": "11",
           "n": 23533,
-          "diabeticN": 5141,
+          "positiveClassN": 5141,
           "label": "70-74",
           "prevalencePct": 21.85
         },
         {
           "value": "12",
           "n": 15980,
-          "diabeticN": 3403,
+          "positiveClassN": 3403,
           "label": "75-79",
           "prevalencePct": 21.3
         },
         {
           "value": "13",
           "n": 17363,
-          "diabeticN": 3209,
+          "positiveClassN": 3209,
           "label": "80+",
           "prevalencePct": 18.48
         }
@@ -253,14 +253,14 @@
         {
           "value": "0",
           "n": 229787,
-          "diabeticN": 27468,
+          "positiveClassN": 27468,
           "label": "No",
           "prevalencePct": 11.95
         },
         {
           "value": "1",
           "n": 23893,
-          "diabeticN": 7878,
+          "positiveClassN": 7878,
           "label": "Yes",
           "prevalencePct": 32.97
         }
@@ -281,56 +281,56 @@
         {
           "value": "1",
           "n": 9811,
-          "diabeticN": 2383,
+          "positiveClassN": 2383,
           "label": "< $10k",
           "prevalencePct": 24.29
         },
         {
           "value": "2",
           "n": 11783,
-          "diabeticN": 3086,
+          "positiveClassN": 3086,
           "label": "$10k-$15k",
           "prevalencePct": 26.19
         },
         {
           "value": "3",
           "n": 15994,
-          "diabeticN": 3568,
+          "positiveClassN": 3568,
           "label": "$15k-$20k",
           "prevalencePct": 22.31
         },
         {
           "value": "4",
           "n": 20135,
-          "diabeticN": 4054,
+          "positiveClassN": 4054,
           "label": "$20k-$25k",
           "prevalencePct": 20.13
         },
         {
           "value": "5",
           "n": 25883,
-          "diabeticN": 4504,
+          "positiveClassN": 4504,
           "label": "$25k-$35k",
           "prevalencePct": 17.4
         },
         {
           "value": "6",
           "n": 36470,
-          "diabeticN": 5291,
+          "positiveClassN": 5291,
           "label": "$35k-$50k",
           "prevalencePct": 14.51
         },
         {
           "value": "7",
           "n": 43219,
-          "diabeticN": 5265,
+          "positiveClassN": 5265,
           "label": "$50k-$75k",
           "prevalencePct": 12.18
         },
         {
           "value": "8",
           "n": 90385,
-          "diabeticN": 7195,
+          "positiveClassN": 7195,
           "label": "$75k+",
           "prevalencePct": 7.96
         }
@@ -351,42 +351,42 @@
         {
           "value": "1",
           "n": 174,
-          "diabeticN": 47,
+          "positiveClassN": 47,
           "label": "Never / kindergarten",
           "prevalencePct": 27.01
         },
         {
           "value": "2",
           "n": 4043,
-          "diabeticN": 1183,
+          "positiveClassN": 1183,
           "label": "Grades 1-8",
           "prevalencePct": 29.26
         },
         {
           "value": "3",
           "n": 9478,
-          "diabeticN": 2296,
+          "positiveClassN": 2296,
           "label": "Grades 9-11",
           "prevalencePct": 24.22
         },
         {
           "value": "4",
           "n": 62750,
-          "diabeticN": 11066,
+          "positiveClassN": 11066,
           "label": "High school graduate",
           "prevalencePct": 17.64
         },
         {
           "value": "5",
           "n": 69910,
-          "diabeticN": 10354,
+          "positiveClassN": 10354,
           "label": "Some college",
           "prevalencePct": 14.81
         },
         {
           "value": "6",
           "n": 107325,
-          "diabeticN": 10400,
+          "positiveClassN": 10400,
           "label": "College graduate",
           "prevalencePct": 9.69
         }
@@ -407,14 +407,14 @@
         {
           "value": "0",
           "n": 61760,
-          "diabeticN": 13059,
+          "positiveClassN": 13059,
           "label": "No",
           "prevalencePct": 21.14
         },
         {
           "value": "1",
           "n": 191920,
-          "diabeticN": 22287,
+          "positiveClassN": 22287,
           "label": "Yes",
           "prevalencePct": 11.61
         }
@@ -435,14 +435,14 @@
         {
           "value": "0",
           "n": 243388,
-          "diabeticN": 32078,
+          "positiveClassN": 32078,
           "label": "No",
           "prevalencePct": 13.18
         },
         {
           "value": "1",
           "n": 10292,
-          "diabeticN": 3268,
+          "positiveClassN": 3268,
           "label": "Yes",
           "prevalencePct": 31.75
         }
@@ -463,14 +463,14 @@
         {
           "value": "0",
           "n": 9470,
-          "diabeticN": 241,
+          "positiveClassN": 241,
           "label": "No",
           "prevalencePct": 2.54
         },
         {
           "value": "1",
           "n": 244210,
-          "diabeticN": 35105,
+          "positiveClassN": 35105,
           "label": "Yes",
           "prevalencePct": 14.37
         }
@@ -491,14 +491,14 @@
         {
           "value": "0",
           "n": 141257,
-          "diabeticN": 17029,
+          "positiveClassN": 17029,
           "label": "No",
           "prevalencePct": 12.06
         },
         {
           "value": "1",
           "n": 112423,
-          "diabeticN": 18317,
+          "positiveClassN": 18317,
           "label": "Yes",
           "prevalencePct": 16.29
         }
@@ -519,14 +519,14 @@
         {
           "value": "0",
           "n": 239424,
-          "diabeticN": 34514,
+          "positiveClassN": 34514,
           "label": "No",
           "prevalencePct": 14.42
         },
         {
           "value": "1",
           "n": 14256,
-          "diabeticN": 832,
+          "positiveClassN": 832,
           "label": "Yes",
           "prevalencePct": 5.84
         }
@@ -547,14 +547,14 @@
         {
           "value": "0",
           "n": 47839,
-          "diabeticN": 8610,
+          "positiveClassN": 8610,
           "label": "No",
           "prevalencePct": 18
         },
         {
           "value": "1",
           "n": 205841,
-          "diabeticN": 26736,
+          "positiveClassN": 26736,
           "label": "Yes",
           "prevalencePct": 12.99
         }
@@ -575,14 +575,14 @@
         {
           "value": "0",
           "n": 92782,
-          "diabeticN": 14653,
+          "positiveClassN": 14653,
           "label": "No",
           "prevalencePct": 15.79
         },
         {
           "value": "1",
           "n": 160898,
-          "diabeticN": 20693,
+          "positiveClassN": 20693,
           "label": "Yes",
           "prevalencePct": 12.86
         }
@@ -603,14 +603,14 @@
         {
           "value": "0",
           "n": 141974,
-          "diabeticN": 18411,
+          "positiveClassN": 18411,
           "label": "Female",
           "prevalencePct": 12.97
         },
         {
           "value": "1",
           "n": 111706,
-          "diabeticN": 16935,
+          "positiveClassN": 16935,
           "label": "Male",
           "prevalencePct": 15.16
         }
@@ -631,14 +631,14 @@
         {
           "value": "0",
           "n": 232326,
-          "diabeticN": 31604,
+          "positiveClassN": 31604,
           "label": "No",
           "prevalencePct": 13.6
         },
         {
           "value": "1",
           "n": 21354,
-          "diabeticN": 3742,
+          "positiveClassN": 3742,
           "label": "Yes",
           "prevalencePct": 17.52
         }
@@ -659,14 +659,14 @@
         {
           "value": "0",
           "n": 12417,
-          "diabeticN": 1422,
+          "positiveClassN": 1422,
           "label": "No",
           "prevalencePct": 11.45
         },
         {
           "value": "1",
           "n": 241263,
-          "diabeticN": 33924,
+          "positiveClassN": 33924,
           "label": "Yes",
           "prevalencePct": 14.06
         }
@@ -676,11 +676,11 @@
   "numeric": [
     {
       "variable": "BMI",
-      "healthyMean": 27.80577005871738,
-      "diabeticMean": 31.94401063769592,
+      "noDiabetesMean": 27.80577005871738,
+      "positiveClassMean": 31.94401063769592,
       "meanDiff": 4.138240578978543,
-      "healthyMedian": 27,
-      "diabeticMedian": 31,
+      "noDiabetesMedian": 27,
+      "positiveClassMedian": 31,
       "tStat": 99.91962872964875,
       "tPValue": 0,
       "cohensD": 0.6414422130558329,
@@ -690,11 +690,11 @@
     },
     {
       "variable": "MentHlth",
-      "healthyMean": 2.978033654859069,
-      "diabeticMean": 4.461806144966899,
+      "noDiabetesMean": 2.978033654859069,
+      "positiveClassMean": 4.461806144966899,
       "meanDiff": 1.48377249010783,
-      "healthyMedian": 0,
-      "diabeticMedian": 0,
+      "noDiabetesMedian": 0,
+      "positiveClassMedian": 0,
       "tStat": 29.694812441366324,
       "tPValue": 7.929124395108952e-192,
       "cohensD": 0.2006444983608304,
@@ -704,11 +704,11 @@
     },
     {
       "variable": "PhysHlth",
-      "healthyMean": 3.6410820119633223,
-      "diabeticMean": 7.954478583149437,
+      "noDiabetesMean": 3.6410820119633223,
+      "positiveClassMean": 7.954478583149437,
       "meanDiff": 4.313396571186114,
-      "healthyMedian": 0,
-      "diabeticMedian": 1,
+      "noDiabetesMedian": 0,
+      "positiveClassMedian": 1,
       "tStat": 68.96882564388012,
       "tPValue": 0,
       "cohensD": 0.5021970599675453,

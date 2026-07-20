@@ -1,168 +1,105 @@
 #!/usr/bin/env python
 """
-Cramér's V Effect Size Ranking Figure Generator (Figure 3)
-----------------------------------------------------------
-Author: Advanced Data Analytics Agent
-Description:
-    Generates an enhanced horizontal lollipop chart illustrating the top 10 
-    health indicators associated with diabetes/prediabetes ranked by Cramér's V.
-    
-    Includes:
-        - Delineated vertical background shading for effect size classes
-          (Negligible, Weak, Small, Moderate).
-        - Color-coded top-ranked variables to emphasize strong associations.
-        - Text value labels next to the markers.
-        - Clickable file references and high-quality vector export.
-        
-    The diagram is saved as:
-        - docs/figures/effect_size_ranking.svg (Vector)
-        - docs/figures/effect_size_ranking.png (300 DPI Raster)
+Effect-size evidence by feature family Figure Generator
+-------------------------------------------------------
+Reads statistical results directly from CSV files and generates a two-panel 
+publication-quality figure comparing effect sizes across feature families.
+
+- Panel A: Cramér's V (Categorical/Ordinal predictors)
+- Panel B: Absolute Rank-Biserial Correlation (Numerical predictors)
 """
 
-import os
 from pathlib import Path
+import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Resolve paths relative to this script
 BASE_DIR = Path(__file__).resolve().parent.parent
-OUTPUT_DIR = BASE_DIR / "docs" / "figures"
+RESULTS_STAT_DIR = BASE_DIR / "results" / "statistical_analysis"
+DOCS_FIG_DIR = BASE_DIR / "docs" / "figures"
 
-def create_output_directory():
-    """Ensures that the output directory for figures exists."""
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    print(f"Verified output directory: {OUTPUT_DIR}")
+def generate_effect_size_figure():
+    DOCS_FIG_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_STAT_DIR.mkdir(parents=True, exist_ok=True)
 
-def generate_effect_size_chart():
-    """Generates the Cramér's V ranking lollipop chart."""
-    create_output_directory()
-    
-    # Academic typography setup
-    plt.rcParams['font.family'] = 'sans-serif'
-    plt.rcParams['font.sans-serif'] = ['DejaVu Sans', 'Arial', 'Helvetica']
-    
-    # 1. Dataset definition (Top 10 features sorted in descending order)
-    features_raw = [
-        "GenHlth", "HighBP", "DiffWalk", "HighChol", "Age",
-        "HeartDiseaseorAttack", "Income", "Education", "PhysActivity", "Stroke"
-    ]
-    
-    features_descriptive = [
-        "GenHlth (General Health)",
-        "HighBP (High Blood Pressure)",
-        "DiffWalk (Difficulty Walking)",
-        "HighChol (High Cholesterol)",
-        "Age (Age Category)",
-        "HeartDiseaseorAttack (Heart Disease/Attack)",
-        "Income (Income Level)",
-        "Education (Education Level)",
-        "PhysActivity (Physical Activity)",
-        "Stroke (Stroke History)"
-    ]
-    
-    values = [0.2816, 0.2543, 0.2053, 0.1949, 0.1891, 0.1682, 0.1422, 0.1046, 0.1004, 0.0992]
-    
-    # Map index to y-coordinates (largest at y=9, smallest at y=0)
-    y_pos = np.arange(len(values))[::-1]
-    
-    # 2. Figure Setup
-    # 9.5" x 5.5" landscape offers a spacious horizontal scale and neat labels
-    fig, ax = plt.subplots(figsize=(9.5, 5.5))
-    
-    # Set limits
-    ax.set_xlim(0.00, 0.32)
-    ax.set_ylim(-0.8, 10.5) # Extra space at the top (9.5 to 10.5) for effect size labels
-    
-    # 3. Draw Vertical Effect Size Threshold Bands (Background Shading)
-    # Moderate Effect: 0.20 to 0.30 (Faint warm yellow)
-    ax.axvspan(0.20, 0.30, facecolor='#FEF7E0', alpha=0.45, zorder=1)
-    # Small Effect: 0.10 to 0.20 (Faint green)
-    ax.axvspan(0.10, 0.20, facecolor='#E6F4EA', alpha=0.45, zorder=1)
-    # Weak Effect: 0.05 to 0.10 (Faint slate/blue)
-    ax.axvspan(0.05, 0.10, facecolor='#F0F4F8', alpha=0.45, zorder=1)
-    # Negligible Effect: 0.00 to 0.05 (Plain white)
-    ax.axvspan(0.00, 0.05, facecolor='#FFFFFF', alpha=1.0, zorder=1)
-    
-    # Draw vertical separator lines for the bands
-    for border in [0.05, 0.10, 0.20, 0.30]:
-        ax.axvline(border, color='#CBD5E1', linestyle='--', linewidth=0.8, zorder=2)
-        
-    # 4. Add Effect Size Labels in the Top Margin
-    text_y = 9.8
-    ax.text(0.025, text_y, "Negligible\n(< 0.05)", fontsize=8.0, color='#64748B', ha='center', va='bottom', fontweight='bold', family='sans-serif')
-    ax.text(0.075, text_y, "Weak\n(0.05 - 0.10)", fontsize=8.0, color='#64748B', ha='center', va='bottom', fontweight='bold', family='sans-serif')
-    ax.text(0.150, text_y, "Small\n(0.10 - 0.20)", fontsize=8.0, color='#64748B', ha='center', va='bottom', fontweight='bold', family='sans-serif')
-    ax.text(0.250, text_y, "Moderate\n(0.20 - 0.30)", fontsize=8.0, color='#64748B', ha='center', va='bottom', fontweight='bold', family='sans-serif')
-    
-    # 5. Plot Lollipops (Horizontal Lines + End Markers)
-    # Highlight color palette
-    color_top = '#DD6B20'    # Accent warm orange for top-tier features (GenHlth, HighBP, DiffWalk)
-    color_normal = '#3182CE' # Muted slate blue for lower-ranked features
-    
-    for i, (y, val) in enumerate(zip(y_pos, values)):
-        # Rank identifier: top 3 are Moderately associated, next 2 are Small, etc.
-        # We emphasize the top 3 features (GenHlth, HighBP, DiffWalk) which exceed 0.20
-        is_top = (val >= 0.20)
-        
-        line_color = '#1A202C' if is_top else '#4A5568'
-        marker_color = color_top if is_top else color_normal
-        linewidth = 2.0 if is_top else 1.5
-        marker_size = 110 if is_top else 80
-        
-        # Horizontal stem of lollipop
-        ax.hlines(y, xmin=0.00, xmax=val, color=line_color, linewidth=linewidth, zorder=3)
-        
-        # Lollipop end node
-        ax.scatter(
-            val, y, 
-            facecolor=marker_color, edgecolor='#1A202C', 
-            s=marker_size, linewidths=1.2, zorder=4
-        )
-        
-        # Value annotation text next to the node
-        ax.text(
-            val + 0.004, y, f'{val:.4f}',
-            va='center', ha='left',
-            fontsize=9.0, fontweight='bold' if is_top else 'medium',
-            color='#1A202C' if is_top else '#4A5568',
-            zorder=4
-        )
+    chi2_path = RESULTS_STAT_DIR / "chi_square_results.csv"
+    num_path = RESULTS_STAT_DIR / "numerical_results.csv"
 
-    # 6. Formatting & Aesthetics
-    # Y-Axis formatting (Right-aligned, numbered ranks + descriptive labels)
-    yticklabels = [f"#{len(values)-y:02d}  {features_descriptive[len(values)-1-y]}" for y in y_pos]
-    ax.set_yticks(y_pos)
-    ax.set_yticklabels(yticklabels, fontsize=9.5, color='#2D3748', fontweight='medium')
-    
-    # X-Axis formatting
-    ax.set_xticks([0.00, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30])
-    ax.set_xticklabels(['0.00', '0.05', '0.10', '0.15', '0.20', '0.25', '0.30'], fontsize=9.5, color='#2D3748')
-    ax.set_xlabel("Cramér's V (Strength of Association)", fontsize=10.5, fontweight='bold', color='#2D3748', labelpad=10)
-    
-    # Clean spines (Academic journal standard)
-    ax.spines['top'].set_visible(False)
-    ax.spines['right'].set_visible(False)
-    ax.spines['left'].set_color('#718096')
-    ax.spines['bottom'].set_color('#718096')
-    ax.spines['left'].set_linewidth(0.8)
-    ax.spines['bottom'].set_linewidth(0.8)
-    
-    # Adjust layout to guarantee labels fit perfectly without clipping
-    plt.tight_layout()
-    
-    # File Paths
-    svg_path = OUTPUT_DIR / "effect_size_ranking.svg"
-    png_path = OUTPUT_DIR / "effect_size_ranking.png"
-    
-    # Save files
-    plt.savefig(svg_path, format='svg', bbox_inches='tight', transparent=True)
-    plt.savefig(png_path, format='png', dpi=300, bbox_inches='tight', facecolor='white')
-    
+    if not chi2_path.exists() or not num_path.exists():
+        raise FileNotFoundError("Statistical CSV files not found. Run statistical_analysis.py first.")
+
+    cat_df = pd.read_csv(chi2_path)
+    cramers_col = [c for c in cat_df.columns if "Cram" in c][0]
+    cat_df = cat_df.sort_values(by=cramers_col, ascending=True)
+
+    num_df = pd.read_csv(num_path)
+    rb_col = [c for c in num_df.columns if "Biserial" in c or "Effect_Size" in c or "Rank" in c][0]
+    num_df[rb_col] = num_df[rb_col].abs()
+    num_df = num_df.sort_values(by=rb_col, ascending=True)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7), gridspec_kw={'width_ratios': [1.2, 1]})
+
+    # Panel A: Cramér's V
+    y_pos_cat = np.arange(len(cat_df))
+    ax1.axvspan(0.00, 0.05, facecolor="#F8FAFC", alpha=0.9, zorder=1)
+    ax1.axvspan(0.05, 0.10, facecolor="#EFF6FF", alpha=0.9, zorder=1)
+    ax1.axvspan(0.10, 0.20, facecolor="#ECFDF5", alpha=0.9, zorder=1)
+    ax1.axvspan(0.20, 0.35, facecolor="#FEF3C7", alpha=0.9, zorder=1)
+
+    for border in [0.05, 0.10, 0.20]:
+        ax1.axvline(border, color="#CBD5E1", linestyle="--", linewidth=0.8, zorder=2)
+
+    ax1.hlines(y_pos_cat, xmin=0, xmax=cat_df[cramers_col], color="#64748B", linewidth=1.2, zorder=3)
+    ax1.scatter(cat_df[cramers_col], y_pos_cat, color="#2563EB", s=60, zorder=4, edgecolor="#0F172A", linewidth=0.8)
+
+    for y, (_, row) in zip(y_pos_cat, cat_df.iterrows()):
+        val = row[cramers_col]
+        ax1.text(val + 0.004, y, f"{val:.3f}", va="center", ha="left", fontsize=8.5, color="#1E293B", fontweight="medium")
+
+    cat_labels = cat_df["Description"] if "Description" in cat_df.columns else cat_df["Variable"]
+    ax1.set_yticks(y_pos_cat)
+    ax1.set_yticklabels(cat_labels, fontsize=8.5, color="#1E293B")
+    ax1.set_xlabel("Cramér's V (Categorical Association)", fontsize=9.5, fontweight="bold", color="#0F172A", labelpad=8)
+    ax1.set_title("Panel A: Categorical Features (Cramér's V)", fontsize=11, fontweight="bold", color="#0F172A")
+    ax1.set_xlim(0, max(cat_df[cramers_col]) * 1.15)
+    ax1.grid(axis='x', linestyle=':', alpha=0.5)
+
+    # Panel B: Absolute Rank-Biserial Correlation
+    y_pos_num = np.arange(len(num_df))
+    ax2.axvspan(0.00, 0.05, facecolor="#F8FAFC", alpha=0.9, zorder=1)
+    ax2.axvspan(0.05, 0.10, facecolor="#EFF6FF", alpha=0.9, zorder=1)
+    ax2.axvspan(0.10, 0.20, facecolor="#ECFDF5", alpha=0.9, zorder=1)
+    ax2.axvspan(0.20, 0.35, facecolor="#FEF3C7", alpha=0.9, zorder=1)
+
+    for border in [0.05, 0.10, 0.20]:
+        ax2.axvline(border, color="#CBD5E1", linestyle="--", linewidth=0.8, zorder=2)
+
+    ax2.hlines(y_pos_num, xmin=0, xmax=num_df[rb_col], color="#64748B", linewidth=1.2, zorder=3)
+    ax2.scatter(num_df[rb_col], y_pos_num, color="#D97706", marker="s", s=60, zorder=4, edgecolor="#0F172A", linewidth=0.8)
+
+    for y, (_, row) in zip(y_pos_num, num_df.iterrows()):
+        val = row[rb_col]
+        ax2.text(val + 0.004, y, f"{val:.3f}", va="center", ha="left", fontsize=8.5, color="#1E293B", fontweight="medium")
+
+    num_labels = num_df["Description"] if "Description" in num_df.columns else num_df["Variable"]
+    ax2.set_yticks(y_pos_num)
+    ax2.set_yticklabels(num_labels, fontsize=8.5, color="#1E293B")
+    ax2.set_xlabel("Absolute Rank-Biserial Correlation", fontsize=9.5, fontweight="bold", color="#0F172A", labelpad=8)
+    ax2.set_title("Panel B: Numerical Features (Rank-Biserial r)", fontsize=11, fontweight="bold", color="#0F172A")
+    ax2.set_xlim(0, max(num_df[rb_col]) * 1.20)
+    ax2.grid(axis='x', linestyle=':', alpha=0.5)
+
+    fig.suptitle("Effect-size evidence by feature family", fontsize=13, fontweight="bold", color="#0F172A", y=0.98)
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+
+    png_path = DOCS_FIG_DIR / "effect_size_ranking.png"
+    results_png_path = RESULTS_STAT_DIR / "cramers_v_ranking.png"
+
+    plt.savefig(png_path, dpi=300, bbox_inches="tight", facecolor="white")
+    plt.savefig(results_png_path, dpi=300, bbox_inches="tight", facecolor="white")
     plt.close()
-    
-    print(f"\nEffect size ranking figures successfully generated:")
-    print(f"  - SVG: {svg_path}")
-    print(f"  - PNG: {png_path} (300 DPI)")
+
+    print(f"Generated 2-panel effect size figure: {png_path}")
 
 if __name__ == "__main__":
-    generate_effect_size_chart()
+    generate_effect_size_figure()

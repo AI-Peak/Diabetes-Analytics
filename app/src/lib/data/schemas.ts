@@ -15,7 +15,7 @@ const CohortCellSchema = z.object({
   bmiBand: z.enum(["underweight", "healthy", "overweight", "obesity"]),
   highBP: z.number().int().min(0).max(1),
   n: z.number().int().positive(),
-  diabeticN: z.number().int().nonnegative(),
+  positiveClassN: z.number().int().nonnegative(),
 });
 
 export const OverviewSchema = z.object({
@@ -28,10 +28,10 @@ export const OverviewSchema = z.object({
     split: z.string(),
   }),
   classBalance: z.object({
-    healthyPct: z.number(),
-    diabeticPct: z.number(),
-    healthyN: z.number().int(),
-    diabeticN: z.number().int(),
+    noDiabetesPct: z.number(),
+    positiveClassPct: z.number(),
+    noDiabetesN: z.number().int(),
+    positiveClassN: z.number().int(),
   }),
   cohortCube: z.array(CohortCellSchema).min(1),
   bestModel: z.object({ name: z.string(), rocAuc: z.number(), prAuc: z.number() }),
@@ -57,18 +57,18 @@ const CategoricalSchema = z.object({
     value: z.string(),
     label: z.string(),
     n: z.number().int().positive(),
-    diabeticN: z.number().int().nonnegative(),
+    positiveClassN: z.number().int().nonnegative(),
     prevalencePct: z.number().min(0).max(100),
   })).min(2),
 });
 
 const NumericSchema = z.object({
   variable: z.string(),
-  healthyMean: z.number(),
-  diabeticMean: z.number(),
+  noDiabetesMean: z.number(),
+  positiveClassMean: z.number(),
   meanDiff: z.number(),
-  healthyMedian: z.number(),
-  diabeticMedian: z.number(),
+  noDiabetesMedian: z.number(),
+  positiveClassMedian: z.number(),
   tStat: z.number(),
   tPValue: z.number(),
   cohensD: z.number(),
@@ -120,6 +120,13 @@ export const Rq2Schema = z.object({
   bestModelName: z.string(),
   thresholds: z.array(ThresholdSchema).min(1),
   highlights: z.object({ default: HighlightSchema, optimized: HighlightSchema }),
+  calibration: z.object({
+    brierScore: z.number(),
+    slope: z.number(),
+    intercept: z.number(),
+    sampleSize: z.number().int(),
+    evaluationSplit: z.string(),
+  }),
 });
 
 const FeatureSchema = z.object({

@@ -31,7 +31,7 @@ export default function Rq2Page() {
         </div>
       </Section>
 
-      <Section label="Model comparison" source="results/modeling/model_comparison.csv">
+      <Section label="Model comparison" source="results/modeling/cv_model_comparison.csv">
         <ModelExplorer data={data} />
       </Section>
 

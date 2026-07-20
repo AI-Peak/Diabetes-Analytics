@@ -54,7 +54,7 @@ export function ModelExplorer({ data }: { data: Rq2Data }) {
         <ChartCard
           title={`Model ranking by ${metricLabel(metric)}`}
           subtitle="Change the metric, then click a bar. The selected model profile and scorecard row update together."
-          source="results/modeling/model_comparison.csv"
+          source="results/modeling/cv_model_comparison.csv"
           action={<StatBadge label={`selected · ${selected.name}`} tone={selected.isBest ? "best" : "moderate"} />}
         >
           <HBarChart
@@ -75,7 +75,7 @@ export function ModelExplorer({ data }: { data: Rq2Data }) {
         <ChartCard
           title="Selected model profile"
           subtitle="One model selection drives all six evaluation metrics."
-          source="model_comparison.csv · selected row"
+          source="cv_model_comparison.csv · selected row"
         >
           <div className="selection-panel">
             <span className="eyebrow">Current model</span>

@@ -186,31 +186,31 @@ async function datasetAnalytics() {
     const highBP = Number(cells[index.HighBP]);
     const band = bmiBand(Number(cells[index.BMI]));
     const cohortKey = `${sex}|${age}|${band}|${highBP}`;
-    const cohort = cohortCells.get(cohortKey) ?? { sex, age, bmiBand: band, highBP, n: 0, diabeticN: 0 };
+    const cohort = cohortCells.get(cohortKey) ?? { sex, age, bmiBand: band, highBP, n: 0, positiveClassN: 0 };
     cohort.n += 1;
-    cohort.diabeticN += diabetic;
+    cohort.positiveClassN += diabetic;
     cohortCells.set(cohortKey, cohort);
 
     for (const variable of CATEGORICAL_VARIABLES) {
       const value = cells[index[variable]];
       const groups = categoryCells[variable];
-      const group = groups.get(value) ?? { value, n: 0, diabeticN: 0 };
+      const group = groups.get(value) ?? { value, n: 0, positiveClassN: 0 };
       group.n += 1;
-      group.diabeticN += diabetic;
+      group.positiveClassN += diabetic;
       groups.set(value, group);
     }
   }
 
   const nRows = lines.length - 1;
-  const healthyN = nRows - diabeticN;
+  const noDiabetesN = nRows - diabeticN;
   return {
     profile: {
       nRows,
       nFeatures: headers.length - 1,
-      healthyN,
-      diabeticN,
-      healthyPct: Number(((healthyN / nRows) * 100).toFixed(1)),
-      diabeticPct: Number(((diabeticN / nRows) * 100).toFixed(1)),
+      noDiabetesN,
+      positiveClassN: diabeticN,
+      noDiabetesPct: Number(((noDiabetesN / nRows) * 100).toFixed(1)),
+      positiveClassPct: Number(((diabeticN / nRows) * 100).toFixed(1)),
     },
     cohortCube: [...cohortCells.values()].sort((a, b) => a.age - b.age || a.sex - b.sex || a.highBP - b.highBP),
     categoryLevels: Object.fromEntries(
@@ -221,7 +221,7 @@ async function datasetAnalytics() {
           .map((group) => ({
             ...group,
             label: levelLabel(variable, group.value),
-            prevalencePct: Number(((group.diabeticN / group.n) * 100).toFixed(2)),
+            prevalencePct: Number(((group.positiveClassN / group.n) * 100).toFixed(2)),
           })),
       ]),
     ),
@@ -249,11 +249,11 @@ function categoricalRows(rows, categoryLevels) {
 function numericRows(rows) {
   return rows.map((row) => ({
     variable: row.Variable,
-    healthyMean: number(row, "Healthy Mean"),
-    diabeticMean: number(row, "Diabetic Mean"),
+    noDiabetesMean: number(row, "No Reported Diabetes Mean" in row ? "No Reported Diabetes Mean" : "Healthy Mean"),
+    positiveClassMean: number(row, "Prediabetes/Diabetes Positive Mean" in row ? "Prediabetes/Diabetes Positive Mean" : "Diabetic Mean"),
     meanDiff: number(row, "Mean Difference"),
-    healthyMedian: number(row, "Healthy Median"),
-    diabeticMedian: number(row, "Diabetic Median"),
+    noDiabetesMedian: number(row, "No Reported Diabetes Median" in row ? "No Reported Diabetes Median" : "Healthy Median"),
+    positiveClassMedian: number(row, "Prediabetes/Diabetes Positive Median" in row ? "Prediabetes/Diabetes Positive Median" : "Diabetic Median"),
     tStat: number(row, "t-Statistic"),
     tPValue: number(row, "t p-value"),
     cohensD: number(row, "Cohen's d"),
@@ -266,12 +266,12 @@ function numericRows(rows) {
 function modelRows(rows) {
   const mapped = rows.map((row) => ({
     name: row.Model,
-    accuracy: number(row, "Accuracy"),
-    precision: number(row, "Precision"),
-    recall: number(row, "Recall"),
-    f1: number(row, "F1-score"),
-    rocAuc: number(row, "ROC-AUC"),
-    prAuc: number(row, "PR-AUC"),
+    accuracy: number(row, "Mean_Accuracy" in row ? "Mean_Accuracy" : "Accuracy"),
+    precision: number(row, "Mean_Precision" in row ? "Mean_Precision" : "Precision"),
+    recall: number(row, "Mean_Recall" in row ? "Mean_Recall" : "Recall"),
+    f1: number(row, "Mean_F1" in row ? "Mean_F1" : ("F1-score" in row ? "F1-score" : "F1")),
+    rocAuc: number(row, "Mean_ROC_AUC" in row ? "Mean_ROC_AUC" : "ROC-AUC"),
+    prAuc: number(row, "Mean_PR_AUC" in row ? "Mean_PR_AUC" : "PR-AUC"),
     isBest: false,
   }));
   const best = mapped.reduce((winner, model) => (model.prAuc > winner.prAuc ? model : winner));
@@ -318,13 +318,14 @@ async function main() {
   await mkdir(generatedRoot, { recursive: true });
   await mkdir(figuresRoot, { recursive: true });
 
-  const [dataset, categoricalCsv, numericCsv, modelsCsv, thresholdsCsv, consistencyCsv, modelSelectionMeta] = await Promise.all([
+  const [dataset, categoricalCsv, numericCsv, modelsCsv, thresholdsCsv, consistencyCsv, calibrationCsv, modelSelectionMeta] = await Promise.all([
     datasetAnalytics(),
     parseCsv(path.join("results", "statistical_analysis", "chi_square_results.csv")),
     parseCsv(path.join("results", "statistical_analysis", "numerical_results.csv")),
-    parseCsv(path.join("results", "modeling", "model_comparison.csv")),
+    parseCsv(path.join("results", "modeling", "cv_model_comparison.csv")),
     parseCsv(path.join("results", "modeling", "threshold_analysis.csv")),
     parseCsv(path.join("results", "xai", "explanation_consistency.csv")),
+    parseCsv(path.join("results", "modeling", "calibration_metrics.csv")),
     readFile(path.join("results", "modeling", "model_selection.json"), "utf8").then(JSON.parse).catch(() => null),
   ]);
 
@@ -334,6 +335,14 @@ async function main() {
   const models = modelRows(modelsCsv);
   const thresholds = thresholdRows(thresholdsCsv);
   const features = featureRows(consistencyCsv);
+  const calibRow = calibrationCsv[0] || {};
+  const calibration = {
+    brierScore: number(calibRow, "Brier_Score"),
+    slope: number(calibRow, "Calibration_Slope"),
+    intercept: number(calibRow, "Calibration_Intercept"),
+    sampleSize: number(calibRow, "Holdout_Sample_Size"),
+    evaluationSplit: calibRow["Evaluation_Split"] || "Untouched holdout test",
+  };
   const bestModel = models.find((model) => model.isBest);
   if (!bestModel) throw new Error("Could not determine the best model");
 
@@ -352,10 +361,10 @@ async function main() {
       split: "stratified 80/20",
     },
     classBalance: {
-      healthyPct: profile.healthyPct,
-      diabeticPct: profile.diabeticPct,
-      healthyN: profile.healthyN,
-      diabeticN: profile.diabeticN,
+      noDiabetesPct: profile.noDiabetesPct,
+      positiveClassPct: profile.positiveClassPct,
+      noDiabetesN: profile.noDiabetesN,
+      positiveClassN: profile.positiveClassN,
     },
     cohortCube: dataset.cohortCube,
     bestModel: { name: bestModel.name, rocAuc: bestModel.rocAuc, prAuc: bestModel.prAuc },
@@ -410,6 +419,7 @@ async function main() {
     bestModelName: bestModel.name,
     thresholds,
     highlights: { default: highlight(defaultThreshold), optimized: highlight(optimizedThreshold) },
+    calibration,
   };
 
   const uniqueGroups = [...new Set(features.map((f) => f.group))];

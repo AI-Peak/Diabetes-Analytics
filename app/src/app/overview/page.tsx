@@ -20,8 +20,8 @@ export default function OverviewPage() {
           title="From population evidence to explainable diabetes-risk screening."
           subtitle="A CRISP-DM research arc connecting statistical association, imbalanced classification, threshold design, and SHAP-based explanation on CDC BRFSS 2015."
           meta={[
-            `Healthy ${data.classBalance.healthyPct.toFixed(1)}%`,
-            `Diabetic ${data.classBalance.diabeticPct.toFixed(1)}%`,
+            `No reported diabetes ${data.classBalance.noDiabetesPct.toFixed(1)}%`,
+            `Prediabetes/diabetes ${data.classBalance.positiveClassPct.toFixed(1)}%`,
             `${data.dataset.nFeatures} indicators`,
             "SQL · Python · XGBoost · SHAP",
           ]}
@@ -32,13 +32,13 @@ export default function OverviewPage() {
         <div className="kpi-grid">
           <KpiCard label="Records" value={fmtInt(data.dataset.nRows)} note={`${data.dataset.name} · cleaned`} />
           <KpiCard label="Predictors" value={String(data.dataset.nFeatures)} note={`Target · ${data.dataset.target}`} />
-          <KpiCard label="Diabetic prevalence" value={`${data.classBalance.diabeticPct.toFixed(1)}%`} note={`${fmtInt(data.classBalance.diabeticN)} positive records`} tone="risk" />
+          <KpiCard label="Prediabetes/Diabetes prevalence" value={`${data.classBalance.positiveClassPct.toFixed(1)}%`} note={`${fmtInt(data.classBalance.positiveClassN)} positive records`} tone="risk" />
           <KpiCard label="Best model PR-AUC" value={fmtFloat(data.bestModel.prAuc, 3)} note={`${data.bestModel.name} · test n=${fmtInt(data.dataset.testSize)}`} tone="accent" />
         </div>
       </Section>
 
       <Section label="Interactive cohort lab" source="pre-aggregated BRFSS cohort cube">
-        <CohortExplorer cube={data.cohortCube} overall={{ diabeticPct: data.classBalance.diabeticPct, diabeticN: data.classBalance.diabeticN }} />
+        <CohortExplorer cube={data.cohortCube} overall={{ positiveClassPct: data.classBalance.positiveClassPct, positiveClassN: data.classBalance.positiveClassN }} />
       </Section>
 
       <Section label="Evidence chain" source="RQ1 → RQ2 → RQ3">
@@ -78,15 +78,15 @@ export default function OverviewPage() {
 
           <article className="surface-card">
             <div className="chart-card-header">
-              <div><h2 className="card-title">Class balance</h2><p className="card-subtitle">The minority class makes accuracy alone an incomplete model-selection signal.</p></div>
+              <div><h2 className="card-title">Class balance</h2><p className="card-subtitle">The minority positive class makes accuracy alone an incomplete model-selection signal.</p></div>
             </div>
-            <div className="balance-bar" role="img" aria-label={`Healthy ${data.classBalance.healthyPct}% and diabetic ${data.classBalance.diabeticPct}%`}>
-              <div className="balance-healthy" style={{ width: `${data.classBalance.healthyPct}%` }}>{data.classBalance.healthyPct.toFixed(1)}%</div>
-              <div className="balance-diabetic" style={{ width: `${data.classBalance.diabeticPct}%` }}>{data.classBalance.diabeticPct.toFixed(1)}%</div>
+            <div className="balance-bar" role="img" aria-label={`No reported diabetes ${data.classBalance.noDiabetesPct}% and prediabetes/diabetes ${data.classBalance.positiveClassPct}%`}>
+              <div className="balance-healthy" style={{ width: `${data.classBalance.noDiabetesPct}%` }}>{data.classBalance.noDiabetesPct.toFixed(1)}%</div>
+              <div className="balance-diabetic" style={{ width: `${data.classBalance.positiveClassPct}%` }}>{data.classBalance.positiveClassPct.toFixed(1)}%</div>
             </div>
             <div className="legend-row">
-              <span className="legend-item"><span className="legend-swatch" /> Healthy · <span className="num">{fmtInt(data.classBalance.healthyN)}</span></span>
-              <span className="legend-item"><span className="legend-swatch risk" /> Diabetic · <span className="num">{fmtInt(data.classBalance.diabeticN)}</span></span>
+              <span className="legend-item"><span className="legend-swatch" /> No reported diabetes · <span className="num">{fmtInt(data.classBalance.noDiabetesN)}</span></span>
+              <span className="legend-item"><span className="legend-swatch risk" /> Prediabetes/Diabetes · <span className="num">{fmtInt(data.classBalance.positiveClassN)}</span></span>
             </div>
           </article>
         </div>

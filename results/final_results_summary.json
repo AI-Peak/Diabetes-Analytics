@@ -3,11 +3,12 @@
   "dataset": {
     "n_records": 253680,
     "n_features": 21,
-    "class_distribution": {
-      "healthy_count": 218334,
-      "healthy_pct": 86.07,
-      "diabetic_count": 35346,
-      "diabetic_pct": 13.93
+    "repeated_profiles_count": 24206,
+    "target_distribution": {
+      "no_diabetes_count": 218334,
+      "no_diabetes_pct": 86.07,
+      "prediabetes_or_diabetes_count": 35346,
+      "prediabetes_or_diabetes_pct": 13.93
     },
     "split": {
       "development_size": 202944,
@@ -106,6 +107,13 @@
         0.4317,
         0.4418
       ]
+    },
+    "calibration": {
+      "Brier_Score": 0.0974,
+      "Calibration_Slope": 0.959,
+      "Calibration_Intercept": -0.0514,
+      "Holdout_Sample_Size": 50736,
+      "Evaluation_Split": "Untouched holdout test"
     }
   },
   "xai_consistency": {
@@ -121,7 +129,7 @@
         "HeartDiseaseorAttack",
         "HvyAlcoholConsump"
       ],
-      "Group 2 \u2014 Population-associated, model-redundant": [
+      "Group 2 \u2014 Meaningful marginal association, lower model salience": [
         "DiffWalk",
         "Education",
         "Stroke",

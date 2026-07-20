@@ -7,7 +7,7 @@
       "pValue": 0,
       "effectSize": 0.2993216672450668,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution.",
+      "statInterpretation": "Meaningful marginal association within the analyzed BRFSS sample and high model salience.",
       "shapRank": 1,
       "statRank": 1,
       "group": "Group 1 — Consistent high evidence"
@@ -19,7 +19,7 @@
       "pValue": 0,
       "effectSize": 0.2631172900689311,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution.",
+      "statInterpretation": "Meaningful marginal association within the analyzed BRFSS sample and high model salience.",
       "shapRank": 2,
       "statRank": 3,
       "group": "Group 1 — Consistent high evidence"
@@ -31,7 +31,7 @@
       "pValue": 0,
       "effectSize": 0.1861984481259515,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution.",
+      "statInterpretation": "Meaningful marginal association within the analyzed BRFSS sample and high model salience.",
       "shapRank": 3,
       "statRank": 6,
       "group": "Group 1 — Consistent high evidence"
@@ -43,7 +43,7 @@
       "pValue": 0,
       "effectSize": 0.3766327799846281,
       "effectSizeType": "Abs Rank-Biserial",
-      "statInterpretation": "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution.",
+      "statInterpretation": "Meaningful marginal association within the analyzed BRFSS sample and high model salience.",
       "shapRank": 4,
       "statRank": 1,
       "group": "Group 1 — Consistent high evidence"
@@ -55,7 +55,7 @@
       "pValue": 0,
       "effectSize": 0.2002646751624945,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution.",
+      "statInterpretation": "Meaningful marginal association within the analyzed BRFSS sample and high model salience.",
       "shapRank": 5,
       "statRank": 5,
       "group": "Group 1 — Consistent high evidence"
@@ -67,7 +67,7 @@
       "pValue": 0,
       "effectSize": 0.166157948278278,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution.",
+      "statInterpretation": "Meaningful marginal association within the analyzed BRFSS sample and high model salience.",
       "shapRank": 6,
       "statRank": 8,
       "group": "Group 1 — Consistent high evidence"
@@ -79,7 +79,7 @@
       "pValue": 2.1098747365768505e-56,
       "effectSize": 0.0314185327912046,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature is weak marginally but becomes valuable in multivariate or non-linear predictive context.",
+      "statInterpretation": "The feature exhibits lower univariate marginal association in the sample but makes non-negligible contributions in the multivariate predictive model.",
       "shapRank": 7,
       "statRank": 19,
       "group": "Group 3 — Model-salient, weak marginal association"
@@ -91,7 +91,7 @@
       "pValue": 3.7513988789188714e-233,
       "effectSize": 0.0647307861486771,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution.",
+      "statInterpretation": "Meaningful marginal association within the analyzed BRFSS sample and high model salience.",
       "shapRank": 8,
       "statRank": 13,
       "group": "Group 1 — Consistent high evidence"
@@ -103,7 +103,7 @@
       "pValue": 0,
       "effectSize": 0.1772627715988454,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution.",
+      "statInterpretation": "Meaningful marginal association within the analyzed BRFSS sample and high model salience.",
       "shapRank": 9,
       "statRank": 7,
       "group": "Group 1 — Consistent high evidence"
@@ -115,7 +115,7 @@
       "pValue": 1.865931810105641e-181,
       "effectSize": 0.0570315421396454,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution.",
+      "statInterpretation": "Meaningful marginal association within the analyzed BRFSS sample and high model salience.",
       "shapRank": 10,
       "statRank": 15,
       "group": "Group 1 — Consistent high evidence"
@@ -127,7 +127,7 @@
       "pValue": 1.750549040620507e-90,
       "effectSize": 0.0545514474207249,
       "effectSizeType": "Abs Rank-Biserial",
-      "statInterpretation": "Limited evidence under both marginal population analysis and model contribution.",
+      "statInterpretation": "Weak evidence within the current dataset and model does not imply that the feature has no medical relevance.",
       "shapRank": 11,
       "statRank": 15,
       "group": "Group 4 — Weak evidence"
@@ -139,10 +139,10 @@
       "pValue": 0,
       "effectSize": 0.2183291362092445,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature has marginal association but provides limited incremental signal after model considers other predictors. Possible redundancy or shared information.",
+      "statInterpretation": "The feature shows a meaningful marginal association within the analyzed sample but is not among the highest SHAP-ranked predictors. This may reflect shared information, correlation, or limited incremental contribution after other predictors are considered.",
       "shapRank": 12,
       "statRank": 4,
-      "group": "Group 2 — Population-associated, model-redundant"
+      "group": "Group 2 — Meaningful marginal association, lower model salience"
     },
     {
       "variable": "Education",
@@ -151,10 +151,10 @@
       "pValue": 0,
       "effectSize": 0.1259951287811945,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature has marginal association but provides limited incremental signal after model considers other predictors. Possible redundancy or shared information.",
+      "statInterpretation": "The feature shows a meaningful marginal association within the analyzed sample but is not among the highest SHAP-ranked predictors. This may reflect shared information, correlation, or limited incremental contribution after other predictors are considered.",
       "shapRank": 13,
       "statRank": 10,
-      "group": "Group 2 — Population-associated, model-redundant"
+      "group": "Group 2 — Meaningful marginal association, lower model salience"
     },
     {
       "variable": "Stroke",
@@ -163,10 +163,10 @@
       "pValue": 0,
       "effectSize": 0.1057872185884464,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature has marginal association but provides limited incremental signal after model considers other predictors. Possible redundancy or shared information.",
+      "statInterpretation": "The feature shows a meaningful marginal association within the analyzed sample but is not among the highest SHAP-ranked predictors. This may reflect shared information, correlation, or limited incremental contribution after other predictors are considered.",
       "shapRank": 14,
       "statRank": 12,
-      "group": "Group 2 — Population-associated, model-redundant"
+      "group": "Group 2 — Meaningful marginal association, lower model salience"
     },
     {
       "variable": "Fruits",
@@ -175,7 +175,7 @@
       "pValue": 1.0881213885155634e-93,
       "effectSize": 0.0407674108050883,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Limited evidence under both marginal population analysis and model contribution.",
+      "statInterpretation": "Weak evidence within the current dataset and model does not imply that the feature has no medical relevance.",
       "shapRank": 15,
       "statRank": 18,
       "group": "Group 4 — Weak evidence"
@@ -187,10 +187,10 @@
       "pValue": 0,
       "effectSize": 0.2260290861400187,
       "effectSizeType": "Abs Rank-Biserial",
-      "statInterpretation": "Feature has marginal association but provides limited incremental signal after model considers other predictors. Possible redundancy or shared information.",
+      "statInterpretation": "The feature shows a meaningful marginal association within the analyzed sample but is not among the highest SHAP-ranked predictors. This may reflect shared information, correlation, or limited incremental contribution after other predictors are considered.",
       "shapRank": 16,
       "statRank": 8,
-      "group": "Group 2 — Population-associated, model-redundant"
+      "group": "Group 2 — Meaningful marginal association, lower model salience"
     },
     {
       "variable": "PhysActivity",
@@ -199,10 +199,10 @@
       "pValue": 0,
       "effectSize": 0.1181198528157091,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature has marginal association but provides limited incremental signal after model considers other predictors. Possible redundancy or shared information.",
+      "statInterpretation": "The feature shows a meaningful marginal association within the analyzed sample but is not among the highest SHAP-ranked predictors. This may reflect shared information, correlation, or limited incremental contribution after other predictors are considered.",
       "shapRank": 17,
       "statRank": 11,
-      "group": "Group 2 — Population-associated, model-redundant"
+      "group": "Group 2 — Meaningful marginal association, lower model salience"
     },
     {
       "variable": "Smoker",
@@ -211,10 +211,10 @@
       "pValue": 8.640171809942516e-206,
       "effectSize": 0.0607770480619646,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature has marginal association but provides limited incremental signal after model considers other predictors. Possible redundancy or shared information.",
+      "statInterpretation": "The feature shows a meaningful marginal association within the analyzed sample but is not among the highest SHAP-ranked predictors. This may reflect shared information, correlation, or limited incremental contribution after other predictors are considered.",
       "shapRank": 18,
       "statRank": 14,
-      "group": "Group 2 — Population-associated, model-redundant"
+      "group": "Group 2 — Meaningful marginal association, lower model salience"
     },
     {
       "variable": "Veggies",
@@ -223,10 +223,10 @@
       "pValue": 1.4630291539062376e-178,
       "effectSize": 0.0565695868822472,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Feature has marginal association but provides limited incremental signal after model considers other predictors. Possible redundancy or shared information.",
+      "statInterpretation": "The feature shows a meaningful marginal association within the analyzed sample but is not among the highest SHAP-ranked predictors. This may reflect shared information, correlation, or limited incremental contribution after other predictors are considered.",
       "shapRank": 19,
       "statRank": 17,
-      "group": "Group 2 — Population-associated, model-redundant"
+      "group": "Group 2 — Meaningful marginal association, lower model salience"
     },
     {
       "variable": "AnyHealthcare",
@@ -235,7 +235,7 @@
       "pValue": 2.9861810739704523e-16,
       "effectSize": 0.0162287597331057,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Limited evidence under both marginal population analysis and model contribution.",
+      "statInterpretation": "Weak evidence within the current dataset and model does not imply that the feature has no medical relevance.",
       "shapRank": 20,
       "statRank": 21,
       "group": "Group 4 — Weak evidence"
@@ -247,7 +247,7 @@
       "pValue": 2.2183954101223777e-56,
       "effectSize": 0.031412264160595,
       "effectSizeType": "Cramér's V",
-      "statInterpretation": "Limited evidence under both marginal population analysis and model contribution.",
+      "statInterpretation": "Weak evidence within the current dataset and model does not imply that the feature has no medical relevance.",
       "shapRank": 21,
       "statRank": 20,
       "group": "Group 4 — Weak evidence"
@@ -287,8 +287,8 @@
       ]
     },
     {
-      "key": "group-2-population-associated-model-redundant",
-      "label": "Group 2 — Population-associated, model-redundant",
+      "key": "group-2-meaningful-marginal-association-lower-model-salience",
+      "label": "Group 2 — Meaningful marginal association, lower model salience",
       "members": [
         "DiffWalk",
         "Education",

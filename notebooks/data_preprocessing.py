@@ -237,8 +237,8 @@ This document outlines the data preprocessing step for the **Diabetes-Analytics*
 
 | Class (Diabetes_binary) | Raw Counts | Raw Pct | Cleaned Counts | Cleaned Pct |
 |-------------------------|------------|---------|----------------|-------------|
-| **0 (No Diabetes)**      | {raw_class_counts.get(0.0, 0):,} | {raw_class_pct.get(0.0, 0):.2%} | {cleaned_class_counts.get(0, 0):,} | {cleaned_class_pct.get(0, 0):.2%} |
-| **1 (Diabetes)**         | {raw_class_counts.get(1.0, 0):,} | {raw_class_pct.get(1.0, 0):.2%} | {cleaned_class_counts.get(1, 0):,} | {cleaned_class_pct.get(1, 0):.2%} |
+| **0 (No reported diabetes)**      | {raw_class_counts.get(0.0, 0):,} | {raw_class_pct.get(0.0, 0):.2%} | {cleaned_class_counts.get(0, 0):,} | {cleaned_class_pct.get(0, 0):.2%} |
+| **1 (Prediabetes/Diabetes positive class)** | {raw_class_counts.get(1.0, 0):,} | {raw_class_pct.get(1.0, 0):.2%} | {cleaned_class_counts.get(1, 0):,} | {cleaned_class_pct.get(1, 0):.2%} |
 
 ## Preprocessing Summary Table
 Refer to the CSV summary at `results/data_preprocessing/preprocessing_summary.csv` for detailed steps.

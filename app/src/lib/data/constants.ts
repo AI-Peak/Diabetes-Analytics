@@ -8,9 +8,9 @@ export const PAGES = [
 
 export const STUDY = {
   n: 253_680,
-  testSize: 45_895,
-  healthyPct: 84.7,
-  diabeticPct: 15.3,
+  testSize: 50_736,
+  noDiabetesPct: 86.1,
+  positiveClassPct: 13.9,
 } as const;
 
 export const VARIABLE_LABELS: Record<string, string> = {

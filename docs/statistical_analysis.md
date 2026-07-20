@@ -59,27 +59,27 @@ To ensure statistical rigor, we apply:
 ## 3. Numerical Variable Analysis (t-Test & Mann-Whitney U)
 
 ### Numerical Tests Summary
-| Variable | Healthy Mean | Diabetic Mean | Mean Diff | Healthy Median | Diabetic Median | t-Stat | Raw t p-val | MWU p-val | Holm MWU p | Reject $H_0$ | Cohen's d | Abs Rank-Biserial | Effect Size Interpretation |
+| Variable | No Reported Diabetes Mean | Prediabetes/Diabetes Positive Mean | Mean Diff | No Reported Diabetes Median | Prediabetes/Diabetes Median | t-Stat | Raw t p-val | MWU p-val | Holm MWU p | Reject $H_0$ | Cohen's d | Abs Rank-Biserial | Effect Size Interpretation |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 | `BMI` | 27.81 | 31.94 | 4.14 | 27.0 | 31.0 | 99.92 | `< 1.00e-300` | `< 1.00e-300` | `< 1.00e-300` | Yes | 0.6414 | 0.3766 | **Moderate** |
 | `MentHlth` | 2.98 | 4.46 | 1.48 | 0.0 | 0.0 | 29.69 | `7.93e-192` | `1.75e-90` | `7.00e-90` | Yes | 0.2006 | 0.0546 | **Negligible** |
 | `PhysHlth` | 3.64 | 7.95 | 4.31 | 0.0 | 1.0 | 68.97 | `< 1.00e-300` | `< 1.00e-300` | `< 1.00e-300` | Yes | 0.5022 | 0.2260 | **Small** |
 
 ### Key Findings from Numerical Analysis:
-1. **Body Mass Index (BMI)**: Mean BMI for the non-diabetic group is **27.81** vs **31.94** for the diabetic group. Absolute Rank-Biserial correlation is **0.3766** (Cohen's d = **0.6414**), confirming a moderate practical effect size.
-2. **Physical Unhealthy Days (`PhysHlth`)**: Diabetics report an average of **7.95** unhealthy physical days in the past 30 days compared to **3.64** days for non-diabetics.
+1. **Body Mass Index (BMI)**: Mean BMI for the group without reported diabetes is **27.81** vs **31.94** for the prediabetes/diabetes positive group. Absolute Rank-Biserial correlation is **0.3766** (Cohen's d = **0.6414**), confirming a moderate practical effect size within the sample.
+2. **Physical Unhealthy Days (`PhysHlth`)**: Respondents in the prediabetes/diabetes positive class report an average of **7.95** unhealthy physical days in the past 30 days compared to **3.64** days for respondents without reported diabetes.
 
 ---
 
 ## 4. Visualizations and Diagnostics
 Saved under `results/statistical_analysis/` and `docs/figures/`:
-* **Effect Size Ranking**: [effect_size_ranking.png](file:///C:/Users/Admin/Desktop/SU26-FPT/DAP391M/Predicting Diabetes Risk Using CDC Health Indicators/results/statistical_analysis/cramers_v_ranking.png) — Hierarchical lollipop ranking comparing Cramér's V and Absolute Rank-Biserial effect sizes.
-* **Subgroup Prevalence**: [top_categorical_prevalence.png](file:///C:/Users/Admin/Desktop/SU26-FPT/DAP391M/Predicting Diabetes Risk Using CDC Health Indicators/results/statistical_analysis/top_categorical_prevalence.png) — Diabetes rate by key risk factors.
-* **BMI Distribution Boxplot**: [bmi_boxplot.png](file:///C:/Users/Admin/Desktop/SU26-FPT/DAP391M/Predicting Diabetes Risk Using CDC Health Indicators/results/statistical_analysis/bmi_boxplot.png) — BMI range comparison across classes.
-* **Unhealthy Days Comparison**: [health_days_comparison.png](file:///C:/Users/Admin/Desktop/SU26-FPT/DAP391M/Predicting Diabetes Risk Using CDC Health Indicators/results/statistical_analysis/health_days_comparison.png) — Mental and physical unhealthy day comparisons.
+* **Effect Size Ranking**: [effect_size_ranking.png](figures/effect_size_ranking.png) — Two-panel lollipop ranking comparing Cramér's V (categorical) and Absolute Rank-Biserial correlation (numerical).
+* **Subgroup Prevalence**: [top_categorical_prevalence.png](figures/top_categorical_prevalence.png) — Prediabetes/diabetes positive rate by key risk factors.
+* **BMI Distribution Boxplot**: [bmi_boxplot.png](figures/bmi_boxplot.png) — BMI range comparison across target classes.
+* **Unhealthy Days Comparison**: [health_days_comparison.png](figures/health_days_comparison.png) — Mental and physical unhealthy day comparisons.
 
 ---
 
 ## 5. Conclusions for Research Question 1 (RQ1)
-1. **Primary Marginal Drivers**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest effect sizes.
+1. **Primary Marginal Indicators**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest effect sizes in the analyzed sample.
 2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but their ranking is governed by standardized effect size.

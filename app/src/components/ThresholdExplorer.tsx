@@ -58,14 +58,14 @@ export function ThresholdExplorer({ data }: { data: Rq2Data }) {
 
       <ChartCard
         title={`Confusion matrix · t=${selected.t.toFixed(2)}`}
-        subtitle="Rows represent actual class; columns represent predicted class. False negatives receive risk emphasis."
+        subtitle="Rows represent actual class; columns represent predicted class (Development OOF). False negatives receive risk emphasis."
         source="threshold_analysis.csv · selected row"
       >
         <div className="confusion-grid" aria-live="polite" aria-label={`Confusion matrix at threshold ${selected.t.toFixed(2)}`}>
-          <div className="cm-cell true-cell"><span className="cm-label">True negative · actual healthy</span><strong>{fmtInt(selected.tn)}</strong></div>
-          <div className="cm-cell"><span className="cm-label">False positive · healthy flagged</span><strong>{fmtInt(selected.fp)}</strong></div>
-          <div className="cm-cell fn-cell"><span className="cm-label">False negative · missed diabetic</span><strong>{fmtInt(selected.fn)}</strong></div>
-          <div className="cm-cell true-cell"><span className="cm-label">True positive · diabetic found</span><strong>{fmtInt(selected.tp)}</strong></div>
+          <div className="cm-cell true-cell"><span className="cm-label">True negative · actual no diabetes</span><strong>{fmtInt(selected.tn)}</strong></div>
+          <div className="cm-cell"><span className="cm-label">False positive · no diabetes flagged</span><strong>{fmtInt(selected.fp)}</strong></div>
+          <div className="cm-cell fn-cell"><span className="cm-label">False negative · missed positive</span><strong>{fmtInt(selected.fn)}</strong></div>
+          <div className="cm-cell true-cell"><span className="cm-label">True positive · positive found</span><strong>{fmtInt(selected.tp)}</strong></div>
         </div>
         <div className="legend-row">
           <span className="legend-item"><span className="legend-swatch" /> Correct classification</span>

@@ -110,4 +110,4 @@ Do not upload or commit `.env.local`; configure the API key in the Vercel projec
 
 ## Data provenance
 
-All displayed metrics and figures trace to the repository's `data/processed/` and `results/` outputs. The build script trims padded CSV fields, preserves scientific-notation p-values, and fails on missing source files. RQ1 uses only observed min/max prevalence ranges, RQ3 derives exactly two consistency groups from the source CSV, and no unavailable values are fabricated.
+All displayed metrics and figures trace to the repository's `data/processed/` and `results/` outputs. The build script trims padded CSV fields, preserves scientific-notation p-values, and fails on missing source files. RQ1 uses only observed min/max prevalence ranges, RQ3 derives four consistency groups from the source CSV, and no unavailable values are fabricated.

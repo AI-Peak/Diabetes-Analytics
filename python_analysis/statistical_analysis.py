@@ -23,6 +23,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import scipy.stats as stats
+from statsmodels.stats.multitest import multipletests
 from scipy import stats
 
 # Define directory paths
@@ -174,11 +176,11 @@ def perform_numerical_tests(df: pd.DataFrame) -> pd.DataFrame:
         
         results.append({
             "Variable": col,
-            "Healthy Mean": m_healthy,
-            "Diabetic Mean": m_diabetic,
+            "No Reported Diabetes Mean": m_healthy,
+            "Prediabetes/Diabetes Positive Mean": m_diabetic,
             "Mean Difference": m_diabetic - m_healthy,
-            "Healthy Median": med_healthy,
-            "Diabetic Median": med_diabetic,
+            "No Reported Diabetes Median": med_healthy,
+            "Prediabetes/Diabetes Positive Median": med_diabetic,
             "t-Statistic": t_stat,
             "t p-value": t_pval,
             "Cohen's d": cohen_d,
@@ -196,8 +198,6 @@ def perform_numerical_tests(df: pd.DataFrame) -> pd.DataFrame:
 
 def apply_holm_bonferroni_corrections(cat_df: pd.DataFrame, num_df: pd.DataFrame):
     """Applies Holm-Bonferroni p-value adjustment across all statistical hypothesis tests."""
-    from statsmodels.stats.multitest import multipletests
-
     all_pvals = list(cat_df["p-value"].values) + list(num_df["MWU p-value"].values)
     reject, pvals_corrected, _, _ = multipletests(all_pvals, alpha=0.05, method="holm")
     
@@ -217,74 +217,10 @@ def generate_visualizations(df: pd.DataFrame, cat_results: pd.DataFrame, num_res
     print("Generating statistical visualizations...")
     sns.set_theme(style="whitegrid")
     
-    # 1. Combined Effect Size Ranking Plot (Lollipop Chart)
-    # Combine categorical and numerical effect sizes
-    combined_effect = []
-    for _, row in cat_results.iterrows():
-        combined_effect.append({
-            "Variable": row["Variable"],
-            "Description": f"{row['Variable']} ({row['Description']})",
-            "Effect_Size": row["Effect_Size"],
-            "Effect_Size_Type": row["Effect_Size_Type"],
-            "Interpretation": row["Effect Size Interpretation"]
-        })
-    for _, row in num_results.iterrows():
-        combined_effect.append({
-            "Variable": row["Variable"],
-            "Description": f"{row['Variable']} ({LABEL_MAPPING.get(row['Variable'], row['Variable'])})",
-            "Effect_Size": row["Effect_Size"],
-            "Effect_Size_Type": row["Effect_Size_Type"],
-            "Interpretation": row["Effect Size Interpretation"]
-        })
-    
-    comb_df = pd.DataFrame(combined_effect).sort_values(by="Effect_Size", ascending=True)
-    
-    fig, ax = plt.subplots(figsize=(10, 8))
-    
-    y_pos = np.arange(len(comb_df))
-    
-    # Draw background shaded threshold bands
-    ax.axvspan(0.00, 0.05, facecolor="#F8FAFC", alpha=0.9, zorder=1, label="Negligible (<0.05)")
-    ax.axvspan(0.05, 0.10, facecolor="#EFF6FF", alpha=0.9, zorder=1, label="Weak / Small (0.05-0.10)")
-    ax.axvspan(0.10, 0.20, facecolor="#ECFDF5", alpha=0.9, zorder=1, label="Moderate (0.10-0.20)")
-    ax.axvspan(0.20, 0.50, facecolor="#FEF3C7", alpha=0.9, zorder=1, label="Strong (>=0.20)")
-    
-    ax.axvline(0.05, color="#CBD5E1", linestyle="--", linewidth=1.0, zorder=2)
-    ax.axvline(0.10, color="#CBD5E1", linestyle="--", linewidth=1.0, zorder=2)
-    ax.axvline(0.20, color="#CBD5E1", linestyle="--", linewidth=1.0, zorder=2)
-    
-    for i, (y, (_, row)) in enumerate(zip(y_pos, comb_df.iterrows())):
-        val = row["Effect_Size"]
-        is_cat = (row["Effect_Size_Type"] == "Cramér's V")
-        color = "#2563EB" if is_cat else "#D97706"
-        marker = "o" if is_cat else "s"
-        
-        ax.hlines(y, xmin=0, xmax=val, color="#64748B", linewidth=1.2, zorder=3)
-        ax.scatter(val, y, color=color, marker=marker, s=70, zorder=4, edgecolor="#0F172A", linewidth=0.8)
-        ax.text(val + 0.005, y, f"{val:.4f}", va="center", ha="left", fontsize=8.5, fontweight="medium", color="#1E293B")
-        
-    ax.set_yticks(y_pos)
-    ax.set_yticklabels(comb_df["Description"], fontsize=9, color="#1E293B")
-    ax.set_xlabel("Effect Size (Cramér's V for Categorical [blue circles] / Abs Rank-Biserial for Numerical [orange squares])", fontsize=10, fontweight="bold", color="#0F172A", labelpad=10)
-    ax.set_title("Population-Level Statistical Effect Size Ranking (N = 253,680)", fontsize=12, fontweight="bold", color="#0F172A", pad=15)
-    ax.set_xlim(0, max(comb_df["Effect_Size"]) * 1.15)
-    
-    # Custom legend for effect size types
-    from matplotlib.lines import Line2D
-    legend_elements = [
-        Line2D([0], [0], marker="o", color="w", label="Cramér's V (Categorical/Ordinal)", markerfacecolor="#2563EB", markersize=8),
-        Line2D([0], [0], marker="s", color="w", label="Abs Rank-Biserial (Numerical)", markerfacecolor="#D97706", markersize=8),
-    ]
-    ax.legend(handles=legend_elements, loc="lower right", frameon=True, facecolor="white", framealpha=0.9, fontsize=9)
-    
-    plt.tight_layout()
-    plt.savefig(RESULTS_DIR / "cramers_v_ranking.png", dpi=300)
-    docs_fig_dir = BASE_DIR / "docs" / "figures"
-    docs_fig_dir.mkdir(parents=True, exist_ok=True)
-    plt.savefig(docs_fig_dir / "effect_size_ranking.png", dpi=300)
-    plt.savefig(docs_fig_dir / "effect_size_ranking.svg", format="svg", bbox_inches="tight")
-    plt.close()
-    
+    # 1. Generate Two-Panel Effect Size Figure via generate_effect_size_figure module
+    from generate_effect_size_figure import generate_effect_size_figure
+    generate_effect_size_figure()
+
     # 2. Top Categorical Prevalence Bar Chart
     top_factors = cat_results.head(4)["Variable"].tolist()
     fig, axes = plt.subplots(2, 2, figsize=(13, 9))
@@ -333,7 +269,7 @@ def generate_visualizations(df: pd.DataFrame, cat_results: pd.DataFrame, num_res
         width=0.35
     )
     plt.title("Body Mass Index (BMI) Distribution vs Diabetes Status", fontsize=12, fontweight="bold", pad=15)
-    plt.xticks([0, 1], ["0: Healthy / Non-Diabetic", "1: Diabetic / Prediabetic"])
+    plt.xticks([0, 1], ["0: No reported diabetes", "1: Prediabetes/diabetes positive class"])
     plt.xlabel("")
     plt.ylabel("Body Mass Index (BMI)", fontsize=11)
     plt.tight_layout()
@@ -373,13 +309,13 @@ def write_academic_report(df: pd.DataFrame, cat_results: pd.DataFrame, num_resul
     top_cat_v = cat_results.iloc[0]["Cramér's V"]
     top_cat_diff = cat_results.iloc[0]["Max Difference (%)"]
     
-    bmi_diabetic_mean = num_results.loc[num_results["Variable"] == "BMI", "Diabetic Mean"].values[0]
-    bmi_healthy_mean = num_results.loc[num_results["Variable"] == "BMI", "Healthy Mean"].values[0]
+    bmi_diabetic_mean = num_results.loc[num_results["Variable"] == "BMI", "Prediabetes/Diabetes Positive Mean"].values[0]
+    bmi_healthy_mean = num_results.loc[num_results["Variable"] == "BMI", "No Reported Diabetes Mean"].values[0]
     bmi_cohen_d = num_results.loc[num_results["Variable"] == "BMI", "Cohen's d"].values[0]
     bmi_rb = num_results.loc[num_results["Variable"] == "BMI", "Rank-Biserial Correlation"].values[0]
     
-    phys_diabetic_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "Diabetic Mean"].values[0]
-    phys_healthy_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "Healthy Mean"].values[0]
+    phys_diabetic_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "Prediabetes/Diabetes Positive Mean"].values[0]
+    phys_healthy_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "No Reported Diabetes Mean"].values[0]
     
     markdown_content = f"""# Statistical Hypothesis Testing Report
 ## CDC Diabetes Health Indicators (Cleaned Dataset)
@@ -435,7 +371,7 @@ To ensure statistical rigor, we apply:
 ## 3. Numerical Variable Analysis (t-Test & Mann-Whitney U)
 
 ### Numerical Tests Summary
-| Variable | Healthy Mean | Diabetic Mean | Mean Diff | Healthy Median | Diabetic Median | t-Stat | Raw t p-val | MWU p-val | Holm MWU p | Reject $H_0$ | Cohen's d | Abs Rank-Biserial | Effect Size Interpretation |
+| Variable | No Reported Diabetes Mean | Prediabetes/Diabetes Positive Mean | Mean Diff | No Reported Diabetes Median | Prediabetes/Diabetes Median | t-Stat | Raw t p-val | MWU p-val | Holm MWU p | Reject $H_0$ | Cohen's d | Abs Rank-Biserial | Effect Size Interpretation |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :--- |
 """
     for _, row in num_results.iterrows():
@@ -443,8 +379,8 @@ To ensure statistical rigor, we apply:
         mwu_p_str = f"{row['MWU p-value']:.2e}" if row['MWU p-value'] > 0 else "< 1.00e-300"
         holm_p_str = f"{row['Holm_p_value']:.2e}" if row['Holm_p_value'] > 0 else "< 1.00e-300"
         markdown_content += (
-            f"| `{row['Variable']}` | {row['Healthy Mean']:.2f} | {row['Diabetic Mean']:.2f} | "
-            f"{row['Mean Difference']:.2f} | {row['Healthy Median']:.1f} | {row['Diabetic Median']:.1f} | "
+            f"| `{row['Variable']}` | {row['No Reported Diabetes Mean']:.2f} | {row['Prediabetes/Diabetes Positive Mean']:.2f} | "
+            f"{row['Mean Difference']:.2f} | {row['No Reported Diabetes Median']:.1f} | {row['Prediabetes/Diabetes Positive Median']:.1f} | "
             f"{row['t-Statistic']:.2f} | `{t_p_str}` | `{mwu_p_str}` | `{holm_p_str}` | "
             f"{'Yes' if row['Reject_Holm'] else 'No'} | {row['Cohen\'s d']:.4f} | "
             f"{row['Effect_Size']:.4f} | **{row['Effect Size Interpretation']}** |\n"
@@ -452,22 +388,22 @@ To ensure statistical rigor, we apply:
         
     markdown_content += f"""
 ### Key Findings from Numerical Analysis:
-1. **Body Mass Index (BMI)**: Mean BMI for the non-diabetic group is **{bmi_healthy_mean:.2f}** vs **{bmi_diabetic_mean:.2f}** for the diabetic group. Absolute Rank-Biserial correlation is **{abs(bmi_rb):.4f}** (Cohen's d = **{bmi_cohen_d:.4f}**), confirming a moderate practical effect size.
-2. **Physical Unhealthy Days (`PhysHlth`)**: Diabetics report an average of **{phys_diabetic_mean:.2f}** unhealthy physical days in the past 30 days compared to **{phys_healthy_mean:.2f}** days for non-diabetics.
+1. **Body Mass Index (BMI)**: Mean BMI for the group without reported diabetes is **{bmi_healthy_mean:.2f}** vs **{bmi_diabetic_mean:.2f}** for the prediabetes/diabetes positive group. Absolute Rank-Biserial correlation is **{abs(bmi_rb):.4f}** (Cohen's d = **{bmi_cohen_d:.4f}**), confirming a moderate practical effect size within the sample.
+2. **Physical Unhealthy Days (`PhysHlth`)**: Respondents in the prediabetes/diabetes positive class report an average of **{phys_diabetic_mean:.2f}** unhealthy physical days in the past 30 days compared to **{phys_healthy_mean:.2f}** days for respondents without reported diabetes.
 
 ---
 
 ## 4. Visualizations and Diagnostics
 Saved under `results/statistical_analysis/` and `docs/figures/`:
-* **Effect Size Ranking**: [effect_size_ranking.png](file:///{RESULTS_DIR.as_posix()}/cramers_v_ranking.png) — Hierarchical lollipop ranking comparing Cramér's V and Absolute Rank-Biserial effect sizes.
-* **Subgroup Prevalence**: [top_categorical_prevalence.png](file:///{RESULTS_DIR.as_posix()}/top_categorical_prevalence.png) — Diabetes rate by key risk factors.
-* **BMI Distribution Boxplot**: [bmi_boxplot.png](file:///{RESULTS_DIR.as_posix()}/bmi_boxplot.png) — BMI range comparison across classes.
-* **Unhealthy Days Comparison**: [health_days_comparison.png](file:///{RESULTS_DIR.as_posix()}/health_days_comparison.png) — Mental and physical unhealthy day comparisons.
+* **Effect Size Ranking**: [effect_size_ranking.png](figures/effect_size_ranking.png) — Two-panel lollipop ranking comparing Cramér's V (categorical) and Absolute Rank-Biserial correlation (numerical).
+* **Subgroup Prevalence**: [top_categorical_prevalence.png](figures/top_categorical_prevalence.png) — Prediabetes/diabetes positive rate by key risk factors.
+* **BMI Distribution Boxplot**: [bmi_boxplot.png](figures/bmi_boxplot.png) — BMI range comparison across target classes.
+* **Unhealthy Days Comparison**: [health_days_comparison.png](figures/health_days_comparison.png) — Mental and physical unhealthy day comparisons.
 
 ---
 
 ## 5. Conclusions for Research Question 1 (RQ1)
-1. **Primary Marginal Drivers**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest effect sizes.
+1. **Primary Marginal Indicators**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest effect sizes in the analyzed sample.
 2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but their ranking is governed by standardized effect size.
 """
     

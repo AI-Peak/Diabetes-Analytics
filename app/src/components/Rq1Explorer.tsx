@@ -33,8 +33,8 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
 
   const numericColumns: TableColumn<Rq1Data["numeric"][number]>[] = [
     { id: "variable", header: "Variable", render: (row) => <><strong>{row.variable}</strong><br /><span className="card-source">numeric factor</span></> },
-    { id: "healthy", header: "Healthy mean", align: "right", render: (row) => fmtFloat(row.healthyMean, 2) },
-    { id: "diabetic", header: "Diabetic mean", align: "right", render: (row) => fmtFloat(row.diabeticMean, 2) },
+    { id: "healthy", header: "No reported diabetes mean", align: "right", render: (row) => fmtFloat(row.noDiabetesMean, 2) },
+    { id: "diabetic", header: "Prediabetes/Diabetes mean", align: "right", render: (row) => fmtFloat(row.positiveClassMean, 2) },
     { id: "diff", header: "Mean diff", align: "right", render: (row) => fmtFloat(row.meanDiff, 2) },
     { id: "d", header: "Cohen's d", align: "right", render: (row) => fmtFloat(row.cohensD, 3) },
     { id: "rb", header: "|Rank-biserial|", align: "right", render: (row) => fmtFloat(Math.abs(row.rankBiserial), 3) },
@@ -103,7 +103,7 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
             data={selected.levels.map((level) => ({
               name: level.label,
               value: level.prevalencePct,
-              detail: `${fmtInt(level.diabeticN)} diabetic records of ${fmtInt(level.n)}`,
+              detail: `${fmtInt(level.positiveClassN)} positive records of ${fmtInt(level.n)}`,
               tone: level.prevalencePct === highest.prevalencePct ? "red" : "cyan",
             }))}
             valueLabel="Diabetes prevalence"

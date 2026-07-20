@@ -95,6 +95,13 @@
                 0.4317,
                 0.4418
             ]
+        },
+        "calibration": {
+            "Brier_Score": 0.0974,
+            "Calibration_Slope": 0.959,
+            "Calibration_Intercept": -0.0514,
+            "Holdout_Sample_Size": 50736,
+            "Evaluation_Split": "Untouched holdout test"
         }
     }
 }

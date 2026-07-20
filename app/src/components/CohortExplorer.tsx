@@ -44,7 +44,7 @@ const BP_OPTIONS = [
 ];
 
 function summarize(cells: CohortCell[]) {
-  return cells.reduce((total, cell) => ({ n: total.n + cell.n, diabeticN: total.diabeticN + cell.diabeticN }), { n: 0, diabeticN: 0 });
+  return cells.reduce((total, cell) => ({ n: total.n + cell.n, positiveClassN: total.positiveClassN + cell.positiveClassN }), { n: 0, positiveClassN: 0 });
 }
 
 export function CohortExplorer({
@@ -52,7 +52,7 @@ export function CohortExplorer({
   overall,
 }: {
   cube: CohortCell[];
-  overall: { diabeticPct: number; diabeticN: number };
+  overall: { positiveClassPct: number; positiveClassN: number };
 }) {
   const [sex, setSex] = useState("all");
   const [age, setAge] = useState("all");
@@ -67,9 +67,9 @@ export function CohortExplorer({
   ), [age, bmi, cube, highBP, sex]);
 
   const selected = useMemo(() => summarize(selectedCells), [selectedCells]);
-  const prevalence = selected.n ? (selected.diabeticN / selected.n) * 100 : 0;
-  const lift = overall.diabeticPct ? prevalence / overall.diabeticPct : 0;
-  const positiveShare = overall.diabeticN ? (selected.diabeticN / overall.diabeticN) * 100 : 0;
+  const prevalence = selected.n ? (selected.positiveClassN / selected.n) * 100 : 0;
+  const lift = overall.positiveClassPct ? prevalence / overall.positiveClassPct : 0;
+  const positiveShare = overall.positiveClassN ? (selected.positiveClassN / overall.positiveClassN) * 100 : 0;
 
   const ageSeries = useMemo(() => AGE_OPTIONS.slice(1).map((option) => {
     const cells = cube.filter((cell) =>
@@ -81,16 +81,16 @@ export function CohortExplorer({
     const total = summarize(cells);
     return {
       name: option.label,
-      value: total.n ? (total.diabeticN / total.n) * 100 : 0,
-      detail: `${fmtInt(total.diabeticN)} diabetic records of ${fmtInt(total.n)}`,
+      value: total.n ? (total.positiveClassN / total.n) * 100 : 0,
+      detail: `${fmtInt(total.positiveClassN)} positive records of ${fmtInt(total.n)}`,
       ageValue: option.value,
     };
   }).filter((row) => row.value > 0), [bmi, cube, highBP, sex]);
 
   const selectedAgeLabel = AGE_OPTIONS.find((option) => option.value === age)?.label;
   const composition = [
-    { name: "Selected cohort", healthy: 1 - prevalence / 100, diabetic: prevalence / 100 },
-    { name: "Population", healthy: 1 - overall.diabeticPct / 100, diabetic: overall.diabeticPct / 100 },
+    { name: "Selected cohort", noDiabetes: 1 - prevalence / 100, prediabetesOrDiabetes: prevalence / 100 },
+    { name: "Population", noDiabetes: 1 - overall.positiveClassPct / 100, prediabetesOrDiabetes: overall.positiveClassPct / 100 },
   ];
 
   const reset = () => {

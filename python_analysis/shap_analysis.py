@@ -296,16 +296,16 @@ def perform_consistency_analysis(shap_imp_df):
         
         if meaningful and high_shap:
             grp = "Group 1 — Consistent high evidence"
-            interp = "Feature exhibits non-negligible population-level marginal association and substantial multivariate model contribution."
+            interp = "Meaningful marginal association within the analyzed BRFSS sample and high model salience."
         elif meaningful and not high_shap:
-            grp = "Group 2 — Population-associated, model-redundant"
-            interp = "Feature has marginal association but provides limited incremental signal after model considers other predictors. Possible redundancy or shared information."
+            grp = "Group 2 — Meaningful marginal association, lower model salience"
+            interp = "The feature shows a meaningful marginal association within the analyzed sample but is not among the highest SHAP-ranked predictors. This may reflect shared information, correlation, or limited incremental contribution after other predictors are considered."
         elif not meaningful and high_shap:
             grp = "Group 3 — Model-salient, weak marginal association"
-            interp = "Feature is weak marginally but becomes valuable in multivariate or non-linear predictive context."
+            interp = "The feature exhibits lower univariate marginal association in the sample but makes non-negligible contributions in the multivariate predictive model."
         else:
             grp = "Group 4 — Weak evidence"
-            interp = "Limited evidence under both marginal population analysis and model contribution."
+            interp = "Weak evidence within the current dataset and model does not imply that the feature has no medical relevance."
             
         groups.append(grp)
         interpretations.append(interp)
@@ -321,7 +321,7 @@ def perform_consistency_analysis(shap_imp_df):
     jaccard_sim = overlap_count / len(top10_shap.union(top10_stat))
     spearman_corr, spearman_p = spearmanr(merged["SHAP_Rank"], merged["Effect_Size_Rank"])
     
-    print("\n--- Statistical–SHAP Alignment Summary ---")
+    print("\n--- Effect-Size–SHAP Evidence Alignment Summary ---")
     print(f"Top-10 Overlap Count: {overlap_count} / 10 features")
     print(f"Top-10 Jaccard Similarity: {jaccard_sim:.4f}")
     print(f"Spearman Rank Correlation (SHAP Rank vs Effect Size Rank): r = {spearman_corr:.4f} (p = {spearman_p:.4e})")
@@ -333,7 +333,7 @@ def perform_consistency_analysis(shap_imp_df):
     g4_list = merged[merged["Consistency_Group"].str.startswith("Group 4")]["Variable"].tolist()
     
     print(f"Group 1 (Consistent High Evidence): {g1_list}")
-    print(f"Group 2 (Model Redundant): {g2_list}")
+    print(f"Group 2 (Meaningful Marginal, Lower Model Salience): {g2_list}")
     print(f"Group 3 (Model Salient, Weak Marginal): {g3_list}")
     print(f"Group 4 (Weak Evidence): {g4_list}")
     
@@ -344,7 +344,7 @@ def perform_consistency_analysis(shap_imp_df):
     
     color_map = {
         "Group 1 — Consistent high evidence": "#059669",
-        "Group 2 — Population-associated, model-redundant": "#2563EB",
+        "Group 2 — Meaningful marginal association, lower model salience": "#2563EB",
         "Group 3 — Model-salient, weak marginal association": "#D97706",
         "Group 4 — Weak evidence": "#64748B"
     }
@@ -373,7 +373,7 @@ def perform_consistency_analysis(shap_imp_df):
     
     ax.set_xlabel("Population Effect Size Evidence Percentile Rank", fontsize=10.5, fontweight="bold")
     ax.set_ylabel("SHAP Model Importance Percentile Rank", fontsize=10.5, fontweight="bold")
-    ax.set_title(f"Statistical–SHAP Evidence Alignment Framework\n(Top-10 Jaccard = {jaccard_sim:.2f}, Spearman r = {spearman_corr:.2f})", fontsize=12, fontweight="bold", pad=15)
+    ax.set_title(f"Effect-Size–SHAP Evidence Alignment Framework\n(Top-10 Jaccard = {jaccard_sim:.2f}, Spearman r = {spearman_corr:.2f})", fontsize=12, fontweight="bold", pad=15)
     ax.legend(loc="lower left", fontsize=8.5, frameon=True, facecolor="white", framealpha=0.95)
     
     plt.tight_layout()

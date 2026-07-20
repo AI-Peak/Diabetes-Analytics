@@ -1,12 +1,12 @@
 """
 Machine Learning Modeling & Model Selection Module (RQ2)
 -----------------------------------------------------------
-Author: Senior Data Analytics Engineer / Team Members
+Author: Advanced Data Analytics Agent / Team
 Methodology: CRISP-DM
 Dataset: CDC Diabetes Health Indicators (Cleaned)
 
 This script performs the machine learning modeling phase (Phase 4) to answer RQ2:
-"Which machine learning model provides the most reliable prediction performance on the original imbalanced BRFSS dataset?"
+"Which machine learning model provides the most reliable prediction performance on the CDC BRFSS dataset?"
 
 Rigorously adheres to:
 1. Strict 80/20 Stratified Split into Development set and untouched Holdout Test set.
@@ -15,8 +15,9 @@ Rigorously adheres to:
 4. Model-specific pipelines (Logistic Regression uses ColumnTransformer with StandardScaler for continuous,
    OneHotEncoder for ordinal; Tree-based models use raw features without scaling).
 5. Final Evaluation performed EXACTLY ONCE on untouched Holdout Test set after locking model and threshold.
+6. Calibration Analysis (Brier score & reliability diagram) on untouched Holdout Test set.
 
-All outputs are saved in results/modeling/.
+All outputs are saved in results/modeling/ and docs/figures/.
 """
 
 import json
@@ -26,6 +27,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from pathlib import Path
+from scipy.special import logit
+from scipy.stats import linregress
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -34,10 +37,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
+from sklearn.calibration import calibration_curve
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
     roc_auc_score, average_precision_score, roc_curve, precision_recall_curve,
-    confusion_matrix, classification_report
+    confusion_matrix, brier_score_loss
 )
 
 # Define directory paths
@@ -70,12 +74,10 @@ def load_data(file_path: Path) -> pd.DataFrame:
     print(f"Loading cleaned dataset from: {file_path}")
     if not file_path.exists():
         raise FileNotFoundError(f"Cleaned dataset not found at {file_path}. Run preprocessing first.")
-    df = pd.read_csv(file_path)
-    return df
+    return pd.read_csv(file_path)
 
 def build_model_pipelines():
     """Builds model-specific scikit-learn Pipelines to avoid data leakage during CV."""
-    # Preprocessor for Logistic Regression: Scale numeric, One-Hot Encode ordinal, Passthrough binary
     lr_preprocessor = ColumnTransformer(
         transformers=[
             ("num", StandardScaler(), NUMERIC_FEATURES),
@@ -128,10 +130,7 @@ def perform_cross_validation(X_dev, y_dev):
             X_tr, y_tr = X_dev.iloc[train_idx], y_dev.iloc[train_idx]
             X_val, y_val = X_dev.iloc[val_idx], y_dev.iloc[val_idx]
             
-            # Fit pipeline on fold train
             pipeline.fit(X_tr, y_tr)
-            
-            # Predict on fold val
             y_pred_val = pipeline.predict(X_val)
             y_prob_val = pipeline.predict_proba(X_val)[:, 1]
             
@@ -157,10 +156,6 @@ def perform_cross_validation(X_dev, y_dev):
         df_folds = pd.DataFrame(fold_metrics)
         oof_predictions[name] = oof_probs
         
-        # Calculate pooled OOF metrics
-        pooled_roc_auc = roc_auc_score(y_dev, oof_probs)
-        pooled_pr_auc = average_precision_score(y_dev, oof_probs)
-        
         cv_results[name] = {
             "Model": name,
             "Mean_Accuracy": df_folds["Accuracy"].mean(),
@@ -175,8 +170,6 @@ def perform_cross_validation(X_dev, y_dev):
             "Std_ROC_AUC": df_folds["ROC-AUC"].std(),
             "Mean_PR_AUC": df_folds["PR-AUC"].mean(),
             "Std_PR_AUC": df_folds["PR-AUC"].std(),
-            "Pooled_ROC_AUC": pooled_roc_auc,
-            "Pooled_PR_AUC": pooled_pr_auc,
             "Fold_Details": df_folds
         }
         
@@ -252,7 +245,6 @@ def select_threshold_from_oof(y_dev, oof_probs, best_model_name, target_recall=0
     print(f"Selected Threshold: {selected_threshold:.2f}")
     print(f"OOF Metrics at selected threshold ({selected_threshold:.2f}):")
     print(f"  Recall: {selected_row['Recall']:.4f}, Precision: {selected_row['Precision']:.4f}, F1: {selected_row['F1-score']:.4f}, Accuracy: {selected_row['Accuracy']:.4f}")
-    print(f"Selection Reason: {selection_rule}")
     
     df_thresh.to_csv(RESULTS_DIR / "threshold_analysis.csv", index=False)
     return selected_threshold, selection_rule, df_thresh
@@ -260,17 +252,12 @@ def select_threshold_from_oof(y_dev, oof_probs, best_model_name, target_recall=0
 def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_test, y_test):
     """Fits final model on FULL development set and evaluates ONCE on untouched Holdout Test set."""
     print("\n--- Phase 4.3: Final Evaluation on Untouched Holdout Test Set ---")
-    print("Holdout test used for model selection: No")
-    print("Holdout test used for threshold selection: No")
-    print("Final test evaluation performed after selection lock: Yes")
     
     pipelines = build_model_pipelines()
     final_pipeline = pipelines[best_model_name]
     
-    # Fit on entire development set
     final_pipeline.fit(X_dev, y_dev)
     
-    # Predict ONCE on untouched holdout test set
     y_test_pred_default = final_pipeline.predict(X_test)
     y_test_prob = final_pipeline.predict_proba(X_test)[:, 1]
     y_test_pred_selected = (y_test_prob >= selected_threshold).astype(int)
@@ -292,17 +279,14 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
     m_default = compute_metrics(y_test, y_test_pred_default, y_test_prob)
     m_selected = compute_metrics(y_test, y_test_pred_selected, y_test_prob)
     
-    # Compute 95% Bootstrap Confidence Intervals for key test metrics
     print("\nCalculating 95% Stratified Bootstrap Confidence Intervals on Holdout Test...")
     np.random.seed(42)
     n_boot = 1000
     boot_records = []
     
-    test_indices = np.arange(len(y_test))
     y_test_arr = y_test.values
     
     for b in range(n_boot):
-        # Stratified resampling
         idx_0 = np.where(y_test_arr == 0)[0]
         idx_1 = np.where(y_test_arr == 1)[0]
         boot_idx_0 = np.random.choice(idx_0, size=len(idx_0), replace=True)
@@ -327,14 +311,12 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
         ci_lower = np.percentile(df_boot[col], 2.5)
         ci_upper = np.percentile(df_boot[col], 97.5)
         ci_results[col] = (round(ci_lower, 4), round(ci_upper, 4))
-        print(f"  Final Test {col} (at threshold {selected_threshold:.2f}): {m_selected[col]:.4f} (95% CI: [{ci_lower:.4f}, {ci_upper:.4f}])")
         
-    # Build final test metrics table
     test_metrics_df = pd.DataFrame([
         {
             "Operating_Threshold_Label": "Default Threshold (0.50)",
             "Threshold": 0.50,
-            "Evaluation_Split": "Final Holdout Test",
+            "Evaluation_Split": "Untouched holdout test",
             "Accuracy": m_default["Accuracy"],
             "Precision": m_default["Precision"],
             "Recall": m_default["Recall"],
@@ -347,7 +329,7 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
         {
             "Operating_Threshold_Label": f"Validation-Selected Threshold ({selected_threshold:.2f})",
             "Threshold": selected_threshold,
-            "Evaluation_Split": "Final Holdout Test",
+            "Evaluation_Split": "Untouched holdout test",
             "Accuracy": m_selected["Accuracy"],
             "Precision": m_selected["Precision"],
             "Recall": m_selected["Recall"],
@@ -360,90 +342,83 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
     ])
     
     test_metrics_df.to_csv(RESULTS_DIR / "final_test_metrics.csv", index=False)
+    # Calibration Analysis (Cox Logistic Calibration: logit(P) = intercept + slope * logit(p_hat))
+    print("\nExecuting Holdout Calibration Analysis...")
+    brier = brier_score_loss(y_test, y_test_prob)
+    eps = 1e-15
+    probs_clipped = np.clip(y_test_prob, eps, 1 - eps)
+    logits = logit(probs_clipped)
+    calib_model = LogisticRegression(C=1e5, solver="lbfgs").fit(logits.reshape(-1, 1), y_test.values)
+    calib_slope = float(calib_model.coef_[0][0])
+    calib_intercept = float(calib_model.intercept_[0])
     
-    # Save fitted final pipeline artifact
-    joblib.dump(final_pipeline, RESULTS_DIR / "final_model.joblib")
-    print(f"Saved final pipeline model to {RESULTS_DIR / 'final_model.joblib'}")
+    calib_df = pd.DataFrame([{
+        "Brier_Score": round(float(brier), 4),
+        "Calibration_Slope": round(calib_slope, 4),
+        "Calibration_Intercept": round(calib_intercept, 4),
+        "Holdout_Sample_Size": len(y_test),
+        "Evaluation_Split": "Untouched holdout test"
+    }])
+    calib_df.to_csv(RESULTS_DIR / "calibration_metrics.csv", index=False)
     
-    fn_reduced = m_default["FN"] - m_selected["FN"]
-    fn_reduction_pct = (fn_reduced / m_default["FN"]) * 100 if m_default["FN"] > 0 else 0
-    fp_added = m_selected["FP"] - m_default["FP"]
-    
-    print("\n--- Final Screening Operational Trade-off Summary ---")
-    print(f"False Negatives at 0.50: {m_default['FN']:,} -> at {selected_threshold:.2f}: {m_selected['FN']:,} (Reduced by {fn_reduced:,} or {fn_reduction_pct:.2f}%)")
-    print(f"False Positives at 0.50: {m_default['FP']:,} -> at {selected_threshold:.2f}: {m_selected['FP']:,} (Increased by {fp_added:,})")
-    
-    return final_pipeline, m_default, m_selected, ci_results, test_metrics_df
+    return final_pipeline, m_default, m_selected, ci_results, test_metrics_df, calib_df, y_test_prob
 
-def generate_modeling_plots(cv_results, best_model_name, selected_threshold, X_dev, y_dev, X_test, y_test, final_pipeline):
-    """Generates rigorous scientific figures for model selection, ROC/PR curves, and threshold analysis."""
-    print("\n--- Phase 4.4: Generating Modeling Visualizations ---")
+def generate_canonical_figures(cv_results, best_model_name, selected_threshold, y_dev, X_test, y_test, final_pipeline, y_test_prob):
+    """Generates the 4 canonical modeling figures required by the study guidelines."""
+    print("\n--- Phase 4.4: Generating Canonical Modeling Visualizations ---")
     sns.set_theme(style="whitegrid")
     
-    # Figure 1: Cross-Validation Model Comparison (Point-Range Plot)
-    cv_rows = []
-    for name, res in cv_results.items():
-        cv_rows.append({
-            "Model": name,
-            "Mean_PR_AUC": res["Mean_PR_AUC"],
-            "Std_PR_AUC": res["Std_PR_AUC"],
-            "Mean_ROC_AUC": res["Mean_ROC_AUC"],
-            "Std_ROC_AUC": res["Std_ROC_AUC"]
-        })
-    df_cv = pd.DataFrame(cv_rows).sort_values(by="Mean_PR_AUC", ascending=True)
-    
-    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
-    y_pos = np.arange(len(df_cv))
-    
-    # Panel A: Mean CV PR-AUC
-    ax = axes[0]
-    for i, (y, (_, row)) in enumerate(zip(y_pos, df_cv.iterrows())):
-        is_best = (row["Model"] == best_model_name)
-        color = "#2563EB" if is_best else "#64748B"
-        ax.errorbar(row["Mean_PR_AUC"], y, xerr=row["Std_PR_AUC"]*1.96, fmt="o", color=color, ecolor=color, elinewidth=2, capsize=4, markersize=8)
-        ax.text(row["Mean_PR_AUC"] + 0.005, y, f"{row['Mean_PR_AUC']:.4f}", va="center", ha="left", fontsize=9, fontweight="bold" if is_best else "normal", color=color)
-    ax.set_yticks(y_pos)
-    ax.set_yticklabels(df_cv["Model"], fontsize=10, fontweight="bold")
-    ax.set_xlabel("Mean 5-Fold CV PR-AUC (Primary Criterion)", fontsize=10, fontweight="bold")
-    ax.set_title("Panel A: Cross-Validated PR-AUC (95% Fold Variability)", fontsize=11, fontweight="bold")
-    
-    # Panel B: Mean CV ROC-AUC
-    ax = axes[1]
-    for i, (y, (_, row)) in enumerate(zip(y_pos, df_cv.iterrows())):
-        is_best = (row["Model"] == best_model_name)
-        color = "#2563EB" if is_best else "#64748B"
-        ax.errorbar(row["Mean_ROC_AUC"], y, xerr=row["Std_ROC_AUC"]*1.96, fmt="o", color=color, ecolor=color, elinewidth=2, capsize=4, markersize=8)
-        ax.text(row["Mean_ROC_AUC"] + 0.002, y, f"{row['Mean_ROC_AUC']:.4f}", va="center", ha="left", fontsize=9, fontweight="bold" if is_best else "normal", color=color)
-    ax.set_yticks(y_pos)
-    ax.set_yticklabels([""]*len(df_cv))
-    ax.set_xlabel("Mean 5-Fold CV ROC-AUC", fontsize=10, fontweight="bold")
-    ax.set_title("Panel B: Cross-Validated ROC-AUC", fontsize=11, fontweight="bold")
-    
-    plt.suptitle("Model Selection Evaluation (5-Fold Stratified CV on Development Set, N = 202,944)", fontsize=13, fontweight="bold", y=1.02)
-    plt.tight_layout()
-    plt.savefig(RESULTS_DIR / "metrics_comparison.png", dpi=300, bbox_inches="tight")
-    plt.savefig(DOCS_FIG_DIR / "model_performance_curves.png", dpi=300, bbox_inches="tight")
-    plt.savefig(DOCS_FIG_DIR / "model_performance_curves.svg", format="svg", bbox_inches="tight")
-    plt.close()
-    
-    # Also save model_comparison.csv for backward compatibility
+    # 1. Figure 1: cv_model_comparison.png (Mean ± SD across 5 folds)
     df_cv_export = pd.DataFrame([
         {
             "Model": k,
-            "Accuracy": v["Mean_Accuracy"],
-            "Precision": v["Mean_Precision"],
-            "Recall": v["Mean_Recall"],
-            "F1-score": v["Mean_F1"],
-            "ROC-AUC": v["Mean_ROC_AUC"],
-            "PR-AUC": v["Mean_PR_AUC"],
+            "Mean_Accuracy": v["Mean_Accuracy"],
+            "Mean_Precision": v["Mean_Precision"],
+            "Mean_Recall": v["Mean_Recall"],
+            "Mean_F1": v["Mean_F1"],
+            "Mean_ROC_AUC": v["Mean_ROC_AUC"],
+            "Std_ROC_AUC": v["Std_ROC_AUC"],
+            "Mean_PR_AUC": v["Mean_PR_AUC"],
+            "Std_PR_AUC": v["Std_PR_AUC"],
             "Evaluation_Split": "5-Fold CV Development"
         } for k, v in cv_results.items()
     ])
-    df_cv_export.to_csv(RESULTS_DIR / "model_comparison.csv", index=False)
     df_cv_export.to_csv(RESULTS_DIR / "cv_model_comparison.csv", index=False)
     
-    # Figure 2: ROC and Precision-Recall Curves on Untouched Holdout Test Set
-    y_test_prob = final_pipeline.predict_proba(X_test)[:, 1]
+    df_cv_sorted = df_cv_export.sort_values(by="Mean_PR_AUC", ascending=True)
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+    y_pos = np.arange(len(df_cv_sorted))
+    
+    # Panel A: Mean CV PR-AUC ± SD
+    ax = axes[0]
+    for i, (y, (_, row)) in enumerate(zip(y_pos, df_cv_sorted.iterrows())):
+        is_best = (row["Model"] == best_model_name)
+        color = "#2563EB" if is_best else "#64748B"
+        ax.errorbar(row["Mean_PR_AUC"], y, xerr=row["Std_PR_AUC"], fmt="o", color=color, ecolor=color, elinewidth=2, capsize=4, markersize=8)
+        ax.text(row["Mean_PR_AUC"] + 0.005, y, f"{row['Mean_PR_AUC']:.4f}", va="center", ha="left", fontsize=9, fontweight="bold" if is_best else "normal", color=color)
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels(df_cv_sorted["Model"], fontsize=10, fontweight="bold")
+    ax.set_xlabel("Mean 5-Fold CV PR-AUC (Primary Selection Metric)", fontsize=10, fontweight="bold")
+    ax.set_title("Panel A: Mean CV PR-AUC ± Standard Deviation", fontsize=11, fontweight="bold")
+    
+    # Panel B: Mean CV ROC-AUC ± SD
+    ax = axes[1]
+    for i, (y, (_, row)) in enumerate(zip(y_pos, df_cv_sorted.iterrows())):
+        is_best = (row["Model"] == best_model_name)
+        color = "#2563EB" if is_best else "#64748B"
+        ax.errorbar(row["Mean_ROC_AUC"], y, xerr=row["Std_ROC_AUC"], fmt="o", color=color, ecolor=color, elinewidth=2, capsize=4, markersize=8)
+        ax.text(row["Mean_ROC_AUC"] + 0.002, y, f"{row['Mean_ROC_AUC']:.4f}", va="center", ha="left", fontsize=9, fontweight="bold" if is_best else "normal", color=color)
+    ax.set_yticks(y_pos)
+    ax.set_yticklabels([""]*len(df_cv_sorted))
+    ax.set_xlabel("Mean 5-Fold CV ROC-AUC", fontsize=10, fontweight="bold")
+    ax.set_title("Panel B: Mean CV ROC-AUC ± Standard Deviation", fontsize=11, fontweight="bold")
+    
+    fig.suptitle("5-Fold Cross-Validation Model Comparison (Development Set, N = 202,944)\nError bar: Mean ± standard deviation across five folds", fontsize=12, fontweight="bold", y=1.03)
+    plt.tight_layout()
+    plt.savefig(DOCS_FIG_DIR / "cv_model_comparison.png", dpi=300, bbox_inches="tight", facecolor="white")
+    plt.close()
+
+    # 2. Figure 2: holdout_roc_pr_curves.png
     fpr, tpr, _ = roc_curve(y_test, y_test_prob)
     precision, recall, _ = precision_recall_curve(y_test, y_test_prob)
     roc_auc_val = roc_auc_score(y_test, y_test_prob)
@@ -454,25 +429,24 @@ def generate_modeling_plots(cv_results, best_model_name, selected_threshold, X_d
     # Panel A: ROC Curve
     ax = axes[0]
     ax.plot(fpr, tpr, color="#2563EB", linewidth=2.2, label=f"{best_model_name} (ROC-AUC = {roc_auc_val:.4f})")
-    ax.plot([0, 1], [0, 1], "k--", label="Random Baseline", linewidth=1.2)
+    ax.plot([0, 1], [0, 1], "k--", label="No-Skill Diagonal", linewidth=1.2)
     ax.set_xlabel("False Positive Rate (1 - Specificity)", fontsize=10, fontweight="bold")
     ax.set_ylabel("True Positive Rate (Recall)", fontsize=10, fontweight="bold")
-    ax.set_title(f"Panel A: ROC Curve on Independent Holdout Test (N = {len(y_test):,})", fontsize=11, fontweight="bold")
+    ax.set_title(f"Panel A: ROC Curve (Evaluation split: Untouched holdout test, N = {len(y_test):,})", fontsize=10.5, fontweight="bold")
     ax.legend(loc="lower right", frameon=True, facecolor="white", framealpha=0.9)
     
     # Panel B: PR Curve
     ax = axes[1]
     ax.plot(recall, precision, color="#D97706", linewidth=2.2, label=f"{best_model_name} (PR-AUC = {pr_auc_val:.4f})")
     prevalence = y_test.mean()
-    ax.axhline(y=prevalence, color="k", linestyle="--", label=f"Class Prevalence ({prevalence:.2%})", linewidth=1.2)
+    ax.axhline(y=prevalence, color="k", linestyle="--", label=f"Prevalence Baseline ({prevalence:.2%})", linewidth=1.2)
     
-    # Mark operating points
     rec_05 = recall_score(y_test, (y_test_prob >= 0.50).astype(int), zero_division=0)
     prec_05 = precision_score(y_test, (y_test_prob >= 0.50).astype(int), zero_division=0)
     rec_sel = recall_score(y_test, (y_test_prob >= selected_threshold).astype(int), zero_division=0)
     prec_sel = precision_score(y_test, (y_test_prob >= selected_threshold).astype(int), zero_division=0)
     
-    ax.scatter(rec_05, prec_05, color="#DC2626", s=90, zorder=5, marker="o", label=f"Default Threshold (0.50)")
+    ax.scatter(rec_05, prec_05, color="#DC2626", s=90, zorder=5, marker="o", label="Default Threshold (0.50)")
     ax.scatter(rec_sel, prec_sel, color="#059669", s=100, zorder=5, marker="^", label=f"Selected Threshold ({selected_threshold:.2f})")
     
     ax.annotate(f"0.50\n(Rec={rec_05:.2f})", (rec_05, prec_05), textcoords="offset points", xytext=(10, -15), fontsize=8.5, fontweight="bold", color="#DC2626")
@@ -480,19 +454,21 @@ def generate_modeling_plots(cv_results, best_model_name, selected_threshold, X_d
     
     ax.set_xlabel("Recall (Sensitivity)", fontsize=10, fontweight="bold")
     ax.set_ylabel("Precision (PPV)", fontsize=10, fontweight="bold")
-    ax.set_title(f"Panel B: Precision-Recall Curve on Independent Holdout Test (N = {len(y_test):,})", fontsize=11, fontweight="bold")
+    ax.set_title(f"Panel B: Precision-Recall Curve (Evaluation split: Untouched holdout test, N = {len(y_test):,})", fontsize=10.5, fontweight="bold")
     ax.legend(loc="upper right", frameon=True, facecolor="white", framealpha=0.9)
     
     plt.tight_layout()
-    plt.savefig(RESULTS_DIR / "roc_curves.png", dpi=300, bbox_inches="tight")
-    plt.savefig(RESULTS_DIR / "pr_curves.png", dpi=300, bbox_inches="tight")
+    plt.savefig(DOCS_FIG_DIR / "holdout_roc_pr_curves.png", dpi=300, bbox_inches="tight", facecolor="white")
+    # Also save to results for build-data script backward compatibility
+    plt.savefig(RESULTS_DIR / "roc_curves.png", dpi=300, bbox_inches="tight", facecolor="white")
+    plt.savefig(RESULTS_DIR / "pr_curves.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close()
-    
-    # Figure 3: Threshold Analysis & Side-by-Side Confusion Matrices
+
+    # 3. Figure 3: threshold_tradeoff.png
     df_thresh = pd.read_csv(RESULTS_DIR / "threshold_analysis.csv")
     fig, axes = plt.subplots(1, 2, figsize=(14, 5.5))
     
-    # Panel A: OOF Threshold Curves
+    # Panel A: OOF Threshold Trade-off
     ax = axes[0]
     ax.plot(df_thresh["Threshold"], df_thresh["Precision"], label="Precision", color="#2563EB", linewidth=2.0)
     ax.plot(df_thresh["Threshold"], df_thresh["Recall"], label="Recall", color="#DC2626", linewidth=2.0)
@@ -502,7 +478,7 @@ def generate_modeling_plots(cv_results, best_model_name, selected_threshold, X_d
     ax.axhspan(0.80, 1.00, color="#DC2626", alpha=0.08, label="Target Recall >= 0.80")
     ax.set_xlabel("Probability Decision Threshold", fontsize=10, fontweight="bold")
     ax.set_ylabel("Metric Score", fontsize=10, fontweight="bold")
-    ax.set_title("Panel A: OOF Threshold Optimization Trade-off (Development Set)", fontsize=11, fontweight="bold")
+    ax.set_title("Panel A: OOF Threshold Selection (Development Set OOF)", fontsize=11, fontweight="bold")
     ax.legend(loc="center right", fontsize=8.5, frameon=True, facecolor="white")
     
     # Panel B: Side-by-Side Confusion Matrices on Test Set
@@ -510,30 +486,55 @@ def generate_modeling_plots(cv_results, best_model_name, selected_threshold, X_d
     cm_default = confusion_matrix(y_test, (y_test_prob >= 0.50).astype(int))
     cm_selected = confusion_matrix(y_test, (y_test_prob >= selected_threshold).astype(int))
     
-    # Format labels
     cm_text = (
+        f"Evaluation split: Untouched holdout test (N = {len(y_test):,})\n"
+        f"----------------------------------------------------\n"
         f"Default Threshold (0.50):\n"
         f"  TN={cm_default[0,0]:,}\tFP={cm_default[0,1]:,}\n"
         f"  FN={cm_default[1,0]:,}\tTP={cm_default[1,1]:,}\n\n"
-        f"Validation-Selected Threshold ({selected_threshold:.2f}):\n"
+        f"Validation-Selected Screening Threshold ({selected_threshold:.2f}):\n"
         f"  TN={cm_selected[0,0]:,}\tFP={cm_selected[0,1]:,}\n"
         f"  FN={cm_selected[1,0]:,}\tTP={cm_selected[1,1]:,}\n\n"
-        f"Operating Outcome:\n"
+        f"Operating Trade-off Impact:\n"
         f"  False Negatives Reduced: {cm_default[1,0] - cm_selected[1,0]:,} ({((cm_default[1,0]-cm_selected[1,0])/cm_default[1,0])*100:.1f}%)\n"
         f"  False Positives Added: {cm_selected[0,1] - cm_default[0,1]:,}"
     )
     ax.axis("off")
-    ax.text(0.05, 0.50, cm_text, fontsize=10, va="center", ha="left", fontfamily="monospace", bbox=dict(boxstyle="round,pad=1", facecolor="#F8FAFC", edgecolor="#CBD5E1"))
-    ax.set_title(f"Panel B: Confusion Matrix Comparison on Final Holdout Test", fontsize=11, fontweight="bold")
+    ax.text(0.05, 0.50, cm_text, fontsize=9.5, va="center", ha="left", fontfamily="monospace", bbox=dict(boxstyle="round,pad=1", facecolor="#F8FAFC", edgecolor="#CBD5E1"))
+    ax.set_title("Panel B: Holdout Confusion Matrices", fontsize=11, fontweight="bold")
     
     plt.tight_layout()
-    plt.savefig(RESULTS_DIR / "threshold_analysis.png", dpi=300, bbox_inches="tight")
+    plt.savefig(DOCS_FIG_DIR / "threshold_tradeoff.png", dpi=300, bbox_inches="tight", facecolor="white")
+    plt.savefig(RESULTS_DIR / "threshold_analysis.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close()
-    
-    print("Saved all modeling plots successfully.")
 
-def save_metadata_and_reports(best_model_name, selected_threshold, selection_rule, cv_results, m_default, m_selected, ci_results, n_dev, n_test):
+    # 4. Figure 4: holdout_calibration_curve.png
+    fig, ax = plt.subplots(figsize=(7, 6))
+    prob_true, prob_pred = calibration_curve(y_test, y_test_prob, n_bins=10)
+    brier_val = brier_score_loss(y_test, y_test_prob)
+    eps = 1e-15
+    probs_clipped = np.clip(y_test_prob, eps, 1 - eps)
+    logits = logit(probs_clipped)
+    calib_model = LogisticRegression(C=1e5, solver="lbfgs").fit(logits.reshape(-1, 1), y_test.values)
+    calib_slope = float(calib_model.coef_[0][0])
+    calib_intercept = float(calib_model.intercept_[0])
+    
+    ax.plot(prob_pred, prob_true, "s-", color="#2563EB", linewidth=2.0, markersize=6, label=f"{best_model_name} (Brier = {brier_val:.4f}, Slope = {calib_slope:.4f}, Intercept = {calib_intercept:.4f})")
+    ax.plot([0, 1], [0, 1], "k--", label="Perfect Calibration", linewidth=1.2)
+    ax.set_xlabel("Mean Predicted Probability", fontsize=10, fontweight="bold")
+    ax.set_ylabel("Fraction of Positives (Prediabetes/Diabetes)", fontsize=10, fontweight="bold")
+    ax.set_title(f"Holdout Reliability Diagram (Evaluation split: Untouched holdout test, N = {len(y_test):,})", fontsize=11, fontweight="bold")
+    ax.legend(loc="upper left", frameon=True, facecolor="white")
+    
+    plt.tight_layout()
+    plt.savefig(DOCS_FIG_DIR / "holdout_calibration_curve.png", dpi=300, bbox_inches="tight", facecolor="white")
+    plt.close()
+
+    print("Successfully generated all 4 canonical modeling figures.")
+
+def save_metadata_and_reports(best_model_name, selected_threshold, selection_rule, cv_results, m_default, m_selected, ci_results, calib_df, n_dev, n_test):
     """Saves model_selection.json and optimization_report.txt."""
+    calib_dict = calib_df.to_dict(orient="records")[0] if calib_df is not None else {}
     metadata = {
         "selected_model": best_model_name,
         "selection_criterion": "Primary = Mean 5-Fold CV PR-AUC on Development Set, Tie-break = Mean CV ROC-AUC",
@@ -559,73 +560,22 @@ def save_metadata_and_reports(best_model_name, selected_threshold, selection_rul
         "final_holdout_test_metrics": {
             "default_0.50": {k: (round(v, 4) if isinstance(v, float) else int(v)) for k, v in m_default.items()},
             "selected_threshold": {k: (round(v, 4) if isinstance(v, float) else int(v)) for k, v in m_selected.items()},
-            "bootstrap_95_ci_selected_threshold": {k: [v[0], v[1]] for k, v in ci_results.items()}
+            "bootstrap_95_ci_selected_threshold": {k: [v[0], v[1]] for k, v in ci_results.items()},
+            "calibration": calib_dict
         }
     }
     
     with open(RESULTS_DIR / "model_selection.json", "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=4)
     print(f"Saved model selection metadata to {RESULTS_DIR / 'model_selection.json'}")
-    
-    report_content = f"""Model Training and Selection Optimization Report
-====================================================================
-Model Selection Source: 5-Fold Stratified Cross-Validation on Development Set
-Holdout Test Used for Selection: No
-Selected Best Model: {best_model_name}
-Selection Criterion: Primary = Mean CV PR-AUC ({cv_results[best_model_name]['Mean_PR_AUC']:.4f}), Tie-break = Mean CV ROC-AUC ({cv_results[best_model_name]['Mean_ROC_AUC']:.4f})
-
-Development Set Size: {n_dev:,} respondents
-Holdout Test Set Size: {n_test:,} respondents
-
---------------------------------------------------------------------
-Development OOF Threshold Selection:
-- Selected Threshold: {selected_threshold:.2f}
-- Selection Rule: {selection_rule}
-
---------------------------------------------------------------------
-Final Evaluation on Untouched Holdout Test Set (N = {n_test:,}):
-
-1. Default Threshold (0.50):
-   - Accuracy: {m_default['Accuracy']:.4f}
-   - Precision: {m_default['Precision']:.4f}
-   - Recall: {m_default['Recall']:.4f}
-   - Specificity: {m_default['Specificity']:.4f}
-   - F1-score: {m_default['F1-score']:.4f}
-   - ROC-AUC: {m_default['ROC-AUC']:.4f}
-   - PR-AUC: {m_default['PR-AUC']:.4f}
-   - Confusion Matrix: [TN={m_default['TN']:,}, FP={m_default['FP']:,}, FN={m_default['FN']:,}, TP={m_default['TP']:,}]
-
-2. Validation-Selected Screening Threshold ({selected_threshold:.2f}):
-   - Accuracy: {m_selected['Accuracy']:.4f}
-   - Precision: {m_selected['Precision']:.4f}
-   - Recall: {m_selected['Recall']:.4f} (95% CI: [{ci_results['Recall'][0]:.4f}, {ci_results['Recall'][1]:.4f}])
-   - Specificity: {m_selected['Specificity']:.4f}
-   - F1-score: {m_selected['F1-score']:.4f} (95% CI: [{ci_results['F1-score'][0]:.4f}, {ci_results['F1-score'][1]:.4f}])
-   - ROC-AUC: {m_selected['ROC-AUC']:.4f} (95% CI: [{ci_results['ROC-AUC'][0]:.4f}, {ci_results['ROC-AUC'][1]:.4f}])
-   - PR-AUC: {m_selected['PR-AUC']:.4f} (95% CI: [{ci_results['PR-AUC'][0]:.4f}, {ci_results['PR-AUC'][1]:.4f}])
-   - Confusion Matrix: [TN={m_selected['TN']:,}, FP={m_selected['FP']:,}, FN={m_selected['FN']:,}, TP={m_selected['TP']:,}]
-
-3. Operational Trade-off Impact:
-   - False Negatives Reduced: {m_default['FN'] - m_selected['FN']:,} ({((m_default['FN']-m_selected['FN'])/m_default['FN'])*100:.2f}%)
-   - False Positives Added: {m_selected['FP'] - m_default['FP']:,}
-"""
-    with open(RESULTS_DIR / "optimization_report.txt", "w", encoding="utf-8") as f:
-        f.write(report_content)
-    print(f"Saved optimization_report.txt at {RESULTS_DIR}")
 
 def main():
     print("=== Phase 4: Machine Learning Modeling & Model Selection ===")
     
-    try:
-        df = load_data(DATA_PATH)
-    except FileNotFoundError as e:
-        print(e)
-        return
-        
+    df = load_data(DATA_PATH)
     X = df.drop(columns=["Diabetes_binary"])
     y = df["Diabetes_binary"]
     
-    # Stratified 80/20 Train-Test Split (Dev Set vs Untouched Holdout Test Set)
     X_dev, X_test, y_dev, y_test = train_test_split(
         X, y, test_size=0.20, stratify=y, random_state=42
     )
@@ -633,28 +583,23 @@ def main():
     n_dev, n_test = len(X_dev), len(X_test)
     print(f"Total Dataset: {len(df):,} respondents | Dev Set: {n_dev:,} (80%) | Holdout Test: {n_test:,} (20%)")
     
-    # 1. 5-Fold Stratified Cross-Validation on Development Set
     cv_results, oof_predictions = perform_cross_validation(X_dev, y_dev)
-    
-    # 2. Select Best Model
     best_model_name = select_best_model(cv_results)
     
-    # 3. Select Operating Threshold from OOF Predictions of Best Model
     selected_threshold, selection_rule, df_thresh = select_threshold_from_oof(
         y_dev, oof_predictions[best_model_name], best_model_name, target_recall=0.80
     )
     
-    # 4. Final Evaluation on Untouched Holdout Test Set
-    final_pipeline, m_default, m_selected, ci_results, test_metrics_df = evaluate_final_holdout(
+    final_pipeline, m_default, m_selected, ci_results, test_metrics_df, calib_df, y_test_prob = evaluate_final_holdout(
         best_model_name, selected_threshold, X_dev, y_dev, X_test, y_test
     )
     
-    # 5. Generate Figures
-    generate_modeling_plots(cv_results, best_model_name, selected_threshold, X_dev, y_dev, X_test, y_test, final_pipeline)
+    generate_canonical_figures(
+        cv_results, best_model_name, selected_threshold, y_dev, X_test, y_test, final_pipeline, y_test_prob
+    )
     
-    # 6. Save Metadata & Optimization Reports
     save_metadata_and_reports(
-        best_model_name, selected_threshold, selection_rule, cv_results, m_default, m_selected, ci_results, n_dev, n_test
+        best_model_name, selected_threshold, selection_rule, cv_results, m_default, m_selected, ci_results, calib_df, n_dev, n_test
     )
     
     print("\n=== Machine Learning Modeling Module Completed Successfully ===")

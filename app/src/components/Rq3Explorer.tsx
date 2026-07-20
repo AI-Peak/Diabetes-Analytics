@@ -53,9 +53,9 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
           options={[
             { value: "all", label: "All features" },
             { value: "g1", label: "Group 1 (Consistent)" },
-            { value: "g2", label: "Group 2 (Redundant)" },
-            { value: "g3", label: "Group 3 (Salient)" },
-            { value: "g4", label: "Group 4 (Weak)" },
+            { value: "g2", label: "Group 2 (Meaningful Marginal)" },
+            { value: "g3", label: "Group 3 (Model Salient)" },
+            { value: "g4", label: "Group 4 (Weak Evidence)" },
           ]}
           onChange={(value) => setGroup(value as GroupFilter)}
         />
