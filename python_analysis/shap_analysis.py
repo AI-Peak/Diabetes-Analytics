@@ -321,7 +321,7 @@ def perform_consistency_analysis(shap_imp_df):
     jaccard_sim = overlap_count / len(top10_shap.union(top10_stat))
     spearman_corr, spearman_p = spearmanr(merged["SHAP_Rank"], merged["Effect_Size_Rank"])
     
-    print("\n--- Effect-Size–SHAP Evidence Alignment Summary ---")
+    print("\n--- Exploratory Rank-Alignment Diagnostics ---")
     print(f"Top-10 Overlap Count: {overlap_count} / 10 features")
     print(f"Top-10 Jaccard Similarity: {jaccard_sim:.4f}")
     print(f"Spearman Rank Correlation (SHAP Rank vs Effect Size Rank): r = {spearman_corr:.4f} (p = {spearman_p:.4e})")
@@ -339,7 +339,7 @@ def perform_consistency_analysis(shap_imp_df):
     
     merged.to_csv(XAI_DIR / "explanation_consistency.csv", index=False)
     
-    # Generate Quadrant Scatter Figure
+    # Generate Scatter Figure
     fig, ax = plt.subplots(figsize=(10, 7.5))
     
     color_map = {
@@ -368,15 +368,15 @@ def perform_consistency_analysis(shap_imp_df):
                 fontsize=8.5, fontweight="bold", color="#1E293B", zorder=5
             )
             
-    ax.axvline(52, color="#CBD5E1", linestyle="--", linewidth=1.2, zorder=2)
-    ax.axhline(52, color="#CBD5E1", linestyle="--", linewidth=1.2, zorder=2)
-    
-    ax.set_xlabel("Population Effect Size Evidence Percentile Rank", fontsize=10.5, fontweight="bold")
+    ax.set_xlabel("Sample-Level Effect-Size Evidence Percentile", fontsize=10.5, fontweight="bold")
     ax.set_ylabel("SHAP Model Importance Percentile Rank", fontsize=10.5, fontweight="bold")
-    ax.set_title(f"Effect-Size–SHAP Evidence Alignment Framework\n(Top-10 Jaccard = {jaccard_sim:.2f}, Spearman r = {spearman_corr:.2f})", fontsize=12, fontweight="bold", pad=15)
+    ax.set_title(f"Effect-Size–SHAP Evidence Alignment Framework\n(Exploratory Diagnostics: Top-10 Jaccard = {jaccard_sim:.2f}, Spearman r = {spearman_corr:.2f})", fontsize=12, fontweight="bold", pad=15)
     ax.legend(loc="lower left", fontsize=8.5, frameon=True, facecolor="white", framealpha=0.95)
     
     plt.tight_layout()
+    fig.subplots_adjust(bottom=0.12)
+    fig.text(0.5, 0.02, "Groups are defined using prespecified meaningful-effect thresholds and Top-10 SHAP membership; percentile axes are used only for visualization.", ha="center", fontsize=8.5, fontstyle="italic", color="#475569")
+    
     plt.savefig(XAI_DIR / "consistency_quadrant.png", dpi=300)
     plt.savefig(DOCS_FIG_DIR / "effect_size_shap_alignment.png", dpi=300)
     plt.savefig(DOCS_FIG_DIR / "effect_size_shap_alignment.svg", format="svg", bbox_inches="tight")

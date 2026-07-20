@@ -58,8 +58,8 @@ This document outlines the data preprocessing step for the **Diabetes-Analytics*
 
 | Class (Diabetes_binary) | Raw Counts | Raw Pct | Cleaned Counts | Cleaned Pct |
 |-------------------------|------------|---------|----------------|-------------|
-| **0 (No Diabetes)**      | 218,334 | 86.07% | 218,334 | 86.07% |
-| **1 (Diabetes)**         | 35,346 | 13.93% | 35,346 | 13.93% |
+| **0 (No reported diabetes)**      | 218,334 | 86.07% | 218,334 | 86.07% |
+| **1 (Prediabetes/Diabetes positive class)** | 35,346 | 13.93% | 35,346 | 13.93% |
 
 ## Preprocessing Summary Table
 Refer to the CSV summary at `results/data_preprocessing/preprocessing_summary.csv` for detailed steps.

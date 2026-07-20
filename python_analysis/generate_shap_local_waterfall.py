@@ -10,7 +10,7 @@ Description:
     Includes:
         - Consistent replication of the model and SHAP calculation pipeline.
         - Automated candidate search to locate a representative True-Positive case
-          (high risk, actual diabetic, showing typical risk factors like high BMI,
+          (high risk, positive-class record, showing typical risk factors like high BMI,
           high blood pressure, etc.).
         - Remapping of technical feature names to descriptive academic labels.
         - Mapping of standardized z-scores to original, easy-to-read clinical values 
@@ -188,7 +188,7 @@ def generate_local_waterfall():
     explainer = shap.TreeExplainer(model)
     shap_values = explainer(X_test_sample)
     
-    # Extract class 1 (diabetic) explanation
+    # Extract class 1 (positive class) explanation
     if len(shap_values.values.shape) == 3:
         shap_values_to_plot = shap_values[:, :, 1]
     else:

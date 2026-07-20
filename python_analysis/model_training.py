@@ -459,9 +459,7 @@ def generate_canonical_figures(cv_results, best_model_name, selected_threshold, 
     
     plt.tight_layout()
     plt.savefig(DOCS_FIG_DIR / "holdout_roc_pr_curves.png", dpi=300, bbox_inches="tight", facecolor="white")
-    # Also save to results for build-data script backward compatibility
-    plt.savefig(RESULTS_DIR / "roc_curves.png", dpi=300, bbox_inches="tight", facecolor="white")
-    plt.savefig(RESULTS_DIR / "pr_curves.png", dpi=300, bbox_inches="tight", facecolor="white")
+    plt.savefig(RESULTS_DIR / "holdout_roc_pr_curves.png", dpi=300, bbox_inches="tight", facecolor="white")
     plt.close()
 
     # 3. Figure 3: threshold_tradeoff.png
@@ -501,7 +499,7 @@ def generate_canonical_figures(cv_results, best_model_name, selected_threshold, 
     )
     ax.axis("off")
     ax.text(0.05, 0.50, cm_text, fontsize=9.5, va="center", ha="left", fontfamily="monospace", bbox=dict(boxstyle="round,pad=1", facecolor="#F8FAFC", edgecolor="#CBD5E1"))
-    ax.set_title("Panel B: Holdout Confusion Matrices", fontsize=11, fontweight="bold")
+    ax.set_title("Panel B: Untouched Holdout Operating-Point Comparison", fontsize=11, fontweight="bold")
     
     plt.tight_layout()
     plt.savefig(DOCS_FIG_DIR / "threshold_tradeoff.png", dpi=300, bbox_inches="tight", facecolor="white")

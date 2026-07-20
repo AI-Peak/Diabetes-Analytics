@@ -3,7 +3,7 @@
 Tệp này giải thích chi tiết các bước thực hiện, ý nghĩa của từng bước và kết quả thu được khi giải quyết **Câu hỏi Nghiên cứu 2 (RQ2)**:
 > *"Mô hình học máy nào mang lại hiệu suất dự đoán đáng tin cậy nhất trên tập dữ liệu BRFSS gốc bị mất cân bằng?"*
 
-Quá trình huấn luyện và đánh giá mô hình được triển khai trong kịch bản [model_training.py] theo quy trình CRISP-DM chuẩn hóa và phương pháp luận không rò rỉ dữ liệu (zero-leakage).
+Quá trình huấn luyện và đánh giá mô hình được triển khai trong kịch bản [model_training.py] theo quy trình CRISP-DM chuẩn hóa và phương pháp luận bảo toàn tính độc lập của tập kiểm thử.
 
 ---
 
@@ -12,8 +12,9 @@ Quá trình huấn luyện và đánh giá mô hình được triển khai trong
 ### Bước 1: Chia tập dữ liệu Độc lập (Stratified Train-Test Partition)
 *   Tập dữ liệu gốc ($N = 253,680$) được phân chia thành:
     *   **Development Set (80%):** 202,944 bản ghi dùng cho kiểm thử chéo (5-Fold CV) và chọn ngưỡng sàng lọc OOF.
-    *   **Untouched Holdout Test Set (20%):** 50,736 bản ghi hoàn toàn độc lập, chỉ được sử dụng đúng một lần để đánh giá hiệu suất cuối cùng.
-*   Việc chia dữ liệu sử dụng `stratify=y` và `random_state=42` để bảo toàn chính xác tỷ lệ mất cân bằng nhóm tự nhiên (13.93% tiểu đường / 86.07% khỏe mạnh).
+    *   **Untouched Holdout Test Set (20%):** 50,736 bản ghi độc lập.
+*   Holdout data were not used for model, hyperparameter, feature, or threshold selection. They were reserved for final performance evaluation and post-hoc calibration, uncertainty estimation, and explanation analyses.
+*   Việc chia dữ liệu sử dụng `stratify=y` và `random_state=42` để bảo toàn chính xác tỷ lệ mất cân bằng nhóm tự nhiên (13.93% thuộc lớp dương gộp tiền tiểu đường/tiểu đường / 86.07% không ghi nhận tiểu đường).
 
 ### Bước 2: Xây dựng Pipeline riêng cho từng nhóm mô hình (No Data Leakage)
 *   **Logistic Regression Pipeline:**
@@ -38,7 +39,7 @@ Quá trình huấn luyện và đánh giá mô hình được triển khai trong
 ### Bước 5: Đánh giá Cuối cùng trên Untouched Holdout Test Set
 Sau khi mô hình và ngưỡng đã được khóa hoàn toàn:
 1. Huấn luyện pipeline XGBoost trên toàn bộ 202,944 bản ghi của Development Set.
-2. Dự đoán tập kiểm thử 50,736 bản ghi đúng một lần.
+2. Đánh giá trên tập holdout 50,736 bản ghi.
 
 ---
 
@@ -51,13 +52,13 @@ Sau khi mô hình và ngưỡng đã được khóa hoàn toàn:
 | **Recall (Độ nhạy)** | **16.54%** | **80.99%** | **[80.04%, 81.94%]** |
 | **Precision (Độ chính xác)**| 55.83% | 29.91% | [29.53%, 30.28%] |
 | **F1-score** | 0.2552 | 0.4369 | [0.4317, 0.4418] |
-| **Specificity** | 97.88% | 69.26% | — |
-| **False Negatives (Bỏ sót bệnh)** | **5,900 ca** | **1,344 ca** | **Cắt giảm 4,556 ca (77.22%)** |
-| **False Positives (Báo động giả)** | **925 ca** | **13,416 ca** | **Tăng thêm 12,491 ca** |
+| **Specificity** | 97.88% | 69.28% | — |
+| **False Negatives (Bỏ sót bản ghi dương)** | **5,900 bản ghi** | **1,344 bản ghi** | **Cắt giảm 4,556 bản ghi (77.22%)** |
+| **False Positives (Cảnh báo nhầm)** | **925 bản ghi** | **13,416 bản ghi** | **Tăng thêm 12,491 bản ghi** |
 
 ---
 
 ## 3. Kết luận cho RQ2
 
 1.  **Mô hình được chọn:** **XGBoost** thông qua 5-fold CV trên Development Set (`Mean PR-AUC = 0.4359`).
-2.  **Ngưỡng sàng lọc:** Ngưỡng **0.13** (validation-selected screening threshold) tăng chỉ số Recall từ 16.54% lên **80.99%**, giúp phát hiện hơn 80% số ca nguy cơ trong cộng đồng và cắt giảm **77.22% số ca bỏ sót bệnh**.
+2.  **Ngưỡng sàng lọc:** Tại ngưỡng được chọn (0.13), mô hình phát hiện khoảng 81% bản ghi thuộc lớp dương trong tập holdout độc lập (tăng Recall từ 16.54% lên **80.99%**, cắt giảm **77.22% số ca bỏ sót dương**). Đây là một đánh đổi theo hướng ưu tiên sàng lọc, không phải bằng chứng rằng mô hình đã sẵn sàng triển khai lâm sàng. At the selected operating point, the model identified approximately 81% of positive-class records in the untouched holdout sample. This represents a screening-oriented trade-off rather than evidence of clinical readiness.

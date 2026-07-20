@@ -45,10 +45,10 @@ def generate_pie_chart():
         counts = df["Diabetes_binary"].value_counts().sort_index()
         total = len(df)
         pcts = [counts[0] / total * 100, counts[1] / total * 100]
-        labels = [f"Healthy\n(n={counts[0]:,})", f"Diabetes / Prediabetes\n(n={counts[1]:,})"]
+        labels = [f"No Reported Diabetes\n(n={counts[0]:,})", f"Prediabetes / Diabetes\n(n={counts[1]:,})"]
     else:
         pcts = [86.07, 13.93]
-        labels = ["Healthy", "Diabetes / Prediabetes"]
+        labels = ["No Reported Diabetes", "Prediabetes / Diabetes"]
         
     colors = ['#2563EB', '#DC2626']
     

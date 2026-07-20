@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from pathlib import Path
 
 # Define paths relative to this script or project root
@@ -133,7 +134,16 @@ def run_preprocessing():
         "notes": "All variables conform to CDC expected ranges." if total_invalid == 0 else f"Found invalid values in: {invalid_values}"
     })
 
-    # Step: Type conversion (All values are float representations of integers, convert to int64/int32 for cleaner format)
+    # Step: Type conversion (All values are float representations of integers, convert to int for cleaner format)
+    numeric_values = cleaned_df.to_numpy(dtype=float)
+    assert np.isfinite(numeric_values).all(), (
+        "Processed data contain non-finite values."
+    )
+    assert np.allclose(
+        numeric_values,
+        np.round(numeric_values),
+    ), "Non-integer numeric values would be truncated by astype(int)."
+
     cleaned_df = cleaned_df.astype(int)
     steps_log.append({
         "step": "Convert Data Types",

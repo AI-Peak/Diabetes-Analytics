@@ -1,7 +1,7 @@
 # Module Phân tích Python: Trực quan hóa SHAP & Phân tích Căn chỉnh Bằng chứng (RQ3)
 
 Tệp này giải thích chi tiết các bước thực hiện và kết quả phân tích học máy giải thích được (Explainable AI - XAI) cho **Câu hỏi Nghiên cứu 3 (RQ3)**:
-> *"Các giải thích được tạo ra bởi mô hình học máy tốt nhất (XGBoost) có nhất quán về mặt thống kê với bằng chứng thu me từ các kiểm định giả thuyết truyền thống hay không?"*
+> *"Các giải thích được tạo ra bởi mô hình học máy tốt nhất (XGBoost) có nhất quán về mặt thống kê với bằng chứng thu được từ các kiểm định giả thuyết truyền thống hay không?"*
 
 Quá trình phân tích XAI được triển khai trong kịch bản [shap_analysis.py].
 
@@ -21,15 +21,15 @@ Không dựa vào các giá trị p-value ngây thơ ($p < 0.05$), chúng tôi p
 
 ### Group 1 — Consistent high evidence (Đồng thuận cao - 9 đặc trưng)
 *   **Danh sách:** `['GenHlth', 'HighBP', 'Age', 'BMI', 'HighChol', 'Income', 'CholCheck', 'HeartDiseaseorAttack', 'HvyAlcoholConsump']`
-*   **Diễn giải:** Các đặc trưng này có liên hệ biên không đáng bỏ qua ở cấp độ quần thể và đồng thời đóng góp đáng kể trong mô hình đa biến.
+*   **Diễn giải:** Các đặc trưng này thể hiện liên hệ biên có ý nghĩa trong mẫu BRFSS được phân tích (within the analyzed BRFSS sample) và đồng thời đóng góp đáng kể trong mô hình đa biến.
 
 ### Group 2 — Meaningful marginal association, lower model salience (Liên hệ biên ý nghĩa, độ nổi bật mô hình thấp hơn - 7 đặc trưng)
 *   **Danh sách:** `['DiffWalk', 'Education', 'Stroke', 'PhysHlth', 'PhysActivity', 'Smoker', 'Veggies']`
-*   **Diễn giải:** Đặc trưng thể hiện liên hệ biên có ý nghĩa trong mẫu nghiên cứu nhưng không nằm trong nhóm dự báo hàng đầu của mô hình đa biến (ví dụ: `DiffWalk` và `PhysHlth` chia sẻ thông tin với `GenHlth`).
+*   **Diễn giải:** Mức độ nổi bật SHAP thấp hơn của một số biến có thể phản ánh thông tin dùng chung, tương quan giữa các biến hoặc đóng góp gia tăng hạn chế sau khi các biến khác đã được xét đến (The lower SHAP salience of some features may reflect shared information, correlation, or limited incremental contribution after other predictors are considered).
 
 ### Group 3 — Model-salient, weak marginal association (Đóng góp mô hình cao, liên hệ biên yếu - 1 đặc trưng)
 *   **Danh sách:** `['Sex']`
-*   **Diễn giải:** Biến giới tính yếu khi xét đơn biến biên nhưng trở nên hữu ích trong bối cảnh đa biến hoặc tương quan với các biến khác. *(Lưu ý: Không tự động kết luận đây là tương tác phi tuyến nếu chưa chạy kiểm tra SHAP interaction values độc lập).*
+*   **Diễn giải:** Biến thể hiện đóng góp có điều kiện trong mô hình đa biến mặc dù liên hệ biên yếu. A feature with high SHAP salience but weak marginal association may contribute conditionally within the multivariable model; this result does not by itself prove a statistical interaction.
 
 ### Group 4 — Weak evidence (Bằng chứng hạn chế - 4 đặc trưng)
 *   **Danh sách:** `['MentHlth', 'Fruits', 'AnyHealthcare', 'NoDocbcCost']`
@@ -37,7 +37,7 @@ Không dựa vào các giá trị p-value ngây thơ ($p < 0.05$), chúng tôi p
 
 ---
 
-## 3. Chỉ số Đồng thuận Định lượng
+## 3. Exploratory Rank-Alignment Diagnostics
 
 *   **Top-10 Overlap Count:** 7 / 10 đặc trưng.
 *   **Top-10 Jaccard Similarity:** **0.5385**

@@ -17,10 +17,10 @@ To ensure statistical rigor, we apply:
 2. **Cramér's V** to measure effect size for categorical associations.
 3. **Independent Two-Sample Welch t-Test** (parametric mean comparison) and **Mann-Whitney U Test** (non-parametric median/distribution comparison) for continuous numerical variables.
 4. **Absolute Rank-Biserial Correlation** (primary) and **Cohen's d** (secondary) to measure numerical effect sizes.
-5. **Holm–Bonferroni Multiple Testing Correction** to control the family-wise error rate across all indicators.
+5. **Holm–Bonferroni Multiple Testing Correction**: Holm adjustment was applied across the prespecified primary association tests: Chi-square tests for categorical features and Mann–Whitney U tests for numerical features. Welch’s t-tests were retained as complementary sensitivity analyses.
 
 > **Methodological Note on Large Sample Size:**  
-> With *N* = 253,680, statistical tests possess near-infinite power, causing p-values for almost all predictors to drop below $p < 0.05$. Therefore, p-values are reported alongside Holm-adjusted values for formal hypothesis testing, but **practical feature importance is ranked strictly by standardized Effect Size**.
+> With *N* = 253,680, statistical tests possess near-infinite power, causing p-values for almost all predictors to drop below $p < 0.05$. Therefore, p-values are reported alongside Holm-adjusted values for formal hypothesis testing, but **practical feature importance is evaluated by Effect Size within each feature family**.
 
 ---
 
@@ -49,8 +49,8 @@ To ensure statistical rigor, we apply:
 | `AnyHealthcare` | Healthcare Coverage Access | 66.81 | `2.99e-16` | `2.99e-16` | Yes | 1 | 0.0162 | **Negligible** | 2.61% |
 
 ### Key Findings from Categorical Analysis:
-1. **Strongest Predictors**: **`GenHlth`** (Self-Rated General Health) exhibits the strongest population-level association with diabetes status (*V* = **0.2993**), showing a **35.38%** difference in prevalence across health levels.
-2. **Clinical Indicators**: General Health (`GenHlth`, *V* = 0.2993), High Blood Pressure (`HighBP`, *V* = 0.2631), High Cholesterol (`HighChol`, *V* = 0.2003), and Difficulty Walking (`DiffWalk`, *V* = 0.2183) represent the most salient marginal indicators.
+1. **Strongest Predictors**: **`GenHlth`** (Self-Rated General Health) exhibits the strongest association within the analyzed BRFSS sample with diabetes status (*V* = **0.2993**), showing a **35.38%** difference in prevalence across health levels.
+2. **Survey-based Health Indicators**: General Health (`GenHlth`, *V* = 0.2993), High Blood Pressure (`HighBP`, *V* = 0.2631), High Cholesterol (`HighChol`, *V* = 0.2003), and Difficulty Walking (`DiffWalk`, *V* = 0.2183) represent the most salient marginal indicators.
 3. **Behavioral Features**: Physical activity (`PhysActivity`, *V* = 0.1181) and fruit/vegetable intake show weak direct correlations (*V* < 0.10).
 4. **Demographics**: Biological sex (`Sex`, *V* = 0.0314) exhibits minimal marginal association with diabetes prevalence.
 
@@ -73,7 +73,7 @@ To ensure statistical rigor, we apply:
 
 ## 4. Visualizations and Diagnostics
 Saved under `results/statistical_analysis/` and `docs/figures/`:
-* **Effect Size Ranking**: [effect_size_ranking.png](figures/effect_size_ranking.png) — Two-panel lollipop ranking comparing Cramér's V (categorical) and Absolute Rank-Biserial correlation (numerical).
+* **Effect Size Ranking**: [effect_size_ranking.png](figures/effect_size_ranking.png) — Two-panel figure displaying separate effect-size rankings: Cramér's V for categorical features (Panel A) and Absolute Rank-Biserial correlation for numerical features (Panel B).
 * **Subgroup Prevalence**: [top_categorical_prevalence.png](figures/top_categorical_prevalence.png) — Prediabetes/diabetes positive rate by key risk factors.
 * **BMI Distribution Boxplot**: [bmi_boxplot.png](figures/bmi_boxplot.png) — BMI range comparison across target classes.
 * **Unhealthy Days Comparison**: [health_days_comparison.png](figures/health_days_comparison.png) — Mental and physical unhealthy day comparisons.
@@ -82,4 +82,4 @@ Saved under `results/statistical_analysis/` and `docs/figures/`:
 
 ## 5. Conclusions for Research Question 1 (RQ1)
 1. **Primary Marginal Indicators**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest effect sizes in the analyzed sample.
-2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but their ranking is governed by standardized effect size.
+2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but their ranking is governed by effect size within each feature family.

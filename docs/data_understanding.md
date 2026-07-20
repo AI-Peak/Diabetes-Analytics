@@ -122,7 +122,7 @@ The target variable, `Diabetes_binary`, represents the diabetes status of the re
 | `1.0` | Prediabetes or Diabetes | 35,346 | 13.93% |
 
 ### Class Imbalance Diagnostics
-The target variable exhibits a pronounced **class imbalance**, with approximately **86.07%** of the sample classified as healthy (`0`) and only **13.93%** classified as having prediabetes or diabetes (`1`). This distribution aligns with real-world epidemiological statistics where diabetes is a prevalent but minority health condition in the general population. 
+The target variable exhibits a pronounced **class imbalance**, with approximately **86.07%** of the sample classified as without reported diabetes (`0`) and only **13.93%** classified as having prediabetes or diabetes (`1`). This distribution aligns with real-world epidemiological statistics where diabetes is a prevalent but minority health condition in the general population. 
 
 A visualization of this distribution has been saved as `results/data_understanding/target_distribution.png`. Downstream classification models will need to account for this imbalance (e.g., using cost-sensitive learning or appropriate evaluation metrics such as F1-score, Precision-Recall AUC, rather than raw accuracy), but the raw data itself must remain unweighted and unadjusted in this phase to preserve real-world prevalence rates.
 

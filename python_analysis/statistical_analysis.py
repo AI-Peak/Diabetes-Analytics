@@ -276,33 +276,24 @@ def generate_visualizations(df: pd.DataFrame, cat_results: pd.DataFrame, num_res
     plt.savefig(RESULTS_DIR / "bmi_boxplot.png", dpi=300)
     plt.close()
     
-    # 4. Poor Health Days Plot
-    plt.figure(figsize=(9, 5))
-    num_vars_long = pd.melt(df, id_vars=["Diabetes_binary"], value_vars=["MentHlth", "PhysHlth"],
-                            var_name="Indicator", value_name="Days")
-    sns.barplot(
-        data=num_vars_long,
-        x="Indicator",
-        y="Days",
-        hue="Diabetes_binary",
-        palette=["#3B82F6", "#EF4444"],
-        errorbar="ci",
-        alpha=0.85
-    )
+    # 4. Physical & Mental Unhealthy Days Plot
+    df_melt = pd.melt(df, id_vars=["Diabetes_binary"], value_vars=["PhysHlth", "MentHlth"], var_name="Metric", value_name="Days")
+    plt.figure(figsize=(8, 5))
+    sns.barplot(x="Metric", y="Days", hue="Diabetes_binary", data=df_melt, palette=["#2563EB", "#D97706"], errorbar=None)
     plt.title("Comparison of Unhealthy Days (Past 30 Days)", fontsize=12, fontweight="bold", pad=15)
-    plt.xlabel("")
-    plt.ylabel("Average Days Reported", fontsize=11)
-    plt.xticks([0, 1], ["Mental Health (MentHlth)", "Physical Health (PhysHlth)"])
-    plt.legend(labels=["0: Healthy", "1: Diabetic"])
+    plt.xticks([0, 1], ["Physical Unhealthy Days (PhysHlth)", "Mental Unhealthy Days (MentHlth)"])
+    plt.ylabel("Mean Unhealthy Days", fontsize=11)
+    plt.legend(title="Class", labels=["0: No reported diabetes", "1: Prediabetes/diabetes positive class"])
     plt.tight_layout()
     plt.savefig(RESULTS_DIR / "health_days_comparison.png", dpi=300)
+    plt.savefig(DOCS_DIR / "figures/health_days_comparison.png", dpi=300)
     plt.close()
     print("Saved all diagnostic statistical plots successfully.")
 
 def write_academic_report(df: pd.DataFrame, cat_results: pd.DataFrame, num_results: pd.DataFrame):
-    """Writes the statistical analysis findings directly to docs/statistical_analysis.md."""
+    """Generates docs/statistical_analysis.md."""
     print("Writing academic documentation to docs/statistical_analysis.md...")
-    n_total = len(df)
+    DOCS_DIR.mkdir(parents=True, exist_ok=True)
     
     top_cat = cat_results.iloc[0]["Variable"]
     top_cat_desc = cat_results.iloc[0]["Description"]
@@ -317,12 +308,14 @@ def write_academic_report(df: pd.DataFrame, cat_results: pd.DataFrame, num_resul
     phys_diabetic_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "Prediabetes/Diabetes Positive Mean"].values[0]
     phys_healthy_mean = num_results.loc[num_results["Variable"] == "PhysHlth", "No Reported Diabetes Mean"].values[0]
     
+    n_total = len(df)
+    
     markdown_content = f"""# Statistical Hypothesis Testing Report
 ## CDC Diabetes Health Indicators (Cleaned Dataset)
 
 ### Methodology: CRISP-DM (Exploratory & Statistical Analysis)
 **Author:** Senior Data Analytics Engineer & Team Members  
-**Date:** {pd.Timestamp.now().strftime("%Y-%m-%d")}  
+**Date:** 2026-07-20  
 **Project:** Diabetes-Analytics  
 **Objective:** Answer RQ1: *Which demographic, lifestyle, and health-related factors are statistically associated with diabetes in the CDC BRFSS 2015 dataset?*
 
@@ -336,10 +329,10 @@ To ensure statistical rigor, we apply:
 2. **Cramér's V** to measure effect size for categorical associations.
 3. **Independent Two-Sample Welch t-Test** (parametric mean comparison) and **Mann-Whitney U Test** (non-parametric median/distribution comparison) for continuous numerical variables.
 4. **Absolute Rank-Biserial Correlation** (primary) and **Cohen's d** (secondary) to measure numerical effect sizes.
-5. **Holm–Bonferroni Multiple Testing Correction** to control the family-wise error rate across all indicators.
+5. **Holm–Bonferroni Multiple Testing Correction**: Holm adjustment was applied across the prespecified primary association tests: Chi-square tests for categorical features and Mann–Whitney U tests for numerical features. Welch’s t-tests were retained as complementary sensitivity analyses.
 
 > **Methodological Note on Large Sample Size:**  
-> With *N* = {n_total:,}, statistical tests possess near-infinite power, causing p-values for almost all predictors to drop below $p < 0.05$. Therefore, p-values are reported alongside Holm-adjusted values for formal hypothesis testing, but **practical feature importance is ranked strictly by standardized Effect Size**.
+> With *N* = {n_total:,}, statistical tests possess near-infinite power, causing p-values for almost all predictors to drop below $p < 0.05$. Therefore, p-values are reported alongside Holm-adjusted values for formal hypothesis testing, but **practical feature importance is evaluated by Effect Size within each feature family**.
 
 ---
 
@@ -361,8 +354,8 @@ To ensure statistical rigor, we apply:
         
     markdown_content += f"""
 ### Key Findings from Categorical Analysis:
-1. **Strongest Predictors**: **`{top_cat}`** ({top_cat_desc}) exhibits the strongest population-level association with diabetes status (*V* = **{top_cat_v:.4f}**), showing a **{top_cat_diff:.2f}%** difference in prevalence across health levels.
-2. **Clinical Indicators**: General Health (`GenHlth`, *V* = {cat_results.loc[cat_results['Variable'] == 'GenHlth', "Cramér's V"].values[0]:.4f}), High Blood Pressure (`HighBP`, *V* = {cat_results.loc[cat_results['Variable'] == 'HighBP', "Cramér's V"].values[0]:.4f}), High Cholesterol (`HighChol`, *V* = {cat_results.loc[cat_results['Variable'] == 'HighChol', "Cramér's V"].values[0]:.4f}), and Difficulty Walking (`DiffWalk`, *V* = {cat_results.loc[cat_results['Variable'] == 'DiffWalk', "Cramér's V"].values[0]:.4f}) represent the most salient marginal indicators.
+1. **Strongest Predictors**: **`{top_cat}`** ({top_cat_desc}) exhibits the strongest association within the analyzed BRFSS sample with diabetes status (*V* = **{top_cat_v:.4f}**), showing a **{top_cat_diff:.2f}%** difference in prevalence across health levels.
+2. **Survey-based Health Indicators**: General Health (`GenHlth`, *V* = {cat_results.loc[cat_results['Variable'] == 'GenHlth', "Cramér's V"].values[0]:.4f}), High Blood Pressure (`HighBP`, *V* = {cat_results.loc[cat_results['Variable'] == 'HighBP', "Cramér's V"].values[0]:.4f}), High Cholesterol (`HighChol`, *V* = {cat_results.loc[cat_results['Variable'] == 'HighChol', "Cramér's V"].values[0]:.4f}), and Difficulty Walking (`DiffWalk`, *V* = {cat_results.loc[cat_results['Variable'] == 'DiffWalk', "Cramér's V"].values[0]:.4f}) represent the most salient marginal indicators.
 3. **Behavioral Features**: Physical activity (`PhysActivity`, *V* = {cat_results.loc[cat_results['Variable'] == 'PhysActivity', "Cramér's V"].values[0]:.4f}) and fruit/vegetable intake show weak direct correlations (*V* < 0.10).
 4. **Demographics**: Biological sex (`Sex`, *V* = {cat_results.loc[cat_results['Variable'] == 'Sex', "Cramér's V"].values[0]:.4f}) exhibits minimal marginal association with diabetes prevalence.
 
@@ -395,7 +388,7 @@ To ensure statistical rigor, we apply:
 
 ## 4. Visualizations and Diagnostics
 Saved under `results/statistical_analysis/` and `docs/figures/`:
-* **Effect Size Ranking**: [effect_size_ranking.png](figures/effect_size_ranking.png) — Two-panel lollipop ranking comparing Cramér's V (categorical) and Absolute Rank-Biserial correlation (numerical).
+* **Effect Size Ranking**: [effect_size_ranking.png](figures/effect_size_ranking.png) — Two-panel figure displaying separate effect-size rankings: Cramér's V for categorical features (Panel A) and Absolute Rank-Biserial correlation for numerical features (Panel B).
 * **Subgroup Prevalence**: [top_categorical_prevalence.png](figures/top_categorical_prevalence.png) — Prediabetes/diabetes positive rate by key risk factors.
 * **BMI Distribution Boxplot**: [bmi_boxplot.png](figures/bmi_boxplot.png) — BMI range comparison across target classes.
 * **Unhealthy Days Comparison**: [health_days_comparison.png](figures/health_days_comparison.png) — Mental and physical unhealthy day comparisons.
@@ -404,7 +397,7 @@ Saved under `results/statistical_analysis/` and `docs/figures/`:
 
 ## 5. Conclusions for Research Question 1 (RQ1)
 1. **Primary Marginal Indicators**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest effect sizes in the analyzed sample.
-2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but their ranking is governed by standardized effect size.
+2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but their ranking is governed by effect size within each feature family.
 """
     
     output_path = DOCS_DIR / "statistical_analysis.md"
