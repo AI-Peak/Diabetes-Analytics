@@ -25,8 +25,8 @@ export function BarChart({
       <ResponsiveContainer width="100%" height={300}>
         <ReBarChart data={data} margin={{ top: 10, right: 12, left: 0, bottom: 8 }}>
           <CartesianGrid stroke={theme.grid} vertical={false} />
-          <XAxis dataKey="name" tick={{ fill: theme.axis, fontSize: 9 }} tickLine={false} axisLine={{ stroke: theme.grid }} />
-          <YAxis tick={{ fill: theme.axis, fontSize: 9 }} tickLine={false} axisLine={false} tickFormatter={formatValue} />
+          <XAxis dataKey="name" tick={{ fill: theme.axis, fontSize: 11 }} tickLine={false} axisLine={{ stroke: theme.grid }} />
+          <YAxis tick={{ fill: theme.axis, fontSize: 11 }} tickLine={false} axisLine={false} tickFormatter={formatValue} />
           <Tooltip content={<ChartTooltip formatter={(value) => formatValue(Number(value))} />} />
           <Bar dataKey="value" name={valueLabel} fill={theme[color]} radius={[6, 6, 2, 2]} />
         </ReBarChart>

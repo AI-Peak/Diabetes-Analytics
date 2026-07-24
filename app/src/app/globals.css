@@ -687,9 +687,9 @@ svg {
 .section-source,
 .card-source,
 .figure-caption {
-  color: var(--text-dim);
+  color: var(--text-muted);
   font-family: var(--font-mono), monospace;
-  font-size: 8.5px;
+  font-size: 11px;
   line-height: 1.5;
 }
 
@@ -1376,9 +1376,10 @@ input[type="range"] {
 
 .metric-mini span {
   display: block;
-  color: var(--text-dim);
+  color: var(--text-muted);
   font-family: var(--font-mono), monospace;
-  font-size: 8px;
+  font-size: 11px;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 

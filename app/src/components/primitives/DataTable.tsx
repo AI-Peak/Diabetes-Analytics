@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 
 export type TableColumn<T> = {
   id: string;
@@ -37,19 +37,26 @@ export function DataTable<T>({
           {rows.map((row) => {
             const key = rowKey(row);
             const className = [rowClassName?.(row), onRowClick ? "interactive-row" : "", selectedRowKey === key ? "selected-row" : ""].filter(Boolean).join(" ");
+            // Handlers are attached only when the table is interactive, so a static table
+            // stays serialisable and can be rendered from a server component.
+            const interaction = onRowClick
+              ? {
+                  tabIndex: 0,
+                  onClick: () => onRowClick(row),
+                  onKeyDown: (event: KeyboardEvent<HTMLTableRowElement>) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      onRowClick(row);
+                    }
+                  },
+                }
+              : {};
             return (
             <tr
               className={className || undefined}
               key={key}
               aria-selected={selectedRowKey === key || undefined}
-              tabIndex={onRowClick ? 0 : undefined}
-              onClick={() => onRowClick?.(row)}
-              onKeyDown={(event) => {
-                if (onRowClick && (event.key === "Enter" || event.key === " ")) {
-                  event.preventDefault();
-                  onRowClick(row);
-                }
-              }}
+              {...interaction}
             >
               {columns.map((column) => (
                 <td className={column.align === "right" ? "align-right num" : undefined} key={column.id}>{column.render(row)}</td>

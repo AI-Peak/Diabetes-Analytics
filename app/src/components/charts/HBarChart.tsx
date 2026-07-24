@@ -59,16 +59,16 @@ export function HBarChart({
     >
       <div className="chart-min-width" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} layout="vertical" margin={{ top: 4, right: 56, left: 10, bottom: 4 }}>
+          <BarChart data={data} layout="vertical" margin={{ top: 4, right: 68, left: 10, bottom: 4 }}>
             <CartesianGrid stroke={theme.grid} horizontal={false} />
-            <XAxis type="number" tick={{ fill: theme.axis, fontSize: 9 }} tickLine={false} axisLine={{ stroke: theme.grid }} tickFormatter={formatValue} />
-            <YAxis type="category" dataKey="name" width={155} tick={{ fill: theme.axis, fontSize: 9 }} tickLine={false} axisLine={false} />
+            <XAxis type="number" tick={{ fill: theme.axis, fontSize: 11 }} tickLine={false} axisLine={{ stroke: theme.grid }} tickFormatter={formatValue} />
+            <YAxis type="category" dataKey="name" width={168} tick={{ fill: theme.axis, fontSize: 11 }} tickLine={false} axisLine={false} />
             <Tooltip content={<ChartTooltip formatter={(value) => formatValue(Number(value))} />} />
             <Bar dataKey="value" name={valueLabel} fill={theme[color]} radius={[0, 6, 6, 0]} maxBarSize={18} onClick={handleClick} cursor={onSelect ? "pointer" : undefined}>
               {data.map((entry) => {
                 const selected = selectedName === entry.name;
                 const dimmed = Boolean(selectedName && !selected);
-                return <Cell fill={theme[entry.tone ?? color]} fillOpacity={dimmed ? 0.38 : 1} stroke={selected ? theme.red : "transparent"} strokeWidth={selected ? 2 : 0} key={entry.name} />;
+                return <Cell fill={theme[entry.tone ?? color]} fillOpacity={dimmed ? 0.38 : 1} stroke={selected ? theme.red : "transparent"} strokeWidth={selected ? 1.5 : 0} key={entry.name} />;
               })}
               <LabelList
                 dataKey={(entry: Record<string, unknown>) => {
@@ -76,8 +76,8 @@ export function HBarChart({
                   return datum.displayValue ?? formatValue(datum.value);
                 }}
                 position="right"
-                fill={theme.axis}
-                fontSize={9}
+                fill={theme.label}
+                fontSize={11}
               />
             </Bar>
           </BarChart>
