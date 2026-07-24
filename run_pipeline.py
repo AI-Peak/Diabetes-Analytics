@@ -58,15 +58,16 @@ def main():
     steps = [
         (1, "Data Preprocessing & Quality Validation", PROJECT_ROOT / "notebooks" / "data_preprocessing.py"),
         (2, "Class Distribution Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_class_distribution_figure.py"),
-        (3, "Statistical Hypothesis Testing & Adjusted Association", PROJECT_ROOT / "python_analysis" / "statistical_analysis.py"),
-        (4, "Two-Panel Effect-Size Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_effect_size_figure.py"),
-        (5, "Machine Learning Modeling, Selection & Holdout Evaluation", PROJECT_ROOT / "python_analysis" / "model_training.py"),
-        (6, "Explainable AI (SHAP) & Evidence Alignment Analysis", PROJECT_ROOT / "python_analysis" / "shap_analysis.py"),
-        (7, "Global SHAP Feature Importance Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_shap_global_importance.py"),
-        (8, "Local SHAP Waterfall Explanation Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_shap_local_waterfall.py"),
-        (9, "Methodology Pipeline Architecture Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_methodology_pipeline.py"),
-        (10, "Final Results Summary Aggregation", PROJECT_ROOT / "python_analysis" / "generate_final_results_summary.py"),
-        (11, "Automated Pipeline Output & Documentation Validation", PROJECT_ROOT / "python_analysis" / "validate_outputs.py")
+        (3, "Univariate & Multivariate EDA Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_eda_figures.py"),
+        (4, "Statistical Hypothesis Testing & Adjusted Association", PROJECT_ROOT / "python_analysis" / "statistical_analysis.py"),
+        (5, "Two-Panel Effect-Size Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_effect_size_figure.py"),
+        (6, "Machine Learning Modeling, Selection & Holdout Evaluation", PROJECT_ROOT / "python_analysis" / "model_training.py"),
+        (7, "Explainable AI (SHAP) & Evidence Alignment Analysis", PROJECT_ROOT / "python_analysis" / "shap_analysis.py"),
+        (8, "Global SHAP Feature Importance Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_shap_global_importance.py"),
+        (9, "Local SHAP Waterfall Explanation Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_shap_local_waterfall.py"),
+        (10, "Methodology Pipeline Architecture Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_methodology_pipeline.py"),
+        (11, "Final Results Summary Aggregation", PROJECT_ROOT / "python_analysis" / "generate_final_results_summary.py"),
+        (12, "Automated Pipeline Output & Documentation Validation", PROJECT_ROOT / "python_analysis" / "validate_outputs.py")
     ]
 
     total_start = time.time()

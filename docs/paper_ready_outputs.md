@@ -63,6 +63,9 @@ This document maps all canonical datasets, method scripts, main tables, main fig
 | **Figure 9: Global SHAP Summary Beeswarm** | `docs/figures/shap_summary_beeswarm.png` | PNG (300 DPI) & SVG |
 | **Figure 10: Local SHAP Explanation (Class 1 Profile)** | `docs/figures/shap_local_high_risk.png` | PNG (300 DPI) & SVG |
 | **Figure 11: Effect Size–SHAP Alignment Framework** | `docs/figures/effect_size_shap_alignment.png` | PNG (300 DPI) & SVG |
+| **Figure 12: Univariate Distributions (Numeric Indicators)** | `docs/figures/eda_univariate_numeric.png` | PNG (300 DPI) & SVG |
+| **Figure 13: Univariate Composition (Ordinal & Binary Indicators)** | `docs/figures/eda_univariate_categorical.png` | PNG (300 DPI) & SVG |
+| **Figure 14: Spearman Correlation Matrix (Multivariate Structure)** | `docs/figures/eda_correlation_heatmap.png` | PNG (300 DPI) & SVG |
 
 ---
 

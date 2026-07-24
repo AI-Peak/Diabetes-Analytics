@@ -33,15 +33,16 @@ python run_pipeline.py
 Sequential pipeline steps executed by `run_pipeline.py`:
 1. `notebooks/data_preprocessing.py`
 2. `python_analysis/generate_class_distribution_figure.py`
-3. `python_analysis/statistical_analysis.py`
-4. `python_analysis/generate_effect_size_figure.py`
-5. `python_analysis/model_training.py`
-6. `python_analysis/shap_analysis.py`
-7. `python_analysis/generate_shap_global_importance.py`
-8. `python_analysis/generate_shap_local_waterfall.py`
-9. `python_analysis/generate_methodology_pipeline.py`
-10. `python_analysis/generate_final_results_summary.py`
-11. `python_analysis/validate_outputs.py`
+3. `python_analysis/generate_eda_figures.py`
+4. `python_analysis/statistical_analysis.py`
+5. `python_analysis/generate_effect_size_figure.py`
+6. `python_analysis/model_training.py`
+7. `python_analysis/shap_analysis.py`
+8. `python_analysis/generate_shap_global_importance.py`
+9. `python_analysis/generate_shap_local_waterfall.py`
+10. `python_analysis/generate_methodology_pipeline.py`
+11. `python_analysis/generate_final_results_summary.py`
+12. `python_analysis/validate_outputs.py`
 
 ## BRFSS Data Protocol & Methodological Limitations
 
