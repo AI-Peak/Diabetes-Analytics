@@ -1,14 +1,28 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { Rq3Explorer } from "@/components/Rq3Explorer";
-import { ChartCard, Chip, KpiCard, PageHead, Reveal, Section } from "@/components/primitives";
+import { ChartCard, Chip, DataTable, FigureTabs, KpiCard, PageHead, Reveal, Section, type TableColumn } from "@/components/primitives";
 import { loadRq3 } from "@/lib/data/load";
+import type { Rq3Data } from "@/lib/data/schemas";
 
 export const metadata: Metadata = { title: "RQ3 · Explainable AI" };
+
+type AlignmentRow = Rq3Data["alignment"]["topK"][number];
+
+const alignmentColumns: TableColumn<AlignmentRow>[] = [
+  { id: "k", header: "Cutoff", render: (row) => <strong>Top-{row.k}</strong> },
+  { id: "overlap", header: "Overlap vs univariate", align: "right", render: (row) => `${row.overlap} / ${row.k}` },
+  { id: "jaccard", header: "Jaccard vs univariate", align: "right", render: (row) => row.jaccard.toFixed(4) },
+  { id: "overlapOr", header: "Overlap vs adjusted OR", align: "right", render: (row) => `${row.overlapAdjustedOr} / ${row.k}` },
+  { id: "jaccardOr", header: "Jaccard vs adjusted OR", align: "right", render: (row) => row.jaccardAdjustedOr.toFixed(4) },
+];
 
 export default function Rq3Page() {
   const data = loadRq3();
   const top = data.features.slice(0, 4);
+  const byK = (k: number) => data.alignment.topK.find((row) => row.k === k);
+  const top5 = byK(5);
+  const top10 = byK(10);
+  const top15 = byK(15);
 
   return (
     <div className="page">
@@ -49,26 +63,78 @@ export default function Rq3Page() {
         </div>
       </Section>
 
-      <Section label="Supporting global SHAP exports" source="results/xai/shap_summary_*.png">
-        <div className="chart-pair">
-          <ChartCard title="SHAP beeswarm" subtitle="Each point encodes feature value, direction, and contribution magnitude across the offline explanation sample." source="public/figures/shap_summary_dot.png">
-            <figure><div className="figure-frame"><Image src={data.figures.beeswarm} alt="SHAP beeswarm showing feature contribution directions and magnitudes" width={1400} height={1000} sizes="(max-width: 920px) 100vw, 45vw" /></div><figcaption className="figure-caption">Exported TreeExplainer figure · shap_summary_dot.png</figcaption></figure>
-          </ChartCard>
-          <ChartCard title="Global SHAP summary" subtitle="The static export remains a reproducibility artifact; selection and comparison now happen in the interactive feature lab above." source="public/figures/shap_summary_bar.png">
-            <figure><div className="figure-frame"><Image src={data.figures.bar} alt="Global mean absolute SHAP importance bar chart" width={1400} height={1000} sizes="(max-width: 920px) 100vw, 45vw" /></div><figcaption className="figure-caption">Exported TreeExplainer figure · shap_summary_bar.png</figcaption></figure>
-          </ChartCard>
-        </div>
+      <Section label="Quantitative evidence alignment" source="results/xai/rank_sensitivity_analysis.csv">
+        <ChartCard
+          title="How closely do SHAP ranks and statistical effect-size ranks agree?"
+          subtitle="The four groups above are qualitative. These figures put a number on the same question across all 21 features. Agreement is meaningful but incomplete, which is what the exploratory reading depends on."
+          source="rank_sensitivity_analysis.csv + explanation_consistency.csv"
+        >
+          <div className="metric-strip metric-strip-thirds">
+            <div className="metric-mini">
+              <span>Spearman rank correlation</span>
+              <strong>{data.alignment.spearman.toFixed(4)}</strong>
+            </div>
+            <div className="metric-mini">
+              <span>Top-10 Jaccard similarity</span>
+              <strong>{(top10?.jaccard ?? 0).toFixed(4)}</strong>
+            </div>
+            <div className="metric-mini">
+              <span>Features compared</span>
+              <strong>{data.alignment.featureCount}</strong>
+            </div>
+          </div>
+          <DataTable
+            rows={data.alignment.topK}
+            columns={alignmentColumns}
+            rowKey={(row) => String(row.k)}
+            caption="Top-K overlap and Jaccard similarity between SHAP ranks, univariate effect-size ranks, and adjusted odds-ratio ranks"
+          />
+          <p className="interaction-hint">
+            Overlap grows from {top5?.overlap ?? 0}/5 to {top15?.overlap ?? 0}/15 as the cutoff widens, so the two
+            rankings agree on which features matter more than on the exact order. This is evidence alignment, not
+            clinical or statistical validation of SHAP.
+          </p>
+        </ChartCard>
       </Section>
 
-      <Section label="Local explanations" source="results/xai/shap_local_*.png">
-        <div className="chart-pair">
-          <ChartCard title="Correctly predicted diabetic case" subtitle="This waterfall explains why one specific record moved the model output toward the diabetic class; it is not a diagnosis." source="public/figures/shap_local_diabetic.png">
-            <figure><div className="figure-frame"><Image src={data.figures.localDiabetic} alt="SHAP waterfall for a correctly predicted diabetic record" width={1400} height={760} sizes="(max-width: 920px) 100vw, 45vw" /></div><figcaption className="figure-caption">Local TreeExplainer export · shap_local_diabetic.png</figcaption></figure>
-          </ChartCard>
-          <ChartCard title="Correctly predicted healthy case" subtitle="Feature contributions for one healthy record show how evidence can also push the output away from the positive class." source="public/figures/shap_local_healthy.png">
-            <figure><div className="figure-frame"><Image src={data.figures.localHealthy} alt="SHAP waterfall for a correctly predicted healthy record" width={1400} height={760} sizes="(max-width: 920px) 100vw, 45vw" /></div><figcaption className="figure-caption">Local TreeExplainer export · shap_local_healthy.png</figcaption></figure>
-          </ChartCard>
-        </div>
+      <Section label="Exported TreeExplainer figures" source="results/xai">
+        <ChartCard
+          title="Reproducibility exports"
+          subtitle="These are the verified offline figures behind the analysis above. They are grouped here because they are archival artifacts, not the primary reading path; the interactive lab already carries the numbers."
+          source="public/figures/shap_summary_dot.png · shap_local_diabetic.png · shap_local_healthy.png"
+        >
+          <FigureTabs
+            items={[
+              {
+                id: "beeswarm",
+                label: "Global beeswarm",
+                src: data.figures.beeswarm,
+                alt: "SHAP beeswarm showing feature contribution directions and magnitudes",
+                width: 1400,
+                height: 1000,
+                caption: "Adds contribution direction, which the mean absolute ranking cannot show · shap_summary_dot.png",
+              },
+              {
+                id: "local-diabetic",
+                label: "Local · positive case",
+                src: data.figures.localDiabetic,
+                alt: "SHAP waterfall for a correctly predicted diabetic record",
+                width: 1400,
+                height: 760,
+                caption: "Why one specific record moved toward the positive class. Not a diagnosis · shap_local_diabetic.png",
+              },
+              {
+                id: "local-healthy",
+                label: "Local · negative case",
+                src: data.figures.localHealthy,
+                alt: "SHAP waterfall for a correctly predicted healthy record",
+                width: 1400,
+                height: 760,
+                caption: "How evidence can also push the output away from the positive class · shap_local_healthy.png",
+              },
+            ]}
+          />
+        </ChartCard>
       </Section>
     </div>
   );

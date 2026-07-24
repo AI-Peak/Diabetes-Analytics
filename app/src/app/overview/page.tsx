@@ -4,8 +4,7 @@ import { ArrowRight } from "@/lib/icons";
 import { CohortExplorer } from "@/components/CohortExplorer";
 import { loadOverview } from "@/lib/data/load";
 import { fmtFloat, fmtInt } from "@/lib/format";
-import { HBarChart } from "@/components/charts";
-import { ChartCard, Chip, KpiCard, PageHead, Reveal, Section } from "@/components/primitives";
+import { Chip, KpiCard, PageHead, Reveal, Section } from "@/components/primitives";
 
 export const metadata: Metadata = { title: "Overview" };
 
@@ -33,7 +32,7 @@ export default function OverviewPage() {
           <KpiCard label="Records" value={fmtInt(data.dataset.nRows)} note={`${data.dataset.name} · cleaned`} />
           <KpiCard label="Predictors" value={String(data.dataset.nFeatures)} note={`Target · ${data.dataset.target}`} />
           <KpiCard label="Prediabetes/Diabetes prevalence" value={`${data.classBalance.positiveClassPct.toFixed(1)}%`} note={`${fmtInt(data.classBalance.positiveClassN)} positive records`} tone="risk" />
-          <KpiCard label="Best model PR-AUC" value={fmtFloat(data.bestModel.prAuc, 3)} note={`${data.bestModel.name} · test n=${fmtInt(data.dataset.testSize)}`} tone="accent" />
+          <KpiCard label="Holdout PR-AUC" value={fmtFloat(data.holdout.prAuc, 4)} note={`${data.bestModel.name} · locked holdout n=${fmtInt(data.holdout.sampleSize)} · CV PR-AUC ${fmtFloat(data.bestModel.prAuc, 3)}`} tone="accent" />
         </div>
       </Section>
 
@@ -90,16 +89,6 @@ export default function OverviewPage() {
             </div>
           </article>
         </div>
-      </Section>
-
-      <Section label="Top associations" source="results/statistical_analysis/chi_square_results.csv">
-        <ChartCard title="Categorical factors ranked by Cramér's V" subtitle="Effect size ranks association strength; it does not imply causation." source="chi_square_results.csv">
-          <HBarChart
-            data={data.topAssociations.map((item) => ({ name: item.variable, value: item.cramersV }))}
-            valueLabel="Cramér's V"
-            ariaLabel="Top six categorical associations ranked by Cramér's V"
-          />
-        </ChartCard>
       </Section>
     </div>
   );

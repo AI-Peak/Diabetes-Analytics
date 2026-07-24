@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo } from "react";
-import { HBarChart } from "@/components/charts";
 import { ChartCard, DataTable, RadioGroup, StatBadge, type TableColumn } from "@/components/primitives";
 import type { Rq2Data } from "@/lib/data/schemas";
 import { fmtPct } from "@/lib/format";
@@ -35,68 +34,41 @@ export function ModelExplorer({ data }: { data: Rq2Data }) {
   const selected = data.models.find((model) => model.name === selectedName) ?? initial;
 
   const ranked = useMemo(() => data.models.toSorted((a, b) => b[metric] - a[metric]), [data.models, metric]);
+  const rankOf = (row: ModelResult) => ranked.findIndex((model) => model.name === row.name) + 1;
+
+  // The active metric column is emphasised so the ranking order stays readable without a second chart.
+  const cell = (key: MetricKey, row: ModelResult) => {
+    const text = formatMetric(key, row[key]);
+    return key === metric ? <strong>{text}</strong> : text;
+  };
+
   const columns: TableColumn<ModelResult>[] = [
+    { id: "rank", header: "#", render: (row) => <span className="num">{rankOf(row)}</span> },
     { id: "model", header: "Model", render: (row) => <span><strong>{row.name}</strong>{row.isBest ? <> <StatBadge label="best PR-AUC" tone="best" /></> : null}</span> },
-    { id: "accuracy", header: "Accuracy", align: "right", render: (row) => fmtPct(row.accuracy) },
-    { id: "precision", header: "Precision", align: "right", render: (row) => fmtPct(row.precision) },
-    { id: "recall", header: "Recall", align: "right", render: (row) => fmtPct(row.recall) },
-    { id: "f1", header: "F1", align: "right", render: (row) => row.f1.toFixed(3) },
-    { id: "roc", header: "ROC-AUC", align: "right", render: (row) => row.rocAuc.toFixed(3) },
-    { id: "pr", header: "PR-AUC", align: "right", render: (row) => row.prAuc.toFixed(3) },
+    { id: "accuracy", header: "Accuracy", align: "right", render: (row) => cell("accuracy", row) },
+    { id: "precision", header: "Precision", align: "right", render: (row) => cell("precision", row) },
+    { id: "recall", header: "Recall", align: "right", render: (row) => cell("recall", row) },
+    { id: "f1", header: "F1", align: "right", render: (row) => cell("f1", row) },
+    { id: "roc", header: "ROC-AUC", align: "right", render: (row) => cell("rocAuc", row) },
+    { id: "pr", header: "PR-AUC", align: "right", render: (row) => cell("prAuc", row) },
   ];
+
+  const prRank = data.models.toSorted((a, b) => b.prAuc - a.prAuc).findIndex((model) => model.name === selected.name) + 1;
 
   return (
     <div className="analysis-workbench">
       <div className="control-row">
-        <RadioGroup label="Comparison metric" value={metric} options={METRICS} onChange={(value) => setMetric(value as MetricKey)} />
+        <RadioGroup label="Rank by metric" value={metric} options={METRICS} onChange={(value) => setMetric(value as MetricKey)} />
       </div>
 
-      <div className="workbench-grid">
-        <ChartCard
-          title={`Model ranking by ${metricLabel(metric)}`}
-          subtitle="Change the metric, then click a bar. The selected model profile and scorecard row update together."
-          source="results/modeling/cv_model_comparison.csv"
-          action={<StatBadge label={`selected · ${selected.name}`} tone={selected.isBest ? "best" : "moderate"} />}
-        >
-          <HBarChart
-            data={ranked.map((model) => ({
-              name: model.name,
-              value: model[metric],
-              detail: `${metricLabel(metric)} · ${formatMetric(metric, model[metric])}`,
-              tone: model.name === selected.name ? "accent" : model.isBest ? "cyan" : "blue",
-            }))}
-            valueLabel={metricLabel(metric)}
-            selectedName={selected.name}
-            onSelect={(datum, mode) => setSelectedName(datum.name, mode)}
-            formatValue={(value) => formatMetric(metric, value)}
-            ariaLabel={`Four models ranked by ${metricLabel(metric)}`}
-          />
-        </ChartCard>
-
-        <ChartCard
-          title="Selected model profile"
-          subtitle="One model selection drives all six evaluation metrics."
-          source="cv_model_comparison.csv · selected row"
-        >
-          <div className="selection-panel">
-            <span className="eyebrow">Current model</span>
-            <h3>{selected.name}</h3>
-            <p>{selected.isBest ? "Highest PR-AUC in the four-model comparison." : `PR-AUC rank #${data.models.toSorted((a, b) => b.prAuc - a.prAuc).findIndex((model) => model.name === selected.name) + 1}.`}</p>
-          </div>
-          <div className="metric-strip metric-strip-compact" aria-live="polite">
-            <div className="metric-mini"><span>Accuracy</span><strong>{fmtPct(selected.accuracy)}</strong></div>
-            <div className="metric-mini"><span>Precision</span><strong>{fmtPct(selected.precision)}</strong></div>
-            <div className="metric-mini"><span>Recall</span><strong>{fmtPct(selected.recall)}</strong></div>
-            <div className="metric-mini"><span>F1</span><strong>{selected.f1.toFixed(3)}</strong></div>
-            <div className="metric-mini"><span>ROC-AUC</span><strong>{selected.rocAuc.toFixed(3)}</strong></div>
-            <div className="metric-mini"><span>PR-AUC</span><strong>{selected.prAuc.toFixed(3)}</strong></div>
-          </div>
-        </ChartCard>
-      </div>
-
-      <div className="section-block compact-section">
+      <ChartCard
+        title={`Model scorecard, ranked by ${metricLabel(metric)}`}
+        subtitle="Change the metric to re-rank the table, then click a row to select a model. All four models are shown at threshold 0.50."
+        source="results/modeling/cv_model_comparison.csv"
+        action={<StatBadge label={`selected · ${selected.name}`} tone={selected.isBest ? "best" : "moderate"} />}
+      >
         <DataTable
-          rows={data.models}
+          rows={ranked}
           columns={columns}
           rowKey={(row) => row.name}
           rowClassName={(row) => row.isBest ? "winner-row" : ""}
@@ -104,7 +76,14 @@ export function ModelExplorer({ data }: { data: Rq2Data }) {
           onRowClick={(row) => setSelectedName(row.name)}
           caption="Interactive comparison of four machine-learning models at threshold 0.50"
         />
-      </div>
+        <p className="interaction-hint" aria-live="polite">
+          <strong>{selected.name}</strong>{" "}
+          {selected.isBest
+            ? `holds the highest PR-AUC in the four-model comparison and was carried forward to threshold selection.`
+            : `ranks #${prRank} by PR-AUC, the primary selection metric, so it was not carried forward.`}{" "}
+          Ranked #{rankOf(selected)} of {ranked.length} by {metricLabel(metric)}.
+        </p>
+      </ChartCard>
     </div>
   );
 }

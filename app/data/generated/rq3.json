@@ -300,6 +300,33 @@
       ]
     }
   ],
+  "alignment": {
+    "spearman": 0.7097825927953649,
+    "featureCount": 21,
+    "topK": [
+      {
+        "k": 5,
+        "overlap": 4,
+        "jaccard": 0.6667,
+        "overlapAdjustedOr": 3,
+        "jaccardAdjustedOr": 0.4286
+      },
+      {
+        "k": 10,
+        "overlap": 7,
+        "jaccard": 0.5385,
+        "overlapAdjustedOr": 7,
+        "jaccardAdjustedOr": 0.5385
+      },
+      {
+        "k": 15,
+        "overlap": 13,
+        "jaccard": 0.7222,
+        "overlapAdjustedOr": 11,
+        "jaccardAdjustedOr": 0.5789
+      }
+    ]
+  },
   "figures": {
     "beeswarm": "/figures/shap_summary_dot.png",
     "bar": "/figures/shap_summary_bar.png",

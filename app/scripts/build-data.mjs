@@ -292,6 +292,39 @@ function thresholdRows(rows) {
   }));
 }
 
+function holdoutRows(rows) {
+  // results/modeling/final_test_metrics.csv: the locked holdout evaluation.
+  // Kept separate from the OOF threshold sweep so neither can be mistaken for the other.
+  const shape = (row) => ({
+    t: number(row, "Threshold"),
+    accuracy: number(row, "Accuracy"),
+    precision: number(row, "Precision"),
+    recall: number(row, "Recall"),
+    specificity: number(row, "Specificity"),
+    f1: number(row, "F1-score"),
+    rocAuc: number(row, "ROC-AUC"),
+    prAuc: number(row, "PR-AUC"),
+    cm: {
+      tn: number(row, "TN"),
+      fp: number(row, "FP"),
+      fn: number(row, "FN"),
+      tp: number(row, "TP"),
+    },
+  });
+  const byThreshold = (target) =>
+    rows.find((row) => Math.abs(number(row, "Threshold") - target) < 0.001);
+  const defaultRow = byThreshold(0.5);
+  const selectedRow = rows.find((row) => Math.abs(number(row, "Threshold") - 0.5) >= 0.001);
+  if (!defaultRow || !selectedRow) throw new Error("final_test_metrics.csv is missing a required row");
+  const shaped = shape(selectedRow);
+  return {
+    evaluationSplit: selectedRow["Evaluation_Split"] || "Untouched holdout test",
+    sampleSize: shaped.cm.tn + shaped.cm.fp + shaped.cm.fn + shaped.cm.tp,
+    default: shape(defaultRow),
+    selected: shaped,
+  };
+}
+
 function featureRows(rows) {
   return rows
     .map((row) => ({
@@ -309,6 +342,72 @@ function featureRows(rows) {
     .sort((a, b) => a.shapRank - b.shapRank);
 }
 
+function adjustedRows(rows) {
+  return rows
+    .map((row) => ({
+      variable: row.Variable,
+      label: VARIABLE_LABELS[row.Variable] ?? row.Description ?? row.Variable,
+      oddsRatio: number(row, "Odds_Ratio"),
+      ciLower: number(row, "OR_95_CI_Lower"),
+      ciUpper: number(row, "OR_95_CI_Upper"),
+      vif: number(row, "VIF"),
+      holmP: number(row, "Holm_p_value"),
+      significant: String(row.Reject_Holm).toLowerCase() === "true",
+    }))
+    .sort((a, b) => b.oddsRatio - a.oddsRatio);
+}
+
+// Average ("midrank") ranking, so tied ranks are handled the way scipy.stats.spearmanr does.
+function midranks(values) {
+  const order = values.map((value, index) => index).sort((a, b) => values[a] - values[b]);
+  const out = new Array(values.length);
+  let i = 0;
+  while (i < order.length) {
+    let j = i;
+    while (j + 1 < order.length && values[order[j + 1]] === values[order[i]]) j += 1;
+    const average = (i + j) / 2 + 1;
+    for (let k = i; k <= j; k += 1) out[order[k]] = average;
+    i = j + 1;
+  }
+  return out;
+}
+
+function pearson(a, b) {
+  const n = a.length;
+  const meanA = a.reduce((sum, value) => sum + value, 0) / n;
+  const meanB = b.reduce((sum, value) => sum + value, 0) / n;
+  let num = 0;
+  let devA = 0;
+  let devB = 0;
+  for (let i = 0; i < n; i += 1) {
+    num += (a[i] - meanA) * (b[i] - meanB);
+    devA += (a[i] - meanA) ** 2;
+    devB += (b[i] - meanB) ** 2;
+  }
+  if (devA === 0 || devB === 0) throw new Error("Cannot compute rank correlation: zero variance");
+  return num / Math.sqrt(devA * devB);
+}
+
+function alignmentSummary(features, sensitivityCsv) {
+  // Spearman is printed but never exported by shap_analysis.py, so it is recomputed here
+  // from the same SHAP and effect-size ranks. Verified to reproduce the reported 0.7098.
+  const spearman = pearson(
+    midranks(features.map((item) => item.shapRank)),
+    midranks(features.map((item) => item.statRank)),
+  );
+  const topK = sensitivityCsv
+    .map((row) => ({
+      k: number(row, "Top_K"),
+      overlap: number(row, "SHAP_vs_Univariate_Overlap"),
+      jaccard: number(row, "SHAP_vs_Univariate_Jaccard"),
+      overlapAdjustedOr: number(row, "SHAP_vs_AdjustedOR_Overlap"),
+      jaccardAdjustedOr: number(row, "SHAP_vs_AdjustedOR_Jaccard"),
+    }))
+    .sort((a, b) => a.k - b.k);
+  if (!topK.length) throw new Error("No rank sensitivity rows found");
+  return { spearman, featureCount: features.length, topK };
+}
+
 async function writeJson(name, value, summary) {
   await writeFile(path.join(generatedRoot, name), `${JSON.stringify(value, null, 2)}\n`, "utf8");
   console.log(`[build-data] ${name}: ${summary}`);
@@ -318,7 +417,7 @@ async function main() {
   await mkdir(generatedRoot, { recursive: true });
   await mkdir(figuresRoot, { recursive: true });
 
-  const [dataset, categoricalCsv, numericCsv, modelsCsv, thresholdsCsv, consistencyCsv, calibrationCsv, modelSelectionMeta] = await Promise.all([
+  const [dataset, categoricalCsv, numericCsv, modelsCsv, thresholdsCsv, consistencyCsv, calibrationCsv, holdoutCsv, adjustedCsv, sensitivityCsv, modelSelectionMeta] = await Promise.all([
     datasetAnalytics(),
     parseCsv(path.join("results", "statistical_analysis", "chi_square_results.csv")),
     parseCsv(path.join("results", "statistical_analysis", "numerical_results.csv")),
@@ -326,7 +425,10 @@ async function main() {
     parseCsv(path.join("results", "modeling", "threshold_analysis.csv")),
     parseCsv(path.join("results", "xai", "explanation_consistency.csv")),
     parseCsv(path.join("results", "modeling", "calibration_metrics.csv")),
-    readFile(path.join("results", "modeling", "model_selection.json"), "utf8").then(JSON.parse).catch(() => null),
+    parseCsv(path.join("results", "modeling", "final_test_metrics.csv")),
+    parseCsv(path.join("results", "statistical_analysis", "adjusted_association.csv")),
+    parseCsv(path.join("results", "xai", "rank_sensitivity_analysis.csv")),
+    readFile(path.join(repoRoot, "results", "modeling", "model_selection.json"), "utf8").then(JSON.parse).catch(() => null),
   ]);
 
   const profile = dataset.profile;
@@ -343,8 +445,25 @@ async function main() {
     sampleSize: number(calibRow, "Holdout_Sample_Size"),
     evaluationSplit: calibRow["Evaluation_Split"] || "Untouched holdout test",
   };
+  const holdout = holdoutRows(holdoutCsv);
   const bestModel = models.find((model) => model.isBest);
   if (!bestModel) throw new Error("Could not determine the best model");
+
+  const developmentSize = modelSelectionMeta
+    ? Number(modelSelectionMeta.development_sample_size)
+    : profile.nRows - holdout.sampleSize;
+  const holdoutSize = modelSelectionMeta
+    ? Number(modelSelectionMeta.holdout_test_sample_size)
+    : holdout.sampleSize;
+  if (holdoutSize !== holdout.sampleSize) {
+    throw new Error(`Holdout size disagrees: model_selection.json says ${holdoutSize}, final_test_metrics.csv sums to ${holdout.sampleSize}`);
+  }
+  if (developmentSize + holdoutSize !== profile.nRows) {
+    throw new Error(`Split sizes do not sum to the dataset: ${developmentSize} + ${holdoutSize} != ${profile.nRows}`);
+  }
+
+  const MODELS_SPLIT = "5-fold cross-validation on the development set";
+  const THRESHOLDS_SPLIT = "Development out-of-fold";
 
   const selectedThresholdVal = modelSelectionMeta ? Number(modelSelectionMeta.selected_threshold) : 0.13;
   const defaultThreshold = thresholds.find((row) => Math.abs(row.t - 0.5) < 0.01);
@@ -357,7 +476,8 @@ async function main() {
       nRows: profile.nRows,
       nFeatures: profile.nFeatures,
       target: "Diabetes_binary",
-      testSize: Math.round(profile.nRows * 0.2),
+      testSize: holdoutSize,
+      developmentSize,
       split: "stratified 80/20",
     },
     classBalance: {
@@ -367,7 +487,18 @@ async function main() {
       positiveClassN: profile.positiveClassN,
     },
     cohortCube: dataset.cohortCube,
-    bestModel: { name: bestModel.name, rocAuc: bestModel.rocAuc, prAuc: bestModel.prAuc },
+    bestModel: {
+      name: bestModel.name,
+      rocAuc: bestModel.rocAuc,
+      prAuc: bestModel.prAuc,
+      evaluationSplit: MODELS_SPLIT,
+    },
+    holdout: {
+      evaluationSplit: holdout.evaluationSplit,
+      sampleSize: holdout.sampleSize,
+      rocAuc: holdout.selected.rocAuc,
+      prAuc: holdout.selected.prAuc,
+    },
     topAssociations: categorical.slice(0, 6).map(({ variable, label, cramersV }) => ({ variable, label, cramersV })),
     rqSummaries: [
       {
@@ -405,7 +536,8 @@ async function main() {
     ],
   };
 
-  const rq1 = { categorical, numeric, notes: { largeN: true } };
+  const adjusted = adjustedRows(adjustedCsv);
+  const rq1 = { categorical, numeric, adjusted, notes: { largeN: true } };
   const highlight = (row) => ({
     t: row.t,
     accuracy: row.accuracy,
@@ -416,10 +548,18 @@ async function main() {
   });
   const rq2 = {
     models,
+    modelsSplit: MODELS_SPLIT,
     bestModelName: bestModel.name,
+    splits: { developmentSize, holdoutSize },
     thresholds,
+    thresholdsSplit: THRESHOLDS_SPLIT,
     highlights: { default: highlight(defaultThreshold), optimized: highlight(optimizedThreshold) },
+    holdout,
     calibration,
+    figures: {
+      holdoutCurves: "/figures/holdout_roc_pr_curves.png",
+      thresholdSweep: "/figures/threshold_analysis.png",
+    },
   };
 
   const uniqueGroups = [...new Set(features.map((f) => f.group))];
@@ -430,6 +570,7 @@ async function main() {
       label: grp,
       members: features.filter((item) => item.group === grp).map((item) => item.variable),
     })),
+    alignment: alignmentSummary(features, sensitivityCsv),
     figures: {
       beeswarm: "/figures/shap_summary_dot.png",
       bar: "/figures/shap_summary_bar.png",
@@ -442,9 +583,9 @@ async function main() {
 
   await Promise.all([
     writeJson("overview.json", overview, `topAssociations=${overview.topAssociations.length}, pipeline=${overview.pipeline.length}`),
-    writeJson("rq1.json", rq1, `categorical=${categorical.length}, numeric=${numeric.length}`),
+    writeJson("rq1.json", rq1, `categorical=${categorical.length}, numeric=${numeric.length}, adjusted=${adjusted.length}`),
     writeJson("rq2.json", rq2, `models=${models.length}, thresholds=${thresholds.length}`),
-    writeJson("rq3.json", rq3, `features=${features.length}, groups=${rq3.groups.length}`),
+    writeJson("rq3.json", rq3, `features=${features.length}, groups=${rq3.groups.length}, spearman=${rq3.alignment.spearman.toFixed(4)}`),
   ]);
 
   const figurePaths = [
@@ -452,8 +593,8 @@ async function main() {
     ["xai", "shap_summary_bar.png"],
     ["xai", "shap_local_diabetic.png"],
     ["xai", "shap_local_healthy.png"],
-    ["modeling", "roc_curves.png"],
-    ["modeling", "pr_curves.png"],
+    ["modeling", "holdout_roc_pr_curves.png"],
+    ["modeling", "threshold_analysis.png"],
     ["statistical_analysis", "top_categorical_prevalence.png"],
     ["statistical_analysis", "bmi_boxplot.png"],
   ];

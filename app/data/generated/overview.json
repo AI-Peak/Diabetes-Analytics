@@ -5,6 +5,7 @@
     "nFeatures": 21,
     "target": "Diabetes_binary",
     "testSize": 50736,
+    "developmentSize": 202944,
     "split": "stratified 80/20"
   },
   "classBalance": {
@@ -1682,7 +1683,14 @@
   "bestModel": {
     "name": "XGBoost",
     "rocAuc": 0.8304960192255288,
-    "prAuc": 0.4359076877819654
+    "prAuc": 0.4359076877819654,
+    "evaluationSplit": "5-fold cross-validation on the development set"
+  },
+  "holdout": {
+    "evaluationSplit": "Untouched holdout test",
+    "sampleSize": 50736,
+    "rocAuc": 0.8272304360918356,
+    "prAuc": 0.4238422002444966
   },
   "topAssociations": [
     {

@@ -41,7 +41,12 @@
       "isBest": true
     }
   ],
+  "modelsSplit": "5-fold cross-validation on the development set",
   "bestModelName": "XGBoost",
+  "splits": {
+    "developmentSize": 202944,
+    "holdoutSize": 50736
+  },
   "thresholds": [
     {
       "t": 0.01,
@@ -1133,6 +1138,7 @@
       "tn": 174667
     }
   ],
+  "thresholdsSplit": "Development out-of-fold",
   "highlights": {
     "default": {
       "t": 0.5,
@@ -1161,11 +1167,51 @@
       }
     }
   },
+  "holdout": {
+    "evaluationSplit": "Untouched holdout test",
+    "sampleSize": 50736,
+    "default": {
+      "t": 0.5,
+      "accuracy": 0.8654801324503312,
+      "precision": 0.558261700095511,
+      "recall": 0.16536992502475598,
+      "specificity": 0.9788169555957588,
+      "f1": 0.25515660809778457,
+      "rocAuc": 0.8272304360918356,
+      "prAuc": 0.4238422002444966,
+      "cm": {
+        "tn": 42742,
+        "fp": 925,
+        "fn": 5900,
+        "tp": 1169
+      }
+    },
+    "selected": {
+      "t": 0.13,
+      "accuracy": 0.7090823084200568,
+      "precision": 0.29909618097278096,
+      "recall": 0.8098740981751309,
+      "specificity": 0.6927657040785948,
+      "f1": 0.43685616177031666,
+      "rocAuc": 0.8272304360918356,
+      "prAuc": 0.4238422002444966,
+      "cm": {
+        "tn": 30251,
+        "fp": 13416,
+        "fn": 1344,
+        "tp": 5725
+      }
+    }
+  },
   "calibration": {
     "brierScore": 0.0974,
     "slope": 0.959,
     "intercept": -0.0514,
     "sampleSize": 50736,
     "evaluationSplit": "Untouched holdout test"
+  },
+  "figures": {
+    "holdoutCurves": "/figures/holdout_roc_pr_curves.png",
+    "thresholdSweep": "/figures/threshold_analysis.png"
   }
 }

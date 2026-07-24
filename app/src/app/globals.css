@@ -1115,6 +1115,20 @@ input[type="range"] {
   object-fit: contain;
 }
 
+/* Keeps a full-width card from blowing a tall exported figure up to page height.
+   Exported matplotlib figures carry baked-in text, so they are capped rather than
+   stretched: wide enough to stay legible, bounded so one archival figure cannot
+   outgrow the analysis it supports. */
+.figure-frame-narrow {
+  max-width: 640px;
+  margin-inline: auto;
+}
+
+.figure-frame-wide {
+  max-width: 760px;
+  margin-inline: auto;
+}
+
 .evidence-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1758,6 +1772,11 @@ input[type="range"] {
 .metric-strip-compact {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0 0 14px;
+}
+
+.metric-strip-thirds {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
 }
 
 .feature-profile .metric-strip-compact {
