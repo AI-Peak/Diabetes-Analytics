@@ -100,18 +100,27 @@ export default function Rq3Page() {
       <Section label="Exported TreeExplainer figures" source="results/xai">
         <ChartCard
           title="Reproducibility exports"
-          subtitle="These are the verified offline figures behind the analysis above. They are grouped here because they are archival artifacts, not the primary reading path; the interactive lab already carries the numbers."
-          source="public/figures/shap_summary_dot.png · shap_local_diabetic.png · shap_local_healthy.png"
+          subtitle="These are the verified offline figures behind the analysis above. They are grouped here because they are archival artifacts, not the primary reading path; the interactive lab already carries the numbers. One tab is shown at a time, so the section costs the height of a single figure."
+          source="public/figures/shap_summary_bar.png · shap_summary_dot.png · shap_local_diabetic.png · shap_local_healthy.png"
         >
           <FigureTabs
             items={[
+              {
+                id: "ranking",
+                label: "Global ranking",
+                src: data.figures.bar,
+                alt: "Bar chart of global mean absolute SHAP importance across all features",
+                width: 2374,
+                height: 2818,
+                caption: "The conventional mean|SHAP| ranking. Same ordering as the feature lab above, kept as the plain reading of it · shap_summary_bar.png",
+              },
               {
                 id: "beeswarm",
                 label: "Global beeswarm",
                 src: data.figures.beeswarm,
                 alt: "SHAP beeswarm showing feature contribution directions and magnitudes",
-                width: 1400,
-                height: 1000,
+                width: 2332,
+                height: 2819,
                 caption: "Adds contribution direction, which the mean absolute ranking cannot show · shap_summary_dot.png",
               },
               {
@@ -119,8 +128,8 @@ export default function Rq3Page() {
                 label: "Local · positive case",
                 src: data.figures.localDiabetic,
                 alt: "SHAP waterfall for a correctly predicted diabetic record",
-                width: 1400,
-                height: 760,
+                width: 2862,
+                height: 1660,
                 caption: "Why one specific record moved toward the positive class. Not a diagnosis · shap_local_diabetic.png",
               },
               {
@@ -128,8 +137,8 @@ export default function Rq3Page() {
                 label: "Local · negative case",
                 src: data.figures.localHealthy,
                 alt: "SHAP waterfall for a correctly predicted healthy record",
-                width: 1400,
-                height: 760,
+                width: 2602,
+                height: 1660,
                 caption: "How evidence can also push the output away from the positive class · shap_local_healthy.png",
               },
             ]}

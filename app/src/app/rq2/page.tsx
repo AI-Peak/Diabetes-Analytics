@@ -89,8 +89,8 @@ export default function Rq2Page() {
                 label: "Holdout ROC and PR",
                 src: data.figures.holdoutCurves,
                 alt: "ROC and precision-recall curves for the selected XGBoost model on the untouched holdout test set",
-                width: 1200,
-                height: 900,
+                width: 3893,
+                height: 1600,
                 caption: `${data.holdout.evaluationSplit}, n=${data.holdout.sampleSize.toLocaleString("en-US")} · holdout_roc_pr_curves.png`,
               },
               {
@@ -98,8 +98,8 @@ export default function Rq2Page() {
                 label: "Threshold sweep",
                 src: data.figures.thresholdSweep,
                 alt: "Precision, recall and F1 plotted against the decision threshold, with the selected screening threshold marked",
-                width: 1200,
-                height: 900,
+                width: 4157,
+                height: 1602,
                 caption: `${data.thresholdsSplit}, n=${data.splits.developmentSize.toLocaleString("en-US")} · threshold_analysis.png`,
               },
             ]}
