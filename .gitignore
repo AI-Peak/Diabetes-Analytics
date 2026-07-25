@@ -81,6 +81,19 @@ data/external/
 # Antigravity/Gemini local CLI cache
 .gemini/
 
+# Local CLI cache
+.claude/
+.codex-tmp/
+
+# Local reports and presentation artifacts
+AI Audit Log/
+outputs/
+presentation/
+REVIEW_PLAN.md
+docs/script_thuyet_trinh.md
+docs/slide_outline.md
+paper.zip
+
 # Local build prompts (do not commit)
 prompts/
 
