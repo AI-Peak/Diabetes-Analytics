@@ -1469,6 +1469,16 @@ input[type="range"] {
   background: color-mix(in srgb, var(--cyan) 8%, var(--bg-card));
 }
 
+.group-card.salient {
+  border-color: color-mix(in srgb, var(--orange) 34%, transparent);
+  background: color-mix(in srgb, var(--orange) 9%, var(--bg-card));
+}
+
+.group-card.weak {
+  border-color: var(--border);
+  background: var(--bg-card);
+}
+
 .group-card h3 {
   margin: 0;
   font-size: var(--fs-lg);

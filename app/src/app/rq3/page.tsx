@@ -8,6 +8,35 @@ export const metadata: Metadata = { title: "RQ3 · Explainable AI" };
 
 type AlignmentRow = Rq3Data["alignment"]["topK"][number];
 
+// Keyed by the group number so a rename in the pipeline's Consistency_Group text
+// cannot silently drop every card into one branch, which is what happened before.
+const GROUP_META: Record<number, { variant: string; tone: "accent" | "teal" | "risk" | "neutral"; description: string }> = {
+  1: {
+    variant: "",
+    tone: "accent",
+    description: "Model and statistics agree on the leading signals: the black box learned recognizable clinical structure.",
+  },
+  2: {
+    variant: " under",
+    tone: "teal",
+    description: "Univariate effects remain meaningful but receive lower multivariate SHAP rank, plausibly because correlated factors share signal with GenHlth.",
+  },
+  3: {
+    variant: " salient",
+    tone: "risk",
+    description: "Weak on its own, yet salient inside the model: the contribution is conditional on the other predictors, so a bivariate reading alone would have missed it.",
+  },
+  4: {
+    variant: " weak",
+    tone: "neutral",
+    description: "Weak on both axes. Neither the marginal association nor the model assigns much weight, so these are reported for completeness rather than interpreted.",
+  },
+};
+
+function groupNumber(key: string, label: string) {
+  return Number(/^group-(\d)/.exec(key)?.[1] ?? /^Group (\d)/.exec(label)?.[1] ?? 0);
+}
+
 const alignmentColumns: TableColumn<AlignmentRow>[] = [
   { id: "k", header: "Cutoff", render: (row) => <strong>Top-{row.k}</strong> },
   { id: "overlap", header: "Overlap vs univariate", align: "right", render: (row) => `${row.overlap} / ${row.k}` },
@@ -53,13 +82,18 @@ export default function Rq3Page() {
         <Rq3Explorer features={data.features} />
 
         <div className="group-cards section-block">
-          {data.groups.map((group) => (
-            <article className={`group-card${group.key === "under-represented" ? " under" : ""}`} key={group.key}>
-              <h3>{group.label}</h3>
-              <p>{group.key === "strong-agreement" ? "Model and statistics agree on the leading signals: the black box learned recognizable clinical structure." : "Univariate effects remain significant but receive lower multivariate SHAP rank, plausibly because correlated factors share signal with GenHlth."}</p>
-              <div className="member-list">{group.members.map((member) => <Chip tone={group.key === "strong-agreement" ? "accent" : "teal"} key={member}>{member}</Chip>)}</div>
-            </article>
-          ))}
+          {data.groups
+            .toSorted((a, b) => groupNumber(a.key, a.label) - groupNumber(b.key, b.label))
+            .map((group) => {
+              const meta = GROUP_META[groupNumber(group.key, group.label)] ?? GROUP_META[4];
+              return (
+                <article className={`group-card${meta.variant}`} key={group.key}>
+                  <h3>{group.label}</h3>
+                  <p>{meta.description}</p>
+                  <div className="member-list">{group.members.map((member) => <Chip tone={meta.tone} key={member}>{member}</Chip>)}</div>
+                </article>
+              );
+            })}
         </div>
       </Section>
 

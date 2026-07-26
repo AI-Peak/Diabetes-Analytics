@@ -20,7 +20,7 @@ export function ThresholdExplorer({ data }: { data: Rq2Data }) {
     <div className="threshold-hero analysis-workbench">
       <ChartCard
         title="Decision-threshold explorer"
-        subtitle="Move the slider or click the precision-recall chart. Metrics and the confusion matrix update together across 19 precomputed thresholds."
+        subtitle={`Move the slider or click the precision-recall chart. Metrics and the confusion matrix update together across ${data.thresholds.length} precomputed thresholds.`}
         source="results/modeling/threshold_analysis.csv"
       >
         <div className="control-row">
