@@ -1,11 +1,16 @@
 "use client";
 
-import type { KeyboardEvent } from "react";
+import { useState, type KeyboardEvent } from "react";
 import { Bar, BarChart, CartesianGrid, Cell, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { ChartTooltip } from "./Tooltip";
 import { type ChartRole, useChartTheme } from "./theme";
 
 export type HBarDatum = { name: string; value: number; detail?: string; displayValue?: string; tone?: ChartRole };
+
+type ChartHoverState = {
+  activePayload?: Array<{ payload?: { name?: unknown } }>;
+  isTooltipActive?: boolean;
+};
 
 export function HBarChart({
   data,
@@ -25,6 +30,7 @@ export function HBarChart({
   onSelect?: (datum: HBarDatum, mode: "push" | "replace") => void;
 }) {
   const theme = useChartTheme();
+  const [hoveredName, setHoveredName] = useState<string>();
   if (!data.length) return <div className="chart-empty">No chart data available.</div>;
   const height = Math.max(260, data.length * 33 + 50);
   const handleClick = (entry: unknown) => {
@@ -59,7 +65,16 @@ export function HBarChart({
     >
       <div className="chart-min-width" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} layout="vertical" margin={{ top: 4, right: 68, left: 10, bottom: 4 }}>
+          <BarChart
+            data={data}
+            layout="vertical"
+            margin={{ top: 4, right: 68, left: 10, bottom: 4 }}
+            onMouseMove={(state: ChartHoverState) => {
+              const name = state.isTooltipActive ? state.activePayload?.[0]?.payload?.name : undefined;
+              setHoveredName(typeof name === "string" ? name : undefined);
+            }}
+            onMouseLeave={() => setHoveredName(undefined)}
+          >
             <CartesianGrid stroke={theme.grid} horizontal={false} />
             <XAxis type="number" tick={{ fill: theme.axis, fontSize: 13 }} tickLine={false} axisLine={{ stroke: theme.grid }} tickFormatter={formatValue} />
             <YAxis type="category" dataKey="name" width={190} tick={{ fill: theme.axis, fontSize: 13 }} tickLine={false} axisLine={false} />
@@ -67,18 +82,35 @@ export function HBarChart({
             <Bar dataKey="value" name={valueLabel} fill={theme[color]} radius={[0, 6, 6, 0]} maxBarSize={18} onClick={handleClick} cursor={onSelect ? "pointer" : undefined}>
               {data.map((entry) => {
                 const dimmed = Boolean(selectedName && selectedName !== entry.name);
-                return <Cell fill={theme[entry.tone ?? color]} fillOpacity={dimmed ? 0.32 : 1} key={entry.name} />;
+                return (
+                  <Cell
+                    fill={theme[entry.tone ?? color]}
+                    fillOpacity={dimmed ? 0.32 : 1}
+                    key={entry.name}
+                  />
+                );
               })}
               <LabelList
                 dataKey={(entry: Record<string, unknown>) => {
                   const datum = entry as HBarDatum;
                   return datum.displayValue ?? formatValue(datum.value);
                 }}
-                position="right"
-                fill={theme.label}
-                stroke="none"
-                strokeWidth={0}
-                fontSize={13}
+                content={({ x, y, width, height, value, index }) => {
+                  const xPos = Number(x) + Number(width) + 8;
+                  const yPos = Number(y) + Number(height) / 2;
+                  const datum = typeof index === "number" ? data[index] : undefined;
+                  return (
+                    <text
+                      x={xPos}
+                      y={yPos}
+                      dominantBaseline="central"
+                      fill={datum?.name === hoveredName ? "#000000" : theme.label}
+                      fontSize={13}
+                    >
+                      {String(value ?? "")}
+                    </text>
+                  );
+                }}
               />
             </Bar>
           </BarChart>

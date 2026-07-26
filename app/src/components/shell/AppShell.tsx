@@ -16,6 +16,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         ) : null}
         <div className="content-shell">
           <Topbar onMenu={() => setSidebarOpen(true)} />
+          {/* The sidebar footer carries this notice on desktop, but the sidebar
+              collapses into a dismissible drawer below 920px. This keeps the
+              non-diagnostic disclaimer present on every page at every width. */}
+          <p className="shell-disclaimer">Research and education tool, not a diagnostic device. Association is not causation.</p>
           <main className="main-scroll" id="main-content">
             {children}
           </main>

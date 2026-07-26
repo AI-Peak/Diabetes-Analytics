@@ -22,7 +22,7 @@ export default function Rq2Page() {
       </Reveal>
 
       <Section label="Final result on the untouched holdout" source="results/modeling/final_test_metrics.csv">
-        <div className="kpi-grid">
+        <div className="kpi-grid rq2-card-gap-after">
           <KpiCard label="Winner" value={winner.name} note={`Selected by CV PR-AUC ${winner.prAuc.toFixed(3)}`} tone="accent" />
           <KpiCard label={`Holdout recall @ ${data.holdout.selected.t.toFixed(2)}`} value={fmtPct(data.holdout.selected.recall)} note={`${data.holdout.selected.cm.fn.toLocaleString("en-US")} missed positives, down from ${data.holdout.default.cm.fn.toLocaleString("en-US")} at t=0.50`} tone="risk" />
           <KpiCard label="Holdout PR-AUC" value={data.holdout.selected.prAuc.toFixed(4)} note={`ROC-AUC ${data.holdout.selected.rocAuc.toFixed(4)} · n=${data.holdout.sampleSize.toLocaleString("en-US")}`} />
@@ -30,6 +30,7 @@ export default function Rq2Page() {
         </div>
 
         <ChartCard
+          className="rq2-card-gap-after"
           title="Probability calibration on the same holdout"
           subtitle="Discrimination alone does not make probabilities usable. A slope near 1 and an intercept near 0 mean the scores can be read as risk levels rather than as a ranking order only. No recalibration was applied."
           source="results/modeling/calibration_metrics.csv"
@@ -91,6 +92,7 @@ export default function Rq2Page() {
                 alt: "ROC and precision-recall curves for the selected XGBoost model on the untouched holdout test set",
                 width: 3893,
                 height: 1600,
+                size: "large",
                 caption: `${data.holdout.evaluationSplit}, n=${data.holdout.sampleSize.toLocaleString("en-US")} · holdout_roc_pr_curves.png`,
               },
               {
@@ -100,6 +102,7 @@ export default function Rq2Page() {
                 alt: "Precision, recall and F1 plotted against the decision threshold, with the selected screening threshold marked",
                 width: 4157,
                 height: 1602,
+                size: "large",
                 caption: `${data.thresholdsSplit}, n=${data.splits.developmentSize.toLocaleString("en-US")} · threshold_analysis.png`,
               },
             ]}

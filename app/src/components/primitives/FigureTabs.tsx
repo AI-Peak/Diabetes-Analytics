@@ -11,6 +11,7 @@ export type FigureTabItem = {
   width: number;
   height: number;
   caption: string;
+  size?: "compact" | "wide" | "large";
 };
 
 /**
@@ -26,7 +27,7 @@ export function FigureTabs({ items }: { items: FigureTabItem[] }) {
         label: item.label,
         content: (
           <figure>
-            <div className="figure-frame figure-frame-wide">
+            <div className={`figure-frame figure-frame-${item.size ?? "wide"}`}>
               <Image
                 src={item.src}
                 alt={item.alt}

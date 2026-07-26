@@ -150,7 +150,7 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
       <div className="section-block">
         <ChartCard title="BMI distribution by class" subtitle="The exported boxplot remains supporting evidence; the primary categorical analysis above is now fully interactive." source="public/figures/bmi_boxplot.png">
           <figure>
-            <div className="figure-frame figure-frame-wide"><Image src="/figures/bmi_boxplot.png" alt="Boxplot comparing BMI between healthy and diabetic classes" width={2400} height={1500} sizes="(max-width: 920px) 100vw, 760px" /></div>
+            <div className="figure-frame figure-frame-wide"><Image src="/figures/bmi_boxplot.png" alt="Boxplot comparing BMI between the no reported diabetes and prediabetes or diabetes classes" width={2400} height={1500} sizes="(max-width: 920px) 100vw, 760px" /></div>
             <figcaption className="figure-caption">Supporting figure · bmi_boxplot.png</figcaption>
           </figure>
         </ChartCard>

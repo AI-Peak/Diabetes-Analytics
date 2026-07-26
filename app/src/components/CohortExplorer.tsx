@@ -164,7 +164,7 @@ export function CohortExplorer({
             selectedName={age === "all" ? undefined : selectedAgeLabel}
             onSelect={(datum, mode) => {
               const match = ageSeries.find((row) => row.name === datum.name);
-              if (match) setAge(match.ageValue, mode);
+              if (match) setAge(age === match.ageValue ? "all" : match.ageValue, mode);
             }}
             formatValue={(value) => `${value.toFixed(1)}%`}
             ariaLabel="Diabetes prevalence by age group under the selected cohort filters"
@@ -187,7 +187,8 @@ export function CohortExplorer({
               ]}
               formatValue={(value) => `${(value * 100).toFixed(0)}%`}
               ariaLabel="Class composition for the selected cohort compared with the full population"
-              minWidthClass="chart-min-width-narrow"
+              minWidthClass="chart-fit-width"
+              showValues
             />
           )}
           <p className="interaction-hint">Selections are computed from 208 anonymous aggregate cells; no person-level records are sent to the browser. Orange age bars have fewer than 30 records.</p>

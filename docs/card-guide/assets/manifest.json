@@ -1,0 +1,554 @@
+[
+  {
+    "id": "shell-sidebar",
+    "light": "assets/light/shell-sidebar.png",
+    "dark": "assets/dark/shell-sidebar.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "shell-topbar",
+    "light": "assets/light/shell-topbar.png",
+    "dark": "assets/dark/shell-topbar.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "shell-disclaimer",
+    "light": "assets/light/shell-disclaimer.png",
+    "dark": "assets/dark/shell-disclaimer.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-hero",
+    "light": "assets/light/ov-hero.png",
+    "dark": "assets/dark/ov-hero.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-kpi",
+    "light": "assets/light/ov-kpi.png",
+    "dark": "assets/dark/ov-kpi.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-cohort-filters",
+    "light": "assets/light/ov-cohort-filters.png",
+    "dark": "assets/dark/ov-cohort-filters.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-cohort-metrics",
+    "light": "assets/light/ov-cohort-metrics.png",
+    "dark": "assets/dark/ov-cohort-metrics.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-cohort-metrics-empty",
+    "light": "assets/light/ov-cohort-metrics-empty.png",
+    "dark": "assets/dark/ov-cohort-metrics-empty.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-age-profile",
+    "light": "assets/light/ov-age-profile.png",
+    "dark": "assets/dark/ov-age-profile.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-cohort-vs-pop",
+    "light": "assets/light/ov-cohort-vs-pop.png",
+    "dark": "assets/dark/ov-cohort-vs-pop.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-evidence-chain",
+    "light": "assets/light/ov-evidence-chain.png",
+    "dark": "assets/dark/ov-evidence-chain.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-pipeline",
+    "light": "assets/light/ov-pipeline.png",
+    "dark": "assets/dark/ov-pipeline.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ov-class-balance",
+    "light": "assets/light/ov-class-balance.png",
+    "dark": "assets/dark/ov-class-balance.png",
+    "page": "/overview",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq1-hero",
+    "light": "assets/light/rq1-hero.png",
+    "dark": "assets/dark/rq1-hero.png",
+    "page": "/rq1",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq1-kpi",
+    "light": "assets/light/rq1-kpi.png",
+    "dark": "assets/dark/rq1-kpi.png",
+    "page": "/rq1",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq1-largen",
+    "light": "assets/light/rq1-largen.png",
+    "dark": "assets/dark/rq1-largen.png",
+    "page": "/rq1",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq1-explorer",
+    "light": "assets/light/rq1-explorer.png",
+    "dark": "assets/dark/rq1-explorer.png",
+    "page": "/rq1",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq1-levels",
+    "light": "assets/light/rq1-levels.png",
+    "dark": "assets/dark/rq1-levels.png",
+    "page": "/rq1",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq1-profile",
+    "light": "assets/light/rq1-profile.png",
+    "dark": "assets/dark/rq1-profile.png",
+    "page": "/rq1",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq1-numeric",
+    "light": "assets/light/rq1-numeric.png",
+    "dark": "assets/dark/rq1-numeric.png",
+    "page": "/rq1",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq1-bmi-figure",
+    "light": "assets/light/rq1-bmi-figure.png",
+    "dark": "assets/dark/rq1-bmi-figure.png",
+    "page": "/rq1",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq1-adjusted",
+    "light": "assets/light/rq1-adjusted.png",
+    "dark": "assets/dark/rq1-adjusted.png",
+    "page": "/rq1",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-hero",
+    "light": "assets/light/rq2-hero.png",
+    "dark": "assets/dark/rq2-hero.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-holdout-kpi",
+    "light": "assets/light/rq2-holdout-kpi.png",
+    "dark": "assets/dark/rq2-holdout-kpi.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-calibration",
+    "light": "assets/light/rq2-calibration.png",
+    "dark": "assets/dark/rq2-calibration.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-split-callout",
+    "light": "assets/light/rq2-split-callout.png",
+    "dark": "assets/dark/rq2-split-callout.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-dev-kpi",
+    "light": "assets/light/rq2-dev-kpi.png",
+    "dark": "assets/dark/rq2-dev-kpi.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-scorecard",
+    "light": "assets/light/rq2-scorecard.png",
+    "dark": "assets/dark/rq2-scorecard.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-threshold-t050",
+    "light": "assets/light/rq2-threshold-t050.png",
+    "dark": "assets/dark/rq2-threshold-t050.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-threshold-t013",
+    "light": "assets/light/rq2-threshold-t013.png",
+    "dark": "assets/dark/rq2-threshold-t013.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-confusion-t050",
+    "light": "assets/light/rq2-confusion-t050.png",
+    "dark": "assets/dark/rq2-confusion-t050.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-confusion-t013",
+    "light": "assets/light/rq2-confusion-t013.png",
+    "dark": "assets/dark/rq2-confusion-t013.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq2-exports",
+    "light": "assets/light/rq2-exports.png",
+    "dark": "assets/dark/rq2-exports.png",
+    "page": "/rq2",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-hero",
+    "light": "assets/light/rq3-hero.png",
+    "dark": "assets/dark/rq3-hero.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-kpi",
+    "light": "assets/light/rq3-kpi.png",
+    "dark": "assets/dark/rq3-kpi.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-shap-ranking",
+    "light": "assets/light/rq3-shap-ranking.png",
+    "dark": "assets/dark/rq3-shap-ranking.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-scatter",
+    "light": "assets/light/rq3-scatter.png",
+    "dark": "assets/dark/rq3-scatter.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-scatter-sex",
+    "light": "assets/light/rq3-scatter-sex.png",
+    "dark": "assets/dark/rq3-scatter-sex.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-feature-profile",
+    "light": "assets/light/rq3-feature-profile.png",
+    "dark": "assets/dark/rq3-feature-profile.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-table",
+    "light": "assets/light/rq3-table.png",
+    "dark": "assets/dark/rq3-table.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-groups",
+    "light": "assets/light/rq3-groups.png",
+    "dark": "assets/dark/rq3-groups.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-alignment",
+    "light": "assets/light/rq3-alignment.png",
+    "dark": "assets/dark/rq3-alignment.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "rq3-exports",
+    "light": "assets/light/rq3-exports.png",
+    "dark": "assets/dark/rq3-exports.png",
+    "page": "/rq3",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ai-hero",
+    "light": "assets/light/ai-hero.png",
+    "dark": "assets/dark/ai-hero.png",
+    "page": "/assistant",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ai-chat",
+    "light": "assets/light/ai-chat.png",
+    "dark": "assets/dark/ai-chat.png",
+    "page": "/assistant",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  },
+  {
+    "id": "ai-suggestions",
+    "light": "assets/light/ai-suggestions.png",
+    "dark": "assets/dark/ai-suggestions.png",
+    "page": "/assistant",
+    "capturedAt": "2026-07-26T10:49:56.727Z",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "deviceScaleFactor": 2
+    }
+  }
+]
