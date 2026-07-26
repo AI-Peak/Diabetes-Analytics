@@ -91,7 +91,11 @@ outputs/
 presentation/
 REVIEW_PLAN.md
 docs/script_thuyet_trinh.md
+docs/script_nhan.md
 docs/slide_outline.md
+docs/website_card_guide.md
+docs/card-guide/
+docs/prompt_build_card_guide_html.md
 paper.zip
 
 # Local build prompts (do not commit)
