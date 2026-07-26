@@ -61,14 +61,13 @@ export function HBarChart({
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} layout="vertical" margin={{ top: 4, right: 68, left: 10, bottom: 4 }}>
             <CartesianGrid stroke={theme.grid} horizontal={false} />
-            <XAxis type="number" tick={{ fill: theme.axis, fontSize: 11 }} tickLine={false} axisLine={{ stroke: theme.grid }} tickFormatter={formatValue} />
-            <YAxis type="category" dataKey="name" width={168} tick={{ fill: theme.axis, fontSize: 11 }} tickLine={false} axisLine={false} />
+            <XAxis type="number" tick={{ fill: theme.axis, fontSize: 13 }} tickLine={false} axisLine={{ stroke: theme.grid }} tickFormatter={formatValue} />
+            <YAxis type="category" dataKey="name" width={190} tick={{ fill: theme.axis, fontSize: 13 }} tickLine={false} axisLine={false} />
             <Tooltip content={<ChartTooltip formatter={(value) => formatValue(Number(value))} />} />
             <Bar dataKey="value" name={valueLabel} fill={theme[color]} radius={[0, 6, 6, 0]} maxBarSize={18} onClick={handleClick} cursor={onSelect ? "pointer" : undefined}>
               {data.map((entry) => {
-                const selected = selectedName === entry.name;
-                const dimmed = Boolean(selectedName && !selected);
-                return <Cell fill={theme[entry.tone ?? color]} fillOpacity={dimmed ? 0.38 : 1} stroke={selected ? theme.red : "transparent"} strokeWidth={selected ? 1.5 : 0} key={entry.name} />;
+                const dimmed = Boolean(selectedName && selectedName !== entry.name);
+                return <Cell fill={theme[entry.tone ?? color]} fillOpacity={dimmed ? 0.32 : 1} key={entry.name} />;
               })}
               <LabelList
                 dataKey={(entry: Record<string, unknown>) => {
@@ -77,7 +76,9 @@ export function HBarChart({
                 }}
                 position="right"
                 fill={theme.label}
-                fontSize={11}
+                stroke="none"
+                strokeWidth={0}
+                fontSize={13}
               />
             </Bar>
           </BarChart>

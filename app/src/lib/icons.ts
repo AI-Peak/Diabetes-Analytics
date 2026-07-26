@@ -1,5 +1,6 @@
 export {
   Activity,
+  AlertTriangle,
   ArrowRight,
   BarChart3,
   Brain,
@@ -12,6 +13,7 @@ export {
   Menu,
   MessageSquare,
   Moon,
+  RotateCcw,
   Search,
   Send,
   Sun,

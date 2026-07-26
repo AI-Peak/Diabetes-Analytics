@@ -19,9 +19,7 @@ export default function OverviewPage() {
           title="From population evidence to explainable diabetes-risk screening."
           subtitle="A CRISP-DM research arc connecting statistical association, imbalanced classification, threshold design, and SHAP-based explanation on CDC BRFSS 2015."
           meta={[
-            `No reported diabetes ${data.classBalance.noDiabetesPct.toFixed(1)}%`,
-            `Prediabetes/diabetes ${data.classBalance.positiveClassPct.toFixed(1)}%`,
-            `${data.dataset.nFeatures} indicators`,
+            "CDC BRFSS 2015",
             "SQL · Python · XGBoost · SHAP",
           ]}
         />

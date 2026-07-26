@@ -54,8 +54,8 @@ export function RankScatter({ data, selectedVariable, onSelect }: { data: RankPo
         <ResponsiveContainer width="100%" height={430}>
           <ScatterChart margin={{ top: 18, right: 18, left: 0, bottom: 18 }}>
             <CartesianGrid stroke={theme.grid} />
-            <XAxis type="number" dataKey="statRank" name="Stat rank" domain={[1, 21]} reversed tick={{ fill: theme.axis, fontSize: 11 }} tickLine={false} axisLine={{ stroke: theme.grid }} label={{ value: "Statistical rank (1 = strongest)", position: "insideBottom", offset: -12, fill: theme.axis, fontSize: 11 }} />
-            <YAxis type="number" dataKey="shapRank" name="SHAP rank" domain={[1, 21]} reversed tick={{ fill: theme.axis, fontSize: 11 }} tickLine={false} axisLine={false} label={{ value: "SHAP rank", angle: -90, position: "insideLeft", fill: theme.axis, fontSize: 11 }} />
+            <XAxis type="number" dataKey="statRank" name="Stat rank" domain={[1, 21]} reversed tick={{ fill: theme.axis, fontSize: 13 }} tickLine={false} axisLine={{ stroke: theme.grid }} label={{ value: "Statistical rank (1 = strongest)", position: "insideBottom", offset: -12, fill: theme.axis, fontSize: 13 }} />
+            <YAxis type="number" dataKey="shapRank" name="SHAP rank" domain={[1, 21]} reversed tick={{ fill: theme.axis, fontSize: 13 }} tickLine={false} axisLine={false} label={{ value: "SHAP rank", angle: -90, position: "insideLeft", fill: theme.axis, fontSize: 13 }} />
             <ZAxis range={[70, 70]} />
             <ReferenceLine segment={[{ x: 1, y: 1 }, { x: 21, y: 21 }]} stroke={theme.axis} strokeDasharray="5 5" />
             <Tooltip content={<RankTooltip />} cursor={{ strokeDasharray: "3 3" }} />

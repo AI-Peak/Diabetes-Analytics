@@ -5,6 +5,7 @@ import { GroupedBar, HBarChart } from "@/components/charts";
 import { Callout, ChartCard, Select, StatBadge } from "@/components/primitives";
 import type { CohortCell } from "@/lib/data/schemas";
 import { fmtInt } from "@/lib/format";
+import { RotateCcw } from "@/lib/icons";
 import { clearUrlState, useUrlState } from "@/lib/use-url-state";
 
 const SMALL_SAMPLE_N = 30;
@@ -109,6 +110,7 @@ export function CohortExplorer({
     { name: "Population", noDiabetes: 1 - overall.positiveClassPct / 100, prediabetesOrDiabetes: overall.positiveClassPct / 100 },
   ];
 
+  const activeFilters = [sex, age, bmi, highBP].filter((value) => value !== "all").length;
   const reset = () => {
     clearUrlState(["sex", "age", "bmi", "bp"]);
   };
@@ -116,11 +118,20 @@ export function CohortExplorer({
   return (
     <div className="analysis-workbench">
       <div className="filter-toolbar" aria-label="Cohort slicers">
-        <Select label="Sex" value={sex} options={SEX_OPTIONS} onChange={setSex} />
-        <Select label="Age group" value={age} options={AGE_OPTIONS} onChange={setAge} />
-        <Select label="BMI band" value={bmi} options={BMI_OPTIONS} onChange={setBmi} />
-        <Select label="Blood pressure" value={highBP} options={BP_OPTIONS} onChange={setHighBP} />
-        <button className="quick-button secondary filter-reset" type="button" onClick={reset}>Reset slicers</button>
+        <Select label="Sex" value={sex} options={SEX_OPTIONS} onChange={setSex} hideLabel />
+        <Select label="Age group" value={age} options={AGE_OPTIONS} onChange={setAge} hideLabel />
+        <Select label="BMI band" value={bmi} options={BMI_OPTIONS} onChange={setBmi} hideLabel />
+        <Select label="Blood pressure" value={highBP} options={BP_OPTIONS} onChange={setHighBP} hideLabel />
+        <button
+          className="quick-button secondary filter-reset"
+          type="button"
+          onClick={reset}
+          disabled={activeFilters === 0}
+          title={activeFilters === 0 ? "No filters applied" : `Clear ${activeFilters} active filter${activeFilters > 1 ? "s" : ""}`}
+        >
+          <RotateCcw size={15} aria-hidden="true" />
+          <span>Reset filters{activeFilters > 0 ? ` · ${activeFilters}` : ""}</span>
+        </button>
       </div>
 
       <div className="metric-strip" aria-live="polite">
@@ -176,6 +187,7 @@ export function CohortExplorer({
               ]}
               formatValue={(value) => `${(value * 100).toFixed(0)}%`}
               ariaLabel="Class composition for the selected cohort compared with the full population"
+              minWidthClass="chart-min-width-narrow"
             />
           )}
           <p className="interaction-hint">Selections are computed from 208 anonymous aggregate cells; no person-level records are sent to the browser. Orange age bars have fewer than 30 records.</p>
