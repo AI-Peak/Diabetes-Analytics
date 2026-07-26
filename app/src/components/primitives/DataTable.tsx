@@ -4,7 +4,7 @@ export type TableColumn<T> = {
   id: string;
   header: string;
   render: (row: T) => ReactNode;
-  align?: "left" | "right";
+  align?: "left" | "right" | "center";
 };
 
 export function DataTable<T>({
@@ -31,7 +31,7 @@ export function DataTable<T>({
       <table className={`data-table${stickyHeader ? " sticky-head" : ""}`}>
         <caption className="sr-only">{caption}</caption>
         <thead>
-          <tr>{columns.map((column) => <th className={column.align === "right" ? "align-right" : undefined} key={column.id} scope="col">{column.header}</th>)}</tr>
+          <tr>{columns.map((column) => <th className={column.align === "right" ? "align-right" : column.align === "center" ? "align-center" : undefined} key={column.id} scope="col">{column.header}</th>)}</tr>
         </thead>
         <tbody>
           {rows.map((row) => {
@@ -59,7 +59,7 @@ export function DataTable<T>({
               {...interaction}
             >
               {columns.map((column) => (
-                <td className={column.align === "right" ? "align-right num" : undefined} key={column.id}>{column.render(row)}</td>
+                <td className={column.align === "right" ? "align-right num" : column.align === "center" ? "align-center num" : undefined} key={column.id}>{column.render(row)}</td>
               ))}
             </tr>
           );})}

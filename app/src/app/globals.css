@@ -474,6 +474,13 @@ svg {
   color: #ffffff;
 }
 
+.footer-disclaimer {
+  margin: 0;
+  color: var(--text-dim);
+  font-size: var(--fs-micro);
+  line-height: 1.5;
+}
+
 .sidebar-close {
   display: none;
 }
@@ -556,33 +563,8 @@ svg {
   display: none;
 }
 
-.disclaimer-banner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 42px;
-  padding: 9px 18px;
-  border-bottom: 1px solid var(--border);
-  background: var(--accent-soft);
-  color: var(--insight-text);
-  font-size: var(--fs-sm);
-  text-align: center;
-}
-
-.disclaimer-banner svg {
-  flex: 0 0 auto;
-}
-
-.disclaimer-banner strong {
-  font-family: var(--font-mono), monospace;
-  font-size: var(--fs-micro);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
 .main-scroll {
-  min-height: calc(100vh - 120px);
+  min-height: calc(100vh - 76px);
   background-image: radial-gradient(var(--grid-line) 0.65px, transparent 0.65px);
   background-size: 18px 18px;
 }
@@ -591,7 +573,7 @@ svg {
   width: 100%;
   max-width: 1320px;
   margin: 0 auto;
-  padding: clamp(28px, 4vw, 52px) clamp(18px, 4vw, 48px) 64px;
+  padding: clamp(20px, 2vw, 30px) clamp(18px, 4vw, 48px) 64px;
 }
 
 .page-head {
@@ -670,14 +652,14 @@ svg {
 }
 
 .section-block {
-  margin-top: 32px;
+  margin-top: 22px;
 }
 
 .section-heading {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
 }
 
 .section-heading::after {
@@ -720,8 +702,8 @@ svg {
 .kpi-card {
   position: relative;
   overflow: hidden;
-  min-height: 164px;
-  padding: 20px;
+  min-height: 122px;
+  padding: 15px 17px;
 }
 
 .kpi-card::before {
@@ -749,10 +731,10 @@ svg {
 }
 
 .kpi-value {
-  margin-top: 16px;
+  margin-top: 9px;
   color: var(--text);
   font-family: var(--font-mono), monospace;
-  font-size: clamp(24px, 3vw, 34px);
+  font-size: clamp(23px, 2.2vw, 30px);
   font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1;
@@ -763,7 +745,7 @@ svg {
 }
 
 .kpi-note {
-  margin: 12px 0 0;
+  margin: 8px 0 0;
   color: var(--text-muted);
   font-size: var(--fs-xs);
   line-height: 1.5;
@@ -832,6 +814,10 @@ svg {
   font-family: var(--font-mono), monospace;
   font-size: var(--fs-xs);
   font-weight: 700;
+}
+
+.callout-attached {
+  margin-top: 12px;
 }
 
 .stat-badge {
@@ -935,6 +921,10 @@ svg {
 
 .align-right {
   text-align: right !important;
+}
+
+.align-center {
+  text-align: center !important;
 }
 
 .control-row {
@@ -1145,6 +1135,7 @@ input[type="range"] {
 .evidence-card {
   position: relative;
   display: flex;
+  height: 100%;
   min-height: 280px;
   flex-direction: column;
   padding: 21px;
@@ -1164,7 +1155,7 @@ input[type="range"] {
 }
 
 .evidence-title {
-  margin: 30px 0 10px;
+  margin: 14px 0 10px;
   font-size: 21px;
   letter-spacing: -0.025em;
   line-height: 1.15;
@@ -1389,7 +1380,7 @@ input[type="range"] {
 }
 
 .metric-mini {
-  padding: 13px;
+  padding: 11px 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
   background: var(--bg-elevated);
@@ -1408,7 +1399,7 @@ input[type="range"] {
   display: block;
   margin-top: 5px;
   font-family: var(--font-mono), monospace;
-  font-size: 22px;
+  font-size: 20px;
 }
 
 .confusion-grid {
@@ -1722,11 +1713,11 @@ input[type="range"] {
 }
 
 .analysis-workbench .section-block {
-  margin-top: 18px;
+  margin-top: 12px;
 }
 
 .analysis-workbench .metric-strip {
-  margin: 10px 0;
+  margin: 0;
 }
 
 .filter-toolbar {
@@ -1754,7 +1745,7 @@ input[type="range"] {
 
 .workbench-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(410px, 0.75fr);
+  grid-template-columns: minmax(0, 1.35fr) minmax(330px, 0.6fr);
   gap: 10px;
   align-items: start;
 }
@@ -1790,9 +1781,21 @@ input[type="range"] {
   line-height: 1.6;
 }
 
-.metric-strip-compact {
+.profile-note {
+  margin: 12px 0 0;
+  color: var(--text-muted);
+  font-size: var(--fs-xs);
+  line-height: 1.6;
+}
+
+.profile-note strong {
+  color: var(--text);
+}
+
+.metric-strip-compact,
+.analysis-workbench .metric-strip-compact {
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin: 0 0 14px;
+  margin: 12px 0 0;
 }
 
 .metric-strip-thirds {
@@ -1841,7 +1844,7 @@ input[type="range"] {
   }
 
   .page {
-    padding: 27px 14px 48px;
+    padding: 20px 14px 44px;
   }
 
   .page-head {

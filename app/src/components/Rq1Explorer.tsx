@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useMemo } from "react";
 import { HBarChart } from "@/components/charts";
-import { Callout, ChartCard, Chip, DataTable, Select, SliderControl, StatBadge, type TableColumn } from "@/components/primitives";
+import { ChartCard, Chip, DataTable, Select, SliderControl, StatBadge, type TableColumn } from "@/components/primitives";
 import type { Rq1Data } from "@/lib/data/schemas";
 import { fmtFloat, fmtInt } from "@/lib/format";
 import { useUrlState } from "@/lib/use-url-state";
@@ -39,11 +39,11 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
 
   const numericColumns: TableColumn<Rq1Data["numeric"][number]>[] = [
     { id: "variable", header: "Variable", render: (row) => <><strong>{row.variable}</strong><br /><span className="card-source">numeric factor</span></> },
-    { id: "healthy", header: "No reported diabetes mean", align: "right", render: (row) => fmtFloat(row.noDiabetesMean, 2) },
-    { id: "diabetic", header: "Prediabetes/Diabetes mean", align: "right", render: (row) => fmtFloat(row.positiveClassMean, 2) },
-    { id: "diff", header: "Mean diff", align: "right", render: (row) => fmtFloat(row.meanDiff, 2) },
-    { id: "d", header: "Cohen's d", align: "right", render: (row) => fmtFloat(row.cohensD, 3) },
-    { id: "rb", header: "|Rank-biserial|", align: "right", render: (row) => fmtFloat(Math.abs(row.rankBiserial), 3) },
+    { id: "healthy", header: "No reported diabetes mean", align: "center", render: (row) => fmtFloat(row.noDiabetesMean, 2) },
+    { id: "diabetic", header: "Prediabetes/Diabetes mean", align: "center", render: (row) => fmtFloat(row.positiveClassMean, 2) },
+    { id: "diff", header: "Mean diff", align: "center", render: (row) => fmtFloat(row.meanDiff, 2) },
+    { id: "d", header: "Cohen's d", align: "center", render: (row) => fmtFloat(row.cohensD, 3) },
+    { id: "rb", header: "|Rank-biserial|", align: "center", render: (row) => fmtFloat(Math.abs(row.rankBiserial), 3) },
     { id: "magnitude", header: "Magnitude", render: (row) => <StatBadge label={numericMagnitude(row.cohensD)} tone={Math.abs(row.cohensD) >= 0.5 ? "moderate" : "neutral"} /> },
   ];
 
@@ -121,21 +121,23 @@ export function Rq1Explorer({ data }: { data: Rq1Data }) {
 
         <ChartCard
           title="Selected factor profile"
-          subtitle="Ranking selection, category prevalence and evidence summary share the same factor state."
+          subtitle="Detail panel for the factor selected above: how strongly it separates the two classes, and which category carries the highest observed prevalence."
           source="rq1.json · selected variable"
         >
+          <div className="selection-panel">
+            <span className="eyebrow">Current selection</span>
+            <h3>{selected.label}</h3>
+            <p><strong>{highest.label}</strong> has the highest observed diabetes prevalence at {highest.prevalencePct.toFixed(1)}%, compared with {lowest.prevalencePct.toFixed(1)}% for <strong>{lowest.label}</strong>.</p>
+          </div>
           <div className="metric-strip metric-strip-compact" aria-live="polite">
             <div className="metric-mini"><span>Cramer&apos;s V</span><strong>{selected.cramersV.toFixed(3)}</strong></div>
             <div className="metric-mini"><span>Rate spread</span><strong>{selected.maxDiffPct.toFixed(1)} pp</strong></div>
             <div className="metric-mini"><span>Highest group</span><strong>{highest.prevalencePct.toFixed(1)}%</strong></div>
             <div className="metric-mini"><span>Lowest group</span><strong>{lowest.prevalencePct.toFixed(1)}%</strong></div>
           </div>
-          <div className="selection-panel">
-            <span className="eyebrow">Current selection</span>
-            <h3>{selected.label}</h3>
-            <p><strong>{highest.label}</strong> has the highest observed diabetes prevalence at {highest.prevalencePct.toFixed(1)}%, compared with {lowest.prevalencePct.toFixed(1)}% for <strong>{lowest.label}</strong>.</p>
-          </div>
-          <Callout><strong>Interpret carefully.</strong> This is a bivariate association profile. It supports exploration but does not estimate an adjusted or causal effect.</Callout>
+          <p className="profile-note">
+            <strong>Interpret carefully.</strong> This is a bivariate association profile. It supports exploration but does not estimate an adjusted or causal effect.
+          </p>
         </ChartCard>
       </div>
 

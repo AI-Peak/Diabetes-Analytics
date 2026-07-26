@@ -1,6 +1,5 @@
 export {
   Activity,
-  AlertTriangle,
   ArrowRight,
   BarChart3,
   Brain,

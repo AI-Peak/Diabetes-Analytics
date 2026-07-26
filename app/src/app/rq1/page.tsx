@@ -42,13 +42,12 @@ export default function Rq1Page() {
           <KpiCard label="Top Cramér's V" value={fmtFloat(topCategorical.cramersV, 3)} note={`${topCategorical.variable} · ${topCategorical.interpretation}`} tone="accent" />
           <KpiCard label="Top Cohen's d" value={fmtFloat(topNumeric.cohensD, 3)} note={`${topNumeric.variable} · largest numeric effect`} tone="risk" />
         </div>
+        {data.notes.largeN ? (
+          <div className="callout-attached">
+            <Callout variant="warn"><strong>Large-N caution.</strong> With N = 253,680, nearly all p-values are approximately zero. Rank findings by <strong>effect size</strong>, not significance alone.</Callout>
+          </div>
+        ) : null}
       </Section>
-
-      {data.notes.largeN ? (
-        <div className="section-block">
-          <Callout variant="warn"><strong>Large-N caution.</strong> With N = 253,680, nearly all p-values are approximately zero. Rank findings by <strong>effect size</strong>, not significance alone.</Callout>
-        </div>
-      ) : null}
 
       <Section label="Association explorer" source="results/statistical_analysis">
         <Rq1Explorer data={data} />
