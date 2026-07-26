@@ -5,11 +5,13 @@ type ChatMessage = { role: "user" | "assistant"; content: string };
 type GeminiResponse = {
   candidates?: Array<{
     content?: { parts?: Array<{ text?: string }> };
+    finishReason?: string;
   }>;
   error?: { message?: string };
 };
 
 const DEFAULT_MODEL = "gemini-2.5-flash";
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
 
 export const runtime = "nodejs";
 
@@ -34,26 +36,14 @@ function extractReply(payload: GeminiResponse): string | null {
   return text || null;
 }
 
-export async function POST(request: Request) {
-  let body: unknown;
-  try {
-    body = await request.json();
-  } catch {
-    return Response.json({ error: "Invalid JSON body." }, { status: 400 });
-  }
+function wait(delayMs: number) {
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
+}
 
-  const messages = parseMessages(body && typeof body === "object" && "messages" in body ? body.messages : undefined);
-  if (!messages) return Response.json({ error: "Expected 1–12 valid chat messages." }, { status: 400 });
-  const lastUser = [...messages].reverse().find((message) => message.role === "user");
-  if (!lastUser) return Response.json({ error: "A user message is required." }, { status: 400 });
+async function requestGemini(endpoint: string, apiKey: string, messages: ChatMessage[]) {
+  let lastResponse: Response | null = null;
 
-  const apiKey = process.env.GEMINI_API_KEY?.trim();
-  if (!apiKey) return Response.json({ reply: fallbackAnswer(lastUser.content), mocked: true });
-
-  const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
-  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
-
-  try {
+  for (let attempt = 0; attempt < 2; attempt += 1) {
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {
@@ -70,23 +60,62 @@ export async function POST(request: Request) {
         })),
         generationConfig: {
           temperature: 0.2,
-          maxOutputTokens: 800,
+          maxOutputTokens: 4096,
+          thinkingConfig: { thinkingBudget: 512 },
         },
       }),
       cache: "no-store",
       signal: AbortSignal.timeout(30_000),
     });
 
+    lastResponse = response;
+    if (response.ok || !RETRYABLE_STATUSES.has(response.status) || attempt === 1) return response;
+
+    // One short retry absorbs transient quota bursts without making the chat feel stuck.
+    await wait(750);
+  }
+
+  return lastResponse as Response;
+}
+
+export async function POST(request: Request) {
+  let body: unknown;
+  try {
+    body = await request.json();
+  } catch {
+    return Response.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
+
+  const messages = parseMessages(body && typeof body === "object" && "messages" in body ? body.messages : undefined);
+  if (!messages) return Response.json({ error: "Expected 1–12 valid chat messages." }, { status: 400 });
+  const lastUser = [...messages].reverse().find((message) => message.role === "user");
+  if (!lastUser) return Response.json({ error: "A user message is required." }, { status: 400 });
+
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey) return Response.json({ reply: fallbackAnswer(lastUser.content), mocked: true, mode: "offline" });
+
+  const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
+
+  try {
+    const response = await requestGemini(endpoint, apiKey, messages);
+
     if (!response.ok) {
       const payload = await response.json() as GeminiResponse;
-      throw new Error(payload.error?.message || `Gemini returned HTTP ${response.status}`);
+      const reason = response.status === 429 ? "rate_limited" : "unavailable";
+      console.error("[chat] Gemini request failed", payload.error?.message || `HTTP ${response.status}`);
+      return Response.json({ reply: fallbackAnswer(lastUser.content), mocked: true, mode: reason });
     }
     const payload = await response.json() as GeminiResponse;
     const reply = extractReply(payload);
     if (!reply) throw new Error("Gemini returned an empty response");
-    return Response.json({ reply, mocked: false });
+    const finishReason = payload.candidates?.[0]?.finishReason;
+    if (finishReason === "MAX_TOKENS") {
+      throw new Error("Gemini exhausted the output token budget");
+    }
+    return Response.json({ reply, mocked: false, mode: "online" });
   } catch (error) {
     console.error("[chat] Gemini request failed", error instanceof Error ? error.message : "unknown error");
-    return Response.json({ error: "The live assistant is temporarily unavailable. Check the Gemini configuration or remove the API key to use the grounded offline demo." }, { status: 502 });
+    return Response.json({ reply: fallbackAnswer(lastUser.content), mocked: true, mode: "unavailable" });
   }
 }

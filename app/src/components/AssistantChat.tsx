@@ -4,7 +4,14 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { Send } from "@/lib/icons";
 import { ASSISTANT_PROMPTS } from "@/lib/ai/suggested-prompts";
 
-type Message = { id: number; role: "user" | "assistant"; content: string; mocked?: boolean };
+type AssistantMode = "online" | "offline" | "rate_limited" | "unavailable";
+type Message = { id: number; role: "user" | "assistant"; content: string; mocked?: boolean; mode?: AssistantMode };
+
+const modeLabels: Record<Exclude<AssistantMode, "online">, string> = {
+  offline: "Offline knowledge · chưa cấu hình Gemini API",
+  rate_limited: "Offline knowledge · Gemini đang giới hạn lượt gọi",
+  unavailable: "Offline knowledge · Gemini tạm thời không phản hồi",
+};
 
 const welcome: Message = {
   id: 1,
@@ -37,9 +44,9 @@ export function AssistantChat() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: nextMessages.slice(-10).map(({ role, content: text }) => ({ role, content: text })) }),
       });
-      const payload = await response.json() as { reply?: string; mocked?: boolean; error?: string };
+      const payload = await response.json() as { reply?: string; mocked?: boolean; mode?: AssistantMode; error?: string };
       const reply = response.ok && payload.reply ? payload.reply : payload.error ?? "Không thể nhận phản hồi lúc này.";
-      setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", content: reply, mocked: payload.mocked }]);
+      setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", content: reply, mocked: payload.mocked, mode: payload.mode }]);
     } catch {
       setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", content: "Không thể kết nối tới trợ lý lúc này. Vui lòng thử lại.", mocked: true }]);
     } finally {
@@ -60,7 +67,7 @@ export function AssistantChat() {
             <article className={`message ${message.role}`} key={message.id}>
               <div className="message-meta">{message.role === "assistant" ? "Study assistant" : "You"}</div>
               {message.content}
-              {message.mocked ? <div className="offline-note">offline sample · grounded deterministic response</div> : null}
+              {message.mocked ? <div className="offline-note">{message.mode && message.mode !== "online" ? modeLabels[message.mode] : "Offline knowledge · grounded deterministic response"}</div> : null}
             </article>
           ))}
           {sending ? <article className="message"><div className="message-meta">Study assistant</div>Đang đối chiếu context nghiên cứu…</article> : null}
