@@ -15,7 +15,7 @@ export default function Rq2Page() {
       <Reveal>
         <PageHead
           eyebrow="RQ2 · Prediction"
-          title="Which model is reliable on imbalanced data—and which threshold suits screening?"
+          title="Which model is reliable on imbalanced data, and which threshold suits screening?"
           subtitle="Four offline-trained classifiers are compared with minority-aware metrics, then XGBoost's decision threshold is tuned for a recall-first screening context."
           meta={["4 models", "PR-AUC", "Recall-first"]}
         />
