@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo } from "react";
 import { HBarChart, RankScatter } from "@/components/charts";
-import { ChartCard, DataTable, RadioGroup, Select, StatBadge, type TableColumn } from "@/components/primitives";
+import { ChartCard, RadioGroup, Select, StatBadge } from "@/components/primitives";
 import type { FeatureResult } from "@/lib/data/schemas";
 import { useUrlState } from "@/lib/use-url-state";
 
@@ -47,15 +47,6 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
   const toggleSelectedVariable = (variable: string, mode: "push" | "replace" = "push") => {
     setSelectedVariable(selectedVariable === variable ? "" : variable, mode);
   };
-  const columns: TableColumn<FeatureResult>[] = [
-    { id: "feature", header: "Feature", render: (row) => <><strong>{row.variable}</strong><br /><span className="card-source">{row.label}</span></> },
-    { id: "shap", header: "mean|SHAP|", align: "right", render: (row) => row.shapImportance.toFixed(3) },
-    { id: "shapRank", header: "SHAP rank", align: "right", render: (row) => `#${row.shapRank}` },
-    { id: "statRank", header: "Stat rank", align: "right", render: (row) => `#${row.statRank}` },
-    { id: "gap", header: "Rank gap", align: "right", render: (row) => String(Math.abs(row.shapRank - row.statRank)) },
-    { id: "effect", header: "Effect size", align: "right", render: (row) => <>{row.effectSize.toFixed(3)}<br /><span className="card-source">{row.effectSizeType}</span></> },
-    { id: "group", header: "Consistency", render: (row) => <StatBadge label={row.group} tone={row.group.startsWith("Group 1") ? "moderate" : (row.group.startsWith("Group 2") ? "neutral" : (row.group.startsWith("Group 3") ? "best" : "risk"))} /> },
-  ];
 
   return (
     <div className="analysis-workbench">
@@ -82,13 +73,17 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
         <div className="selection-panel">
           <span className="eyebrow">Selected feature</span>
           <h3>{selected?.variable ?? "None"}</h3>
-          <p>{selected ? `${selected.label} · ${selected.group}.` : "Click a bar, point, or table row to inspect a feature."}</p>
+          <p>{selected ? `${selected.label} · ${selected.group}.` : "Click a bar or a scatter point to inspect a feature."}</p>
         </div>
         <div className="metric-strip metric-strip-compact">
           <div className="metric-mini"><span>mean|SHAP|</span><strong>{selected ? selected.shapImportance.toFixed(3) : "-"}</strong></div>
           <div className="metric-mini"><span>SHAP rank</span><strong>{selected ? `#${selected.shapRank}` : "-"}</strong></div>
           <div className="metric-mini"><span>Stat rank</span><strong>{selected ? `#${selected.statRank}` : "-"}</strong></div>
           <div className="metric-mini"><span>Rank gap</span><strong>{selected ? Math.abs(selected.shapRank - selected.statRank) : "-"}</strong></div>
+          <div className="metric-mini metric-mini-wide">
+            <span>{selected ? `Effect size · ${selected.effectSizeType}` : "Effect size"}</span>
+            <strong>{selected ? selected.effectSize.toFixed(3) : "-"}</strong>
+          </div>
         </div>
       </div>
 
@@ -103,7 +98,7 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
             data={rows.map((feature) => ({
               name: feature.variable,
               value: feature.shapImportance,
-              detail: `${feature.label} · SHAP #${feature.shapRank} · Stat #${feature.statRank}`,
+              detail: `${feature.label} · SHAP #${feature.shapRank} · Stat #${feature.statRank} · ${feature.effectSizeType} ${feature.effectSize.toFixed(3)}`,
               tone: feature.group.startsWith("Group 1") ? "accent" : (feature.group.startsWith("Group 2") ? "cyan" : "orange"),
             }))}
             valueLabel="mean|SHAP|"
@@ -115,28 +110,15 @@ export function Rq3Explorer({ features }: { features: FeatureResult[] }) {
 
         <ChartCard
           title="Rank agreement map"
-          subtitle="Click a point to link the scatter, profile, bar ranking and table selection."
+          subtitle="Distance from the dashed diagonal is the rank gap. Click a point to link the scatter, profile and bar ranking."
           source="explanation_consistency.csv · SHAP and statistical ranks"
         >
           <RankScatter
-            data={rows.map((feature) => ({ variable: feature.variable, statRank: feature.statRank, shapRank: feature.shapRank, group: getGroupNumber(feature) }))}
+            data={rows.map((feature) => ({ variable: feature.variable, statRank: feature.statRank, shapRank: feature.shapRank, group: getGroupNumber(feature), effectSize: feature.effectSize, effectSizeType: feature.effectSizeType }))}
             selectedVariable={selectedVariable || undefined}
             onSelect={(variable, mode) => toggleSelectedVariable(variable, mode)}
           />
         </ChartCard>
-      </div>
-
-      <div className="section-block compact-section">
-        <DataTable
-          rows={rows}
-          columns={columns}
-          rowKey={(row) => row.variable}
-          rowClassName={(row) => ["BMI", "Age", "DiffWalk"].includes(row.variable) ? "clash-row" : ""}
-          selectedRowKey={selectedVariable || undefined}
-          onRowClick={(row) => toggleSelectedVariable(row.variable)}
-          stickyHeader
-          caption="Interactive feature table comparing SHAP and statistical ranks"
-        />
       </div>
     </div>
   );

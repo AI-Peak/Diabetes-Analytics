@@ -924,10 +924,6 @@ svg {
   background: var(--accent-soft);
 }
 
-.data-table .clash-row td {
-  background: color-mix(in srgb, var(--orange) 8%, var(--bg-card));
-}
-
 .align-right {
   text-align: right !important;
 }
@@ -1401,6 +1397,12 @@ input[type="range"] {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 8px;
   margin: 14px 0;
+}
+
+/* Lets a single tile take the full strip width, used when its label carries the
+   metric name as well as the metric itself. */
+.metric-mini-wide {
+  grid-column: 1 / -1;
 }
 
 .metric-mini {

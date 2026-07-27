@@ -4,7 +4,7 @@ import type { KeyboardEvent } from "react";
 import { CartesianGrid, Cell, LabelList, ReferenceLine, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAxis, YAxis, ZAxis } from "recharts";
 import { useChartTheme } from "./theme";
 
-type RankPoint = { variable: string; statRank: number; shapRank: number; group: 1 | 2 | 3 | 4 };
+type RankPoint = { variable: string; statRank: number; shapRank: number; group: 1 | 2 | 3 | 4; effectSize: number; effectSizeType: string };
 type ScatterPayload = { payload?: RankPoint };
 
 function RankTooltip({ active, payload }: { active?: boolean; payload?: ScatterPayload[] }) {
@@ -15,6 +15,7 @@ function RankTooltip({ active, payload }: { active?: boolean; payload?: ScatterP
       <div className="tooltip-label">{point.variable}</div>
       <div className="tooltip-row"><span>Stat rank</span><strong>#{point.statRank}</strong></div>
       <div className="tooltip-row"><span>SHAP rank</span><strong>#{point.shapRank}</strong></div>
+      <div className="tooltip-row"><span>{point.effectSizeType}</span><strong>{point.effectSize.toFixed(3)}</strong></div>
     </div>
   );
 }

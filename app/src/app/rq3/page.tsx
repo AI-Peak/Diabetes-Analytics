@@ -135,24 +135,14 @@ export default function Rq3Page() {
         </ChartCard>
       </Section>
 
-      <Section label="Exported TreeExplainer figures" source="results/xai">
+      <Section label="Direction and individual-level evidence" source="results/xai">
         <ChartCard
-          title="Reproducibility exports"
-          subtitle="These are the verified offline figures behind the analysis above. They are grouped here because they are archival artifacts, not the primary reading path; the interactive lab already carries the numbers. One tab is shown at a time, so the section costs the height of a single figure."
-          source="public/figures/shap_summary_bar.png · shap_summary_dot.png · shap_local_diabetic.png · shap_local_healthy.png"
+          title="What the ranking above cannot show"
+          subtitle="The feature lab ranks features by mean absolute SHAP, which discards two things: which way a feature pushes the prediction, and how the evidence combines for one specific person. These verified TreeExplainer exports cover both. One tab is shown at a time, so the section costs the height of a single figure."
+          source="public/figures/shap_summary_dot.png · shap_local_diabetic.png · shap_local_healthy.png"
         >
           <FigureTabs
             items={[
-              {
-                id: "ranking",
-                label: "Global ranking",
-                src: data.figures.bar,
-                alt: "Bar chart of global mean absolute SHAP importance across all features",
-                width: 2374,
-                height: 2818,
-                size: "compact",
-                caption: "The conventional mean|SHAP| ranking. Same ordering as the feature lab above, kept as the plain reading of it · shap_summary_bar.png",
-              },
               {
                 id: "beeswarm",
                 label: "Global beeswarm",
@@ -161,7 +151,7 @@ export default function Rq3Page() {
                 width: 2332,
                 height: 2819,
                 size: "compact",
-                caption: "Adds contribution direction, which the mean absolute ranking cannot show · shap_summary_dot.png",
+                caption: "Each dot is one record. Horizontal position is the signed SHAP value, colour is the feature value, so the plot recovers the direction the mean absolute ranking discards · shap_summary_dot.png",
               },
               {
                 id: "local-diabetic",
