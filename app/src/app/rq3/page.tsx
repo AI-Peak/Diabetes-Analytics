@@ -42,11 +42,11 @@ function formatGroupLabel(label: string) {
 }
 
 const alignmentColumns: TableColumn<AlignmentRow>[] = [
-  { id: "k", header: "Cutoff", render: (row) => <strong>Top-{row.k}</strong> },
-  { id: "overlap", header: "Overlap vs univariate", align: "right", render: (row) => `${row.overlap} / ${row.k}` },
-  { id: "jaccard", header: "Jaccard vs univariate", align: "right", render: (row) => row.jaccard.toFixed(4) },
-  { id: "overlapOr", header: "Overlap vs adjusted OR", align: "right", render: (row) => `${row.overlapAdjustedOr} / ${row.k}` },
-  { id: "jaccardOr", header: "Jaccard vs adjusted OR", align: "right", render: (row) => row.jaccardAdjustedOr.toFixed(4) },
+  { id: "k", header: "Cutoff", align: "center", render: (row) => <strong>Top-{row.k}</strong> },
+  { id: "overlap", header: "Overlap vs univariate", align: "center", render: (row) => `${row.overlap} / ${row.k}` },
+  { id: "jaccard", header: "Jaccard vs univariate", align: "center", render: (row) => row.jaccard.toFixed(4) },
+  { id: "overlapOr", header: "Overlap vs adjusted OR", align: "center", render: (row) => `${row.overlapAdjustedOr} / ${row.k}` },
+  { id: "jaccardOr", header: "Jaccard vs adjusted OR", align: "center", render: (row) => row.jaccardAdjustedOr.toFixed(4) },
 ];
 
 export default function Rq3Page() {
