@@ -69,8 +69,29 @@ export function RankScatter({ data, selectedVariable, onSelect }: { data: RankPo
               const points = data.filter((point) => point.group === series.group);
               return (
                 <Scatter key={series.group} name={series.name} data={points} fill={series.color} shape={series.shape} onClick={handleClick} cursor={onSelect ? "pointer" : undefined}>
-                  {points.map((point) => <Cell key={point.variable} fill={series.color} fillOpacity={selectedVariable && selectedVariable !== point.variable ? 0.32 : 1} stroke={selectedVariable === point.variable ? theme.red : "transparent"} strokeWidth={selectedVariable === point.variable ? 2 : 0} />)}
-                  <LabelList dataKey="variable" position="top" offset={7} fill={theme.label} fontSize={10.5} fontWeight={400} />
+                  {points.map((point) => <Cell key={point.variable} fill={series.color} fillOpacity={selectedVariable && selectedVariable !== point.variable ? 0.32 : 1} />)}
+                  <LabelList
+                    dataKey="variable"
+                    position="top"
+                    offset={7}
+                    content={({ x, y, index }) => {
+                      const point = typeof index === "number" ? points[index] : undefined;
+                      if (!point) return null;
+                      const isSelected = point.variable === selectedVariable;
+                      return (
+                        <text
+                          x={Number(x)}
+                          y={Number(y)}
+                          textAnchor="middle"
+                          fill={isSelected ? theme.red : theme.label}
+                          fontSize={10.5}
+                          fontWeight={isSelected ? 600 : 400}
+                        >
+                          {point.variable}
+                        </text>
+                      );
+                    }}
+                  />
                 </Scatter>
               );
             })}
