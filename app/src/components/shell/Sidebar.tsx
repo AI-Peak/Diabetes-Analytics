@@ -58,7 +58,6 @@ export function Sidebar({ open, onClose }: { open: boolean; onClose: () => void 
           <div className="status-row"><span>records</span><span>253,680</span></div>
           <div className="status-row"><span>build</span><span>precomputed</span></div>
         </div>
-        <p className="footer-disclaimer">Research and education tool, not a diagnostic device. Association is not causation.</p>
         <a className="github-link" href="https://github.com/AI-Peak/Diabetes-Analytics" target="_blank" rel="noreferrer">
           <Github size={13} aria-hidden="true" /> Source repository
         </a>

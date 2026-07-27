@@ -474,14 +474,7 @@ svg {
   color: #ffffff;
 }
 
-.footer-disclaimer {
-  margin: 0;
-  color: var(--text-dim);
-  font-size: var(--fs-micro);
-  line-height: 1.5;
-}
-
-/* Shown only where the sidebar (and its footer disclaimer) collapses away. */
+/* Shown only on compact layouts. */
 .shell-disclaimer {
   display: none;
   margin: 0;
