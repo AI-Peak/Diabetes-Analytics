@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { Send } from "@/lib/icons";
 import { ASSISTANT_PROMPTS } from "@/lib/ai/suggested-prompts";
 
@@ -18,6 +18,43 @@ const welcome: Message = {
   role: "assistant",
   content: "Xin chào! Mình có thể giải thích kết quả RQ1–RQ3, metrics mô hình, ngưỡng sàng lọc tối ưu và mức nhất quán giữa SHAP với thống kê. Mình chỉ dùng dữ liệu đã được kiểm chứng của nghiên cứu.",
 };
+
+function renderInlineMarkdown(text: string): ReactNode[] {
+  return text.split(/(\*\*.+?\*\*)/g).filter(Boolean).map((part, index) =>
+    part.startsWith("**") && part.endsWith("**")
+      ? <strong key={index}>{part.slice(2, -2)}</strong>
+      : part,
+  );
+}
+
+function AssistantMessage({ content }: { content: string }) {
+  const blocks: ReactNode[] = [];
+  const lines = content.split(/\r?\n/);
+
+  for (let index = 0; index < lines.length;) {
+    const line = lines[index].trim();
+    if (!line) {
+      index += 1;
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(line)) {
+      const items: ReactNode[] = [];
+      while (index < lines.length && /^[-*]\s+/.test(lines[index].trim())) {
+        const item = lines[index].trim().replace(/^[-*]\s+/, "");
+        items.push(<li key={index}>{renderInlineMarkdown(item)}</li>);
+        index += 1;
+      }
+      blocks.push(<ul key={`list-${index}`}>{items}</ul>);
+      continue;
+    }
+
+    blocks.push(<p key={`paragraph-${index}`}>{renderInlineMarkdown(line)}</p>);
+    index += 1;
+  }
+
+  return <div className="message-content">{blocks}</div>;
+}
 
 export function AssistantChat() {
   const [messages, setMessages] = useState<Message[]>([welcome]);
@@ -66,7 +103,7 @@ export function AssistantChat() {
           {messages.map((message) => (
             <article className={`message ${message.role}`} key={message.id}>
               <div className="message-meta">{message.role === "assistant" ? "Study assistant" : "You"}</div>
-              {message.content}
+              {message.role === "assistant" ? <AssistantMessage content={message.content} /> : message.content}
               {message.mocked ? <div className="offline-note">{message.mode && message.mode !== "online" ? modeLabels[message.mode] : "Offline knowledge · grounded deterministic response"}</div> : null}
             </article>
           ))}

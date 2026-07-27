@@ -1577,6 +1577,29 @@ input[type="range"] {
   color: rgba(255, 255, 255, 0.7);
 }
 
+.message-content {
+  white-space: normal;
+}
+
+.message-content p,
+.message-content ul {
+  margin: 0;
+}
+
+.message-content p + p,
+.message-content p + ul,
+.message-content ul + p {
+  margin-top: 0.7em;
+}
+
+.message-content ul {
+  padding-left: 1.25em;
+}
+
+.message-content li + li {
+  margin-top: 0.35em;
+}
+
 .offline-note {
   margin-top: 7px;
   color: var(--orange);
