@@ -37,6 +37,10 @@ function groupNumber(key: string, label: string) {
   return Number(/^group-(\d)/.exec(key)?.[1] ?? /^Group (\d)/.exec(label)?.[1] ?? 0);
 }
 
+function formatGroupLabel(label: string) {
+  return label.replace(/\s+[—–]\s+/, ": ");
+}
+
 const alignmentColumns: TableColumn<AlignmentRow>[] = [
   { id: "k", header: "Cutoff", render: (row) => <strong>Top-{row.k}</strong> },
   { id: "overlap", header: "Overlap vs univariate", align: "right", render: (row) => `${row.overlap} / ${row.k}` },
@@ -88,7 +92,7 @@ export default function Rq3Page() {
               const meta = GROUP_META[groupNumber(group.key, group.label)] ?? GROUP_META[4];
               return (
                 <article className={`group-card${meta.variant}`} key={group.key}>
-                  <h3>{group.label}</h3>
+                  <h3>{formatGroupLabel(group.label)}</h3>
                   <p>{meta.description}</p>
                   <div className="member-list">{group.members.map((member) => <Chip tone={meta.tone} key={member}>{member}</Chip>)}</div>
                 </article>
