@@ -95,28 +95,29 @@ def main():
     steps = [
         (1, "Data Preprocessing & Quality Validation", PROJECT_ROOT / "notebooks" / "data_preprocessing.py"),
         (2, "Class Distribution Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_class_distribution_figure.py"),
-        (3, "Statistical Hypothesis Testing & Adjusted Association", PROJECT_ROOT / "python_analysis" / "statistical_analysis.py"),
-        (4, "Two-Panel Effect-Size Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_effect_size_figure.py"),
-        (5, "Machine Learning Modeling, Selection & Holdout Evaluation", PROJECT_ROOT / "python_analysis" / "model_training.py"),
-        (6, "Explainable AI (SHAP) & Evidence Alignment Analysis", PROJECT_ROOT / "python_analysis" / "shap_analysis.py"),
-        (7, "Global SHAP Feature Importance Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_shap_global_importance.py"),
-        (8, "Local SHAP Waterfall Explanation Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_shap_local_waterfall.py"),
-        (9, "Methodology Pipeline Architecture Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_methodology_pipeline_final.py"),
-        (10, "Phase 1 Data & Split Integrity Audit", PROJECT_ROOT / "python_analysis" / "phase1_data_integrity_audit.py"),
-        (11, "Phase 2 Profile-Grouped Sensitivity Evaluation", PROJECT_ROOT / "python_analysis" / "phase2_profile_grouped_sensitivity.py"),
-        (12, "Final Results Summary Aggregation", PROJECT_ROOT / "python_analysis" / "generate_final_results_summary.py"),
-        (13, "Paper Artifacts & LaTeX Table Generation", PROJECT_ROOT / "python_analysis" / "generate_paper_artifacts.py"),
+        (3, "Univariate & Multivariate EDA Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_eda_figures.py"),
+        (4, "Statistical Hypothesis Testing & Adjusted Association", PROJECT_ROOT / "python_analysis" / "statistical_analysis.py"),
+        (5, "Two-Panel Effect-Size Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_effect_size_figure.py"),
+        (6, "Machine Learning Modeling, Selection & Holdout Evaluation", PROJECT_ROOT / "python_analysis" / "model_training.py"),
+        (7, "Explainable AI (SHAP) & Evidence Alignment Analysis", PROJECT_ROOT / "python_analysis" / "shap_analysis.py"),
+        (8, "Global SHAP Feature Importance Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_shap_global_importance.py"),
+        (9, "Local SHAP Waterfall Explanation Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_shap_local_waterfall.py"),
+        (10, "Methodology Pipeline Architecture Figure Generation", PROJECT_ROOT / "python_analysis" / "generate_methodology_pipeline_final.py"),
+        (11, "Phase 1 Data & Split Integrity Audit", PROJECT_ROOT / "python_analysis" / "phase1_data_integrity_audit.py"),
+        (12, "Phase 2 Profile-Grouped Sensitivity Evaluation", PROJECT_ROOT / "python_analysis" / "phase2_profile_grouped_sensitivity.py"),
+        (13, "Final Results Summary Aggregation", PROJECT_ROOT / "python_analysis" / "generate_final_results_summary.py"),
+        (14, "Paper Artifacts & LaTeX Table Generation", PROJECT_ROOT / "python_analysis" / "generate_paper_artifacts.py"),
     ]
 
     total_start = time.time()
     for step_num, title, script_path in steps:
         run_step(step_num, title, script_path)
 
-    # Step 14: LaTeX Manuscript Compilation
-    run_latex_compilation(14)
+    # Step 15: LaTeX Manuscript Compilation
+    run_latex_compilation(15)
 
-    # Step 15: Pipeline Output & Independent Manuscript Consistency Validation
-    run_step(15, "Pipeline Output & Independent Consistency Validation", PROJECT_ROOT / "python_analysis" / "validate_outputs.py")
+    # Step 16: Pipeline Output & Independent Manuscript Consistency Validation
+    run_step(16, "Pipeline Output & Independent Consistency Validation", PROJECT_ROOT / "python_analysis" / "validate_outputs.py")
 
     total_elapsed = time.time() - total_start
     print(f"\n================================================================================")

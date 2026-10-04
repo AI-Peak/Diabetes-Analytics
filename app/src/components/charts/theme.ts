@@ -10,7 +10,8 @@ export const CHART = {
   green: { css: "--green", fallback: "#2f7a55" },
   orange: { css: "--orange", fallback: "#9a6b1f" },
   grid: { css: "--grid-line", fallback: "rgba(120,135,150,.20)" },
-  axis: { css: "--text-dim", fallback: "#8695a9" },
+  axis: { css: "--text-muted", fallback: "#55637a" },
+  label: { css: "--text", fallback: "#17232f" },
   track: { css: "--bar-track", fallback: "rgba(22,58,95,.16)" },
 } as const;
 

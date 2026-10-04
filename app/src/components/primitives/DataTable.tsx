@@ -1,10 +1,10 @@
-import type { ReactNode } from "react";
+import type { KeyboardEvent, ReactNode } from "react";
 
 export type TableColumn<T> = {
   id: string;
   header: string;
   render: (row: T) => ReactNode;
-  align?: "left" | "right";
+  align?: "left" | "right" | "center";
 };
 
 export function DataTable<T>({
@@ -31,28 +31,35 @@ export function DataTable<T>({
       <table className={`data-table${stickyHeader ? " sticky-head" : ""}`}>
         <caption className="sr-only">{caption}</caption>
         <thead>
-          <tr>{columns.map((column) => <th className={column.align === "right" ? "align-right" : undefined} key={column.id} scope="col">{column.header}</th>)}</tr>
+          <tr>{columns.map((column) => <th className={column.align === "right" ? "align-right" : column.align === "center" ? "align-center" : undefined} key={column.id} scope="col">{column.header}</th>)}</tr>
         </thead>
         <tbody>
           {rows.map((row) => {
             const key = rowKey(row);
             const className = [rowClassName?.(row), onRowClick ? "interactive-row" : "", selectedRowKey === key ? "selected-row" : ""].filter(Boolean).join(" ");
+            // Handlers are attached only when the table is interactive, so a static table
+            // stays serialisable and can be rendered from a server component.
+            const interaction = onRowClick
+              ? {
+                  tabIndex: 0,
+                  onClick: () => onRowClick(row),
+                  onKeyDown: (event: KeyboardEvent<HTMLTableRowElement>) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      onRowClick(row);
+                    }
+                  },
+                }
+              : {};
             return (
             <tr
               className={className || undefined}
               key={key}
               aria-selected={selectedRowKey === key || undefined}
-              tabIndex={onRowClick ? 0 : undefined}
-              onClick={() => onRowClick?.(row)}
-              onKeyDown={(event) => {
-                if (onRowClick && (event.key === "Enter" || event.key === " ")) {
-                  event.preventDefault();
-                  onRowClick(row);
-                }
-              }}
+              {...interaction}
             >
               {columns.map((column) => (
-                <td className={column.align === "right" ? "align-right num" : undefined} key={column.id}>{column.render(row)}</td>
+                <td className={column.align === "right" ? "align-right num" : column.align === "center" ? "align-center num" : undefined} key={column.id}>{column.render(row)}</td>
               ))}
             </tr>
           );})}

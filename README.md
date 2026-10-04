@@ -29,7 +29,7 @@ An end-to-end Machine Learning, Statistical Analysis, and Explainable AI (XAI) s
 
 ## Reproducible Pipeline Execution
 
-To execute the entire 15-step scientific pipeline end-to-end (data integrity audit, non-parametric statistical hypothesis testing, categorical dummy multivariable logistic regression, screening-oriented machine learning evaluation, development-selected decision threshold, unpenalized Cox calibration assessment with 1,000 bootstrap CIs, SHAP evidence alignment, profile-grouped sensitivity evaluation, artifact generation, LaTeX publication compilation, and automated manuscript consistency validation):
+To execute the entire 16-step scientific pipeline end-to-end (data integrity audit, non-parametric statistical hypothesis testing, categorical dummy multivariable logistic regression, screening-oriented machine learning evaluation, development-selected decision threshold, unpenalized Cox calibration assessment with 1,000 bootstrap CIs, SHAP evidence alignment, profile-grouped sensitivity evaluation, artifact generation, LaTeX publication compilation, and automated manuscript consistency validation):
 
 ```bash
 python run_pipeline.py
@@ -38,19 +38,20 @@ python run_pipeline.py
 ### Sequential Pipeline Steps:
 1. `notebooks/data_preprocessing.py`: Data ingestion, validation, and formal duplicate/profile audit.
 2. `python_analysis/generate_class_distribution_figure.py`: Class balance visualization.
-3. `python_analysis/statistical_analysis.py`: Non-parametric hypothesis testing (Chi-square, Mann-Whitney U) and multivariable logistic regression with categorical indicator dummy blocks.
-4. `python_analysis/generate_effect_size_figure.py`: Univariate effect size visualization.
-5. `python_analysis/model_training.py`: Multi-paradigm 5-fold CV, model selection, decision threshold selection ($t^* = 0.13$), holdout evaluation, and unpenalized Cox calibration assessment.
-6. `python_analysis/shap_analysis.py`: SHAP TreeExplainer attributions, LR $\chi^2$ statistical alignment, and rank sensitivity.
-7. `python_analysis/generate_shap_global_importance.py`: Global SHAP feature importance plot.
-8. `python_analysis/generate_shap_local_waterfall.py`: Local high-risk waterfall plot.
-9. `python_analysis/generate_methodology_pipeline_final.py`: Authoritative 12-step publication methodology workflow diagram.
-10. `python_analysis/phase1_data_integrity_audit.py`: Formal Phase 1 data and split integrity audit.
-11. `python_analysis/phase2_profile_grouped_sensitivity.py`: Phase 2 zero-overlap profile-grouped sensitivity experiment.
-12. `python_analysis/generate_final_results_summary.py`: Structured JSON/Markdown summary aggregation.
-13. `python_analysis/generate_paper_artifacts.py`: Synchronization of all 10 canonical LaTeX tables (`table1`–`table10`), macros (`generated_metrics.tex`), and figures.
-14. **Manuscript LaTeX Compilation**: Automatic compilation of `paper/main.tex` to `paper/main.pdf` via `tectonic`.
-15. `python_analysis/validate_outputs.py`: Automated output validation and independent manuscript numerical consistency audit (105 checks passed).
+3. `python_analysis/generate_eda_figures.py`: Univariate distributions and Spearman rank correlation matrix figure generation.
+4. `python_analysis/statistical_analysis.py`: Non-parametric hypothesis testing (Chi-square, Mann-Whitney U with Holm–Bonferroni correction) and multivariable logistic regression with categorical indicator dummy blocks.
+5. `python_analysis/generate_effect_size_figure.py`: Univariate effect size visualization.
+6. `python_analysis/model_training.py`: Multi-paradigm 5-fold CV, model selection, decision threshold selection ($t^* = 0.13$), holdout evaluation, and unpenalized Cox calibration assessment.
+7. `python_analysis/shap_analysis.py`: SHAP TreeExplainer attributions, LR $\chi^2$ statistical alignment, and rank sensitivity.
+8. `python_analysis/generate_shap_global_importance.py`: Global SHAP feature importance plot.
+9. `python_analysis/generate_shap_local_waterfall.py`: Local high-risk waterfall plot.
+10. `python_analysis/generate_methodology_pipeline_final.py`: Authoritative 12-step publication methodology workflow diagram.
+11. `python_analysis/phase1_data_integrity_audit.py`: Formal Phase 1 data and split integrity audit.
+12. `python_analysis/phase2_profile_grouped_sensitivity.py`: Phase 2 zero-overlap profile-grouped sensitivity experiment.
+13. `python_analysis/generate_final_results_summary.py`: Structured JSON/Markdown summary aggregation.
+14. `python_analysis/generate_paper_artifacts.py`: Synchronization of all 10 canonical LaTeX tables (`table1`–`table10`), macros (`generated_metrics.tex`), and figures.
+15. **Manuscript LaTeX Compilation**: Automatic compilation of `paper/main.tex` to `paper/main.pdf` via `tectonic`.
+16. `python_analysis/validate_outputs.py`: Automated output validation and independent manuscript numerical consistency audit (105 checks passed).
 
 ## Publication Manuscript (`paper/`)
 

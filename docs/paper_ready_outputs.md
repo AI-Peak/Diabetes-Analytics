@@ -65,7 +65,15 @@ The 9 authoritative publication figures tracked in `paper/images/` (cataloged in
 | **FIG-08** | `effect_size_shap_alignment.png` | RQ3 | Likelihood-ratio Chi2 vs global SHAP importance ranking alignment and quadrant classification |
 | **FIG-09** | `figure1_discrimination_comparison.png` | RQ4 | Primary stratified vs profile-grouped redevelopment discrimination comparison (ROC and PR) |
 
-*Note: Supplementary figures (class distribution, local waterfall plots, etc.) are maintained under `paper/images/supplementary/` and `docs/figures/`.*
+### Exploratory & Supplementary Figures (`docs/figures/`)
+
+| Supplementary Figure | Artifact Path | Description |
+| :--- | :--- | :--- |
+| **Class Distribution** | `docs/figures/class_distribution.png` | Pre-modeling binary class balance (86.07% vs 13.93%). |
+| **Local SHAP Waterfall** | `docs/figures/shap_local_high_risk.png` | Local high-risk individual prediction explanation. |
+| **Univariate Numeric Distributions** | `docs/figures/eda_univariate_numeric.png` | Distribution of continuous/discrete numeric indicators across target classes. |
+| **Univariate Categorical Composition** | `docs/figures/eda_univariate_categorical.png` | Proportions of ordinal and binary indicators across target classes. |
+| **Correlation Heatmap** | `docs/figures/eda_correlation_heatmap.png` | 22x22 Spearman rank correlation matrix demonstrating absence of high collinearity. |
 
 ---
 

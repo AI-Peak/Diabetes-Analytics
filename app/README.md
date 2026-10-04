@@ -11,7 +11,7 @@ An evidence-first research dashboard for a diabetes-risk study using the cleaned
 - Recharts behind local chart wrappers
 - Framer Motion and Lucide icons
 - Zod validation for every generated data contract
-- 9Router's OpenAI-compatible API for the optional live, grounded assistant
+- Google Gemini API for the optional live, grounded assistant
 
 ## Run locally
 
@@ -79,12 +79,11 @@ app/
 
 ## Environment
 
-Fill in `.env.local` if you want live 9Router answers:
+Fill in `.env.local` if you want live Gemini answers:
 
 ```env
-NINEROUTER_API_KEY=your_key_here
-NINEROUTER_BASE_URL=https://9r-nhan.0err.com/v1
-NINEROUTER_MODEL=gpt-5.4-mini
+GEMINI_API_KEY=your_google_ai_studio_key_here
+GEMINI_MODEL=gemini-2.5-flash
 ```
 
 The key is optional. Without it, `/api/chat` uses a deterministic keyword responder grounded in the same study context, so the portfolio demo remains functional offline.
@@ -101,9 +100,8 @@ Import the GitHub repository and use these project settings:
 Add these environment variables for Production, Preview, and Development as needed:
 
 ```env
-NINEROUTER_API_KEY=your_key_here
-NINEROUTER_BASE_URL=https://9r-nhan.0err.com/v1
-NINEROUTER_MODEL=gpt-5.4-mini
+GEMINI_API_KEY=your_google_ai_studio_key_here
+GEMINI_MODEL=gemini-2.5-flash
 ```
 
 Do not upload or commit `.env.local`; configure the API key in the Vercel project settings.

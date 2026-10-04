@@ -2,6 +2,7 @@ export { Callout } from "./Callout";
 export { ChartCard } from "./ChartCard";
 export { Chip } from "./Chip";
 export { DataTable, type TableColumn } from "./DataTable";
+export { FigureTabs, type FigureTabItem } from "./FigureTabs";
 export { KpiCard } from "./KpiCard";
 export { NumberInput } from "./NumberInput";
 export { PageHead } from "./PageHead";

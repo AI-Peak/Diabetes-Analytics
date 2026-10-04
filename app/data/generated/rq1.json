@@ -717,6 +717,218 @@
       "rankBiserial": 0.2260290861400187
     }
   ],
+  "adjusted": [
+    {
+      "variable": "CholCheck",
+      "label": "Cholesterol Check (5 Years)",
+      "oddsRatio": 3.4694598255499005,
+      "ciLower": 3.0330836185451195,
+      "ciUpper": 3.968618407849439,
+      "vif": 1.032821537640755,
+      "holmP": 2.2065315032620897e-72,
+      "significant": true
+    },
+    {
+      "variable": "HighBP",
+      "label": "High Blood Pressure",
+      "oddsRatio": 2.1330765833446623,
+      "ciLower": 2.072260570793661,
+      "ciUpper": 2.195677403962145,
+      "vif": 1.3306844116606815,
+      "holmP": 0,
+      "significant": true
+    },
+    {
+      "variable": "HighChol",
+      "label": "High Cholesterol",
+      "oddsRatio": 1.783389349089521,
+      "ciLower": 1.7365008315789516,
+      "ciUpper": 1.8315439374446056,
+      "vif": 1.1733132418141967,
+      "holmP": 0,
+      "significant": true
+    },
+    {
+      "variable": "GenHlth",
+      "label": "Self-Rated General Health",
+      "oddsRatio": 1.709064445044304,
+      "ciLower": 1.6820229176002646,
+      "ciUpper": 1.7365407134177657,
+      "vif": 1.7958923562116746,
+      "holmP": 0,
+      "significant": true
+    },
+    {
+      "variable": "Sex",
+      "label": "Biological Sex",
+      "oddsRatio": 1.2945116545505035,
+      "ciLower": 1.2608140029763093,
+      "ciUpper": 1.3291099399366124,
+      "vif": 1.0750596256864142,
+      "holmP": 7.915798772118749e-81,
+      "significant": true
+    },
+    {
+      "variable": "HeartDiseaseorAttack",
+      "label": "Heart Disease or Attack History",
+      "oddsRatio": 1.2466032419464081,
+      "ciLower": 1.2038599478844885,
+      "ciUpper": 1.290864145420016,
+      "vif": 1.171917212028981,
+      "holmP": 3.898302891345765e-34,
+      "significant": true
+    },
+    {
+      "variable": "Stroke",
+      "label": "Stroke History",
+      "oddsRatio": 1.143598251314253,
+      "ciLower": 1.0886977849994157,
+      "ciUpper": 1.2012672189001647,
+      "vif": 1.081070129319349,
+      "holmP": 8.112568338590275e-7,
+      "significant": true
+    },
+    {
+      "variable": "Age",
+      "label": "Age Category",
+      "oddsRatio": 1.1316136506231933,
+      "ciLower": 1.1254262145886067,
+      "ciUpper": 1.137835104316322,
+      "vif": 1.3499940172965463,
+      "holmP": 0,
+      "significant": true
+    },
+    {
+      "variable": "DiffWalk",
+      "label": "Difficulty Walking",
+      "oddsRatio": 1.1310999444956331,
+      "ciLower": 1.0940778569055083,
+      "ciUpper": 1.1693748085320408,
+      "vif": 1.5339023400939087,
+      "holmP": 4.005800835374151e-12,
+      "significant": true
+    },
+    {
+      "variable": "AnyHealthcare",
+      "label": "Healthcare Coverage Access",
+      "oddsRatio": 1.0861717973935883,
+      "ciLower": 1.0172139840157586,
+      "ciUpper": 1.1598043204200987,
+      "vif": 1.113103942298708,
+      "holmP": 0.05405107603927057,
+      "significant": false
+    },
+    {
+      "variable": "BMI",
+      "label": "Body Mass Index",
+      "oddsRatio": 1.0627578599711998,
+      "ciLower": 1.060883969111225,
+      "ciUpper": 1.0646350607755768,
+      "vif": 1.1397240149645973,
+      "holmP": 0,
+      "significant": true
+    },
+    {
+      "variable": "NoDocbcCost",
+      "label": "Doctor Cost Barrier",
+      "oddsRatio": 1.018119379680723,
+      "ciLower": 0.9731894890872679,
+      "ciUpper": 1.0651235786091697,
+      "vif": 1.1441583111731806,
+      "holmP": 0.8625827095643028,
+      "significant": false
+    },
+    {
+      "variable": "MentHlth",
+      "label": "Poor Mental Health Days",
+      "oddsRatio": 0.9963748890467757,
+      "ciLower": 0.9947087384671821,
+      "ciUpper": 0.9980438304511067,
+      "vif": 1.2392968063578202,
+      "holmP": 0.00014759919520074098,
+      "significant": true
+    },
+    {
+      "variable": "PhysHlth",
+      "label": "Poor Physical Health Days",
+      "oddsRatio": 0.9926206435224857,
+      "ciLower": 0.9910976153115535,
+      "ciUpper": 0.9941460121839402,
+      "vif": 1.623288017941176,
+      "holmP": 3.587141621869757e-20,
+      "significant": true
+    },
+    {
+      "variable": "Smoker",
+      "label": "Tobacco Smoker Status",
+      "oddsRatio": 0.9896636158746371,
+      "ciLower": 0.964383101692393,
+      "ciUpper": 1.0156068380576717,
+      "vif": 1.091786652212585,
+      "holmP": 0.8625827095643028,
+      "significant": false
+    },
+    {
+      "variable": "Education",
+      "label": "Education Level",
+      "oddsRatio": 0.9696451693354695,
+      "ciLower": 0.9564876519521563,
+      "ciUpper": 0.9829836825354445,
+      "vif": 1.326389605410966,
+      "holmP": 0.00007819967940521242,
+      "significant": true
+    },
+    {
+      "variable": "Veggies",
+      "label": "Daily Vegetable Consumption",
+      "oddsRatio": 0.9673921804271388,
+      "ciLower": 0.9376834399420971,
+      "ciUpper": 0.9980421866140277,
+      "vif": 1.112385484404423,
+      "holmP": 0.11172458061167698,
+      "significant": false
+    },
+    {
+      "variable": "Fruits",
+      "label": "Daily Fruit Consumption",
+      "oddsRatio": 0.951293842113473,
+      "ciLower": 0.9261055632622326,
+      "ciUpper": 0.9771671933977663,
+      "vif": 1.1125333992442583,
+      "holmP": 0.0015921343969882906,
+      "significant": true
+    },
+    {
+      "variable": "Income",
+      "label": "Income Bracket",
+      "oddsRatio": 0.949816646204568,
+      "ciLower": 0.943194171637562,
+      "ciUpper": 0.9564856193300992,
+      "vif": 1.5039312183129028,
+      "holmP": 4.8553761708734e-46,
+      "significant": true
+    },
+    {
+      "variable": "PhysActivity",
+      "label": "Physical Activity",
+      "oddsRatio": 0.9495138913745164,
+      "ciLower": 0.923007937807846,
+      "ciUpper": 0.9767810145321516,
+      "vif": 1.1573105291580073,
+      "holmP": 0.0016770897754911386,
+      "significant": true
+    },
+    {
+      "variable": "HvyAlcoholConsump",
+      "label": "Heavy Alcohol Consumption",
+      "oddsRatio": 0.4633962388716118,
+      "ciLower": 0.42969015277360023,
+      "ciUpper": 0.49974632375040334,
+      "vif": 1.0240588832115414,
+      "holmP": 1.8574941770206306e-87,
+      "significant": true
+    }
+  ],
   "notes": {
     "largeN": true
   }

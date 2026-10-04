@@ -12,6 +12,7 @@ export {
   Menu,
   MessageSquare,
   Moon,
+  RotateCcw,
   Search,
   Send,
   Sun,

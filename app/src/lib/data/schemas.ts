@@ -25,6 +25,7 @@ export const OverviewSchema = z.object({
     nFeatures: z.number().int().positive(),
     target: z.string(),
     testSize: z.number().int().positive(),
+    developmentSize: z.number().int().positive(),
     split: z.string(),
   }),
   classBalance: z.object({
@@ -34,7 +35,18 @@ export const OverviewSchema = z.object({
     positiveClassN: z.number().int(),
   }),
   cohortCube: z.array(CohortCellSchema).min(1),
-  bestModel: z.object({ name: z.string(), rocAuc: z.number(), prAuc: z.number() }),
+  bestModel: z.object({
+    name: z.string(),
+    rocAuc: z.number(),
+    prAuc: z.number(),
+    evaluationSplit: z.string(),
+  }),
+  holdout: z.object({
+    evaluationSplit: z.string(),
+    sampleSize: z.number().int().positive(),
+    rocAuc: z.number(),
+    prAuc: z.number(),
+  }),
   topAssociations: z.array(
     z.object({ variable: z.string(), label: z.string(), cramersV: z.number() }),
   ),
@@ -77,9 +89,21 @@ const NumericSchema = z.object({
   rankBiserial: z.number(),
 });
 
+const AdjustedSchema = z.object({
+  variable: z.string(),
+  label: z.string(),
+  oddsRatio: z.number(),
+  ciLower: z.number(),
+  ciUpper: z.number(),
+  vif: z.number(),
+  holmP: z.number(),
+  significant: z.boolean(),
+});
+
 export const Rq1Schema = z.object({
   categorical: z.array(CategoricalSchema).length(18),
   numeric: z.array(NumericSchema).length(3),
+  adjusted: z.array(AdjustedSchema).length(21),
   notes: z.object({ largeN: z.boolean() }),
 });
 
@@ -104,6 +128,18 @@ const HighlightSchema = z.object({
   cm: z.object({ tn: z.number().int(), fp: z.number().int(), fn: z.number().int(), tp: z.number().int() }),
 });
 
+const HoldoutPointSchema = z.object({
+  t: z.number(),
+  accuracy: z.number(),
+  precision: z.number(),
+  recall: z.number(),
+  specificity: z.number(),
+  f1: z.number(),
+  rocAuc: z.number(),
+  prAuc: z.number(),
+  cm: z.object({ tn: z.number().int(), fp: z.number().int(), fn: z.number().int(), tp: z.number().int() }),
+});
+
 export const Rq2Schema = z.object({
   models: z.array(
     z.object({
@@ -117,15 +153,31 @@ export const Rq2Schema = z.object({
       isBest: z.boolean(),
     }),
   ).length(4),
+  modelsSplit: z.string(),
   bestModelName: z.string(),
+  splits: z.object({
+    developmentSize: z.number().int().positive(),
+    holdoutSize: z.number().int().positive(),
+  }),
   thresholds: z.array(ThresholdSchema).min(1),
+  thresholdsSplit: z.string(),
   highlights: z.object({ default: HighlightSchema, optimized: HighlightSchema }),
+  holdout: z.object({
+    evaluationSplit: z.string(),
+    sampleSize: z.number().int().positive(),
+    default: HoldoutPointSchema,
+    selected: HoldoutPointSchema,
+  }),
   calibration: z.object({
     brierScore: z.number(),
     slope: z.number(),
     intercept: z.number(),
     sampleSize: z.number().int(),
     evaluationSplit: z.string(),
+  }),
+  figures: z.object({
+    holdoutCurves: z.string(),
+    thresholdSweep: z.string(),
   }),
 });
 
@@ -151,6 +203,19 @@ export const Rq3Schema = z.object({
       members: z.array(z.string()),
     }),
   ).min(1),
+  alignment: z.object({
+    spearman: z.number(),
+    featureCount: z.number().int(),
+    topK: z.array(
+      z.object({
+        k: z.number().int(),
+        overlap: z.number().int(),
+        jaccard: z.number(),
+        overlapAdjustedOr: z.number().int(),
+        jaccardAdjustedOr: z.number(),
+      }),
+    ).min(1),
+  }),
   figures: z.object({
     beeswarm: z.string(),
     bar: z.string(),

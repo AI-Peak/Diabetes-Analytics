@@ -1,16 +1,60 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useRef, useState } from "react";
 import { Send } from "@/lib/icons";
 import { ASSISTANT_PROMPTS } from "@/lib/ai/suggested-prompts";
 
-type Message = { id: number; role: "user" | "assistant"; content: string; mocked?: boolean };
+type AssistantMode = "online" | "offline" | "rate_limited" | "unavailable";
+type Message = { id: number; role: "user" | "assistant"; content: string; mocked?: boolean; mode?: AssistantMode };
+
+const modeLabels: Record<Exclude<AssistantMode, "online">, string> = {
+  offline: "Offline knowledge · chưa cấu hình Gemini API",
+  rate_limited: "Offline knowledge · Gemini đang giới hạn lượt gọi",
+  unavailable: "Offline knowledge · Gemini tạm thời không phản hồi",
+};
 
 const welcome: Message = {
   id: 1,
   role: "assistant",
   content: "Xin chào! Mình có thể giải thích kết quả RQ1–RQ3, metrics mô hình, ngưỡng sàng lọc tối ưu và mức nhất quán giữa SHAP với thống kê. Mình chỉ dùng dữ liệu đã được kiểm chứng của nghiên cứu.",
 };
+
+function renderInlineMarkdown(text: string): ReactNode[] {
+  return text.split(/(\*\*.+?\*\*)/g).filter(Boolean).map((part, index) =>
+    part.startsWith("**") && part.endsWith("**")
+      ? <strong key={index}>{part.slice(2, -2)}</strong>
+      : part,
+  );
+}
+
+function AssistantMessage({ content }: { content: string }) {
+  const blocks: ReactNode[] = [];
+  const lines = content.split(/\r?\n/);
+
+  for (let index = 0; index < lines.length;) {
+    const line = lines[index].trim();
+    if (!line) {
+      index += 1;
+      continue;
+    }
+
+    if (/^[-*]\s+/.test(line)) {
+      const items: ReactNode[] = [];
+      while (index < lines.length && /^[-*]\s+/.test(lines[index].trim())) {
+        const item = lines[index].trim().replace(/^[-*]\s+/, "");
+        items.push(<li key={index}>{renderInlineMarkdown(item)}</li>);
+        index += 1;
+      }
+      blocks.push(<ul key={`list-${index}`}>{items}</ul>);
+      continue;
+    }
+
+    blocks.push(<p key={`paragraph-${index}`}>{renderInlineMarkdown(line)}</p>);
+    index += 1;
+  }
+
+  return <div className="message-content">{blocks}</div>;
+}
 
 export function AssistantChat() {
   const [messages, setMessages] = useState<Message[]>([welcome]);
@@ -37,9 +81,9 @@ export function AssistantChat() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: nextMessages.slice(-10).map(({ role, content: text }) => ({ role, content: text })) }),
       });
-      const payload = await response.json() as { reply?: string; mocked?: boolean; error?: string };
+      const payload = await response.json() as { reply?: string; mocked?: boolean; mode?: AssistantMode; error?: string };
       const reply = response.ok && payload.reply ? payload.reply : payload.error ?? "Không thể nhận phản hồi lúc này.";
-      setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", content: reply, mocked: payload.mocked }]);
+      setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", content: reply, mocked: payload.mocked, mode: payload.mode }]);
     } catch {
       setMessages((current) => [...current, { id: Date.now() + 1, role: "assistant", content: "Không thể kết nối tới trợ lý lúc này. Vui lòng thử lại.", mocked: true }]);
     } finally {
@@ -59,8 +103,8 @@ export function AssistantChat() {
           {messages.map((message) => (
             <article className={`message ${message.role}`} key={message.id}>
               <div className="message-meta">{message.role === "assistant" ? "Study assistant" : "You"}</div>
-              {message.content}
-              {message.mocked ? <div className="offline-note">offline sample · grounded deterministic response</div> : null}
+              {message.role === "assistant" ? <AssistantMessage content={message.content} /> : message.content}
+              {message.mocked ? <div className="offline-note">{message.mode && message.mode !== "online" ? modeLabels[message.mode] : "Offline knowledge · grounded deterministic response"}</div> : null}
             </article>
           ))}
           {sending ? <article className="message"><div className="message-meta">Study assistant</div>Đang đối chiếu context nghiên cứu…</article> : null}

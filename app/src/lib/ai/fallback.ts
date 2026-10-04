@@ -1,4 +1,14 @@
+import { loadRq1 } from "@/lib/data/load";
 import { PROJECT_CONTEXT } from "./system-instruction";
+
+// Derived from the pipeline artifact rather than transcribed, so the offline
+// responder cannot drift out of step with the report the way a hard-coded
+// ranking did.
+const topCramersV = [...loadRq1().categorical]
+  .sort((a, b) => b.cramersV - a.cramersV)
+  .slice(0, 5)
+  .map((row) => `${row.variable} ${row.cramersV.toFixed(3)}`)
+  .join(", ");
 
 function normalize(value: string): string {
   return value.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
@@ -38,8 +48,8 @@ export function fallbackAnswer(question: string): string {
 
   if (/(cramer|top 5|yeu to)/.test(normalized)) {
     return en
-      ? "Top categorical associations by Cramér's V include GenHlth, HighBP, HighChol, DiffWalk, and Age. These indicate strong marginal associations within the analyzed sample, but do not imply direct clinical causation."
-      : "Top liên hệ phân loại theo Cramér's V gồm GenHlth, HighBP, HighChol, DiffWalk và Age. Đây là các chỉ số có liên hệ mẫu mạnh, nhưng không suy ra mối quan hệ nhân quả.";
+      ? `Top categorical associations by Cramér's V: ${topCramersV}. These indicate strong marginal associations within the analyzed sample, but do not imply direct clinical causation.`
+      : `Top liên hệ phân loại theo Cramér's V: ${topCramersV}. Đây là các chỉ số có liên hệ mẫu mạnh, nhưng không suy ra mối quan hệ nhân quả.`;
   }
 
   if (/(shap|consisten|nhat quan|group|thong ke)/.test(normalized)) {

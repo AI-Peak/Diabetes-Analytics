@@ -2,37 +2,18 @@ import { fallbackAnswer } from "@/lib/ai/fallback";
 import { PROJECT_CONTEXT, SYSTEM_INSTRUCTION } from "@/lib/ai/system-instruction";
 
 type ChatMessage = { role: "user" | "assistant"; content: string };
-type ChatCompletionResponse = {
-  choices?: Array<{ message?: { content?: unknown } }>;
+type GeminiResponse = {
+  candidates?: Array<{
+    content?: { parts?: Array<{ text?: string }> };
+    finishReason?: string;
+  }>;
+  error?: { message?: string };
 };
 
-const DEFAULT_BASE_URL = "https://9r-nhan.0err.com/v1";
-const DEFAULT_MODEL = "gpt-5.4-mini";
+const DEFAULT_MODEL = "gemini-2.5-flash";
+const RETRYABLE_STATUSES = new Set([429, 500, 502, 503, 504]);
 
 export const runtime = "nodejs";
-
-function extractUpstreamError(body: string): string | null {
-  try {
-    const payload = JSON.parse(body) as unknown;
-    if (!payload || typeof payload !== "object") return null;
-    const record = payload as Record<string, unknown>;
-    const error = record.error;
-
-    if (typeof error === "string") return error.trim().slice(0, 300) || null;
-    if (error && typeof error === "object") {
-      const message = (error as Record<string, unknown>).message;
-      if (typeof message === "string") return message.trim().slice(0, 300) || null;
-    }
-
-    for (const key of ["message", "detail"]) {
-      const message = record[key];
-      if (typeof message === "string") return message.trim().slice(0, 300) || null;
-    }
-  } catch {
-    // Ignore non-JSON proxy pages so logs never include an arbitrary HTML response.
-  }
-  return null;
-}
 
 function parseMessages(value: unknown): ChatMessage[] | null {
   if (!Array.isArray(value) || value.length === 0 || value.length > 12) return null;
@@ -47,18 +28,54 @@ function parseMessages(value: unknown): ChatMessage[] | null {
   return messages;
 }
 
-function extractReply(content: unknown): string | null {
-  if (typeof content === "string" && content.trim()) return content.trim();
-  if (!Array.isArray(content)) return null;
-
-  const text = content
-    .map((part) => {
-      if (!part || typeof part !== "object" || !("text" in part)) return "";
-      return typeof part.text === "string" ? part.text : "";
-    })
+function extractReply(payload: GeminiResponse): string | null {
+  const text = payload.candidates?.[0]?.content?.parts
+    ?.map((part) => part.text ?? "")
     .join("")
     .trim();
   return text || null;
+}
+
+function wait(delayMs: number) {
+  return new Promise((resolve) => setTimeout(resolve, delayMs));
+}
+
+async function requestGemini(endpoint: string, apiKey: string, messages: ChatMessage[]) {
+  let lastResponse: Response | null = null;
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
+      },
+      body: JSON.stringify({
+        systemInstruction: {
+          parts: [{ text: `${SYSTEM_INSTRUCTION}\n\nPROJECT CONTEXT\n${PROJECT_CONTEXT}` }],
+        },
+        contents: messages.map((message) => ({
+          role: message.role === "assistant" ? "model" : "user",
+          parts: [{ text: message.content }],
+        })),
+        generationConfig: {
+          temperature: 0.2,
+          maxOutputTokens: 4096,
+          thinkingConfig: { thinkingBudget: 512 },
+        },
+      }),
+      cache: "no-store",
+      signal: AbortSignal.timeout(30_000),
+    });
+
+    lastResponse = response;
+    if (response.ok || !RETRYABLE_STATUSES.has(response.status) || attempt === 1) return response;
+
+    // One short retry absorbs transient quota bursts without making the chat feel stuck.
+    await wait(750);
+  }
+
+  return lastResponse as Response;
 }
 
 export async function POST(request: Request) {
@@ -74,48 +91,31 @@ export async function POST(request: Request) {
   const lastUser = [...messages].reverse().find((message) => message.role === "user");
   if (!lastUser) return Response.json({ error: "A user message is required." }, { status: 400 });
 
-  const apiKey = process.env.NINEROUTER_API_KEY?.trim();
-  if (!apiKey) return Response.json({ reply: fallbackAnswer(lastUser.content), mocked: true });
+  const apiKey = process.env.GEMINI_API_KEY?.trim();
+  if (!apiKey) return Response.json({ reply: fallbackAnswer(lastUser.content), mocked: true, mode: "offline" });
 
-  const baseUrl = (process.env.NINEROUTER_BASE_URL?.trim() || DEFAULT_BASE_URL).replace(/\/+$/, "");
-  const model = process.env.NINEROUTER_MODEL?.trim() || DEFAULT_MODEL;
+  const model = process.env.GEMINI_MODEL?.trim() || DEFAULT_MODEL;
+  const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`;
 
   try {
-    const response = await fetch(`${baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "User-Agent": "Diabetes-Analytics/1.0",
-      },
-      body: JSON.stringify({
-        model,
-        stream: false,
-        messages: [
-          { role: "system", content: `${SYSTEM_INSTRUCTION}\n\nPROJECT CONTEXT\n${PROJECT_CONTEXT}` },
-          ...messages,
-        ],
-      }),
-      cache: "no-store",
-      signal: AbortSignal.timeout(30_000),
-    });
+    const response = await requestGemini(endpoint, apiKey, messages);
 
     if (!response.ok) {
-      const details = extractUpstreamError(await response.text());
-      const requestId = response.headers.get("cf-ray") || response.headers.get("x-request-id");
-      throw new Error([
-        `9Router returned HTTP ${response.status}`,
-        details ? `(${details})` : "",
-        requestId ? `[request ${requestId}]` : "",
-      ].filter(Boolean).join(" "));
+      const payload = await response.json() as GeminiResponse;
+      const reason = response.status === 429 ? "rate_limited" : "unavailable";
+      console.error("[chat] Gemini request failed", payload.error?.message || `HTTP ${response.status}`);
+      return Response.json({ reply: fallbackAnswer(lastUser.content), mocked: true, mode: reason });
     }
-    const payload = await response.json() as ChatCompletionResponse;
-    const reply = extractReply(payload.choices?.[0]?.message?.content);
-    if (!reply) throw new Error("9Router returned an empty response");
-    return Response.json({ reply, mocked: false });
+    const payload = await response.json() as GeminiResponse;
+    const reply = extractReply(payload);
+    if (!reply) throw new Error("Gemini returned an empty response");
+    const finishReason = payload.candidates?.[0]?.finishReason;
+    if (finishReason === "MAX_TOKENS") {
+      throw new Error("Gemini exhausted the output token budget");
+    }
+    return Response.json({ reply, mocked: false, mode: "online" });
   } catch (error) {
-    console.error("[chat] 9Router request failed", error instanceof Error ? error.message : "unknown error");
-    return Response.json({ error: "The live assistant is temporarily unavailable. Check the 9Router configuration or remove the API key to use the grounded offline demo." }, { status: 502 });
+    console.error("[chat] Gemini request failed", error instanceof Error ? error.message : "unknown error");
+    return Response.json({ reply: fallbackAnswer(lastUser.content), mocked: true, mode: "unavailable" });
   }
 }
