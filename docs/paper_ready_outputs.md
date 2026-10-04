@@ -51,7 +51,7 @@ This document maps all canonical datasets, method scripts, main tables, main fig
 
 ## 4. Main Canonical Figures
 
-The 9 authoritative publication figures tracked in `paper/images/` (cataloged in `paper/images/final_figure_inventory.csv`):
+The 9 authoritative publication figures tracked in `docs/figures/` (cataloged in `docs/figures/final_figure_inventory.csv`):
 
 | Figure ID | Filename | Research Question | Purpose |
 | :---: | :--- | :---: | :--- |

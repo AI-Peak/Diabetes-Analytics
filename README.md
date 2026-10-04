@@ -57,7 +57,7 @@ python run_pipeline.py
 
 The Springer Nature publication manuscript is located in `paper/`:
 - Source file: [paper/main.tex](paper/main.tex)
-- Tables: [paper/tables/](paper/tables/) (Tables 1 through 10)
+- Tables: [docs/tables/](docs/tables/) (Tables 1 through 10)
 - Macros: [paper/generated_metrics.tex](paper/generated_metrics.tex)
 - Compiled PDF: [paper/main.pdf](paper/main.pdf)
 

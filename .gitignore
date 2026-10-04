@@ -97,6 +97,7 @@ docs/website_card_guide.md
 docs/card-guide/
 docs/prompt_build_card_guide_html.md
 paper.zip
+paper/
 
 # Local build prompts (do not commit)
 prompts/
