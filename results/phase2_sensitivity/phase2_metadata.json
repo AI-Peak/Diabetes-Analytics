@@ -1,7 +1,7 @@
 {
     "analysis_phase": "Phase 2 \u2014 Profile-Grouped Sensitivity Analysis for Evaluation Reliability",
-    "timestamp_utc": "2026-10-04T14:39:01.634236+00:00",
-    "git_commit": "9bd7a1cf0b084a4c47b0a7e951af93f2e31f0eb9",
+    "timestamp_utc": "2026-10-04T15:41:04.424871+00:00",
+    "git_commit": "24a197b86e1ab72cc113c932c93dcc34ee3444ec",
     "environment": {
         "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]",
         "platform": "Windows-10-10.0.19045-SP0",
