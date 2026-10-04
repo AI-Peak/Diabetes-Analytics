@@ -1,0 +1,96 @@
+Paper_Location,Metric_Name,Manuscript_Value,Source_Artifact,Source_Key,Artifact_Ground_Truth,Verified_Match
+Abstract / Sec 3 / Tab 1,Total Sample Size (N),"253,680",results/data_understanding/dataset_audit.json,total_observations,253680,True
+Sec 3 / Tab 1,Total Predictors Count,21,results/data_understanding/dataset_audit.json,total_features,21,True
+Abstract / Sec 3 / Tab 1,Class 0 (Non-Diabetic),"218,334",results/data_understanding/dataset_audit.json,class_0_count,218334,True
+Abstract / Sec 3 / Tab 1,Class 1 (Diabetic/Prediabetic),"35,346",results/data_understanding/dataset_audit.json,class_1_count,35346,True
+Abstract / Sec 3 / Tab 1,Positive Prevalence (%),13.93%,results/data_understanding/dataset_audit.json,class_1_pct,13.9333,True
+Sec 3 / Sec 4 / Tab 1,Exact Duplicate Surplus,"24,206",results/phase1_integrity/dataset_integrity_summary.csv,Surplus Duplicate Rows (beyond 1st),24206,True
+Sec 3 / Tab 1,Unique Predictor Profiles,"227,908",results/phase1_integrity/dataset_integrity_summary.csv,Unique Predictor Profiles,227908,True
+Sec 3 / Tab 1,Surplus Predictor Profile Records,"25,772",results/phase1_integrity/dataset_integrity_summary.csv,Surplus Repeated Profile Observations,25772,True
+Sec 3 / Tab 1,Conflicting Label Profiles,"1,566",results/phase1_integrity/dataset_integrity_summary.csv,Conflicting Predictor Profiles Count,1566,True
+Sec 3 / Tab 1,Conflicting Observations Count,"5,218",results/phase1_integrity/dataset_integrity_summary.csv,Observations in Conflicting Profiles,5218,True
+Abstract / Sec 4,Development Partition Sample Size,"202,944",results/phase1_integrity/split_integrity_summary.csv,Development_Rows,202944,True
+Abstract / Sec 4,Holdout Partition Sample Size,"50,736",results/phase1_integrity/split_integrity_summary.csv,Holdout_Rows,50736,True
+Sec 4 / Sec 6,Cross-Partition Profile Overlap Count,"6,836",results/phase1_integrity/split_integrity_summary.csv,Holdout_Predictor_Overlap_Rows,6836,True
+Sec 4 / Sec 6,Cross-Partition Profile Overlap Rate (%),13.47%,results/phase1_integrity/split_integrity_summary.csv,Holdout_Predictor_Overlap_Pct,13.4737,True
+Sec 4 / Sec 6,Cross-Partition Exact Duplicate Overlap Count,"6,375",results/phase1_integrity/split_integrity_summary.csv,Holdout_Exact_Overlap_Rows,6375,True
+Sec 4 / Sec 6,Cross-Partition Exact Duplicate Overlap Rate (%),12.56%,results/phase1_integrity/split_integrity_summary.csv,Holdout_Exact_Overlap_Pct,12.5650,True
+Abstract / Sec 5 / Tab 4,XGBoost CV PR-AUC,0.4359,results/modeling/model_selection.json,XGBoost.Mean_PR_AUC,0.4359,True
+Abstract / Sec 5 / Tab 4,XGBoost CV ROC-AUC,0.8305,results/modeling/model_selection.json,XGBoost.Mean_ROC_AUC,0.8305,True
+Sec 5 / Tab 4,Random Forest CV PR-AUC,0.4301,results/modeling/model_selection.json,Random Forest.Mean_PR_AUC,0.4301,True
+Sec 5 / Tab 4,Random Forest CV ROC-AUC,0.8271,results/modeling/model_selection.json,Random Forest.Mean_ROC_AUC,0.8271,True
+Sec 5 / Tab 4,Logistic Regression CV PR-AUC,0.4163,results/modeling/model_selection.json,Logistic Regression.Mean_PR_AUC,0.4163,True
+Sec 5 / Tab 4,Logistic Regression CV ROC-AUC,0.8250,results/modeling/model_selection.json,Logistic Regression.Mean_ROC_AUC,0.8250,True
+Sec 5 / Tab 4,Decision Tree CV PR-AUC,0.4015,results/modeling/model_selection.json,Decision Tree.Mean_PR_AUC,0.4015,True
+Sec 5 / Tab 4,Decision Tree CV ROC-AUC,0.8169,results/modeling/model_selection.json,Decision Tree.Mean_ROC_AUC,0.8169,True
+Abstract / Sec 4 / Sec 5 / Tab 5,Optimal Screening Cutoff (t*),0.13,results/modeling/model_selection.json,selected_threshold,0.1300,True
+Abstract / Sec 5 / Tab 5,Holdout Recall (t=0.13),80.99%,results/modeling/model_selection.json,selected_threshold.Recall,80.9900,True
+Abstract / Sec 5 / Tab 5,Holdout Precision (t=0.13),29.91%,results/modeling/model_selection.json,selected_threshold.Precision,29.9100,True
+Abstract / Sec 5 / Tab 5,Holdout Specificity (t=0.13),69.28%,results/modeling/model_selection.json,selected_threshold.Specificity,69.2800,True
+Abstract / Sec 5 / Tab 5,Holdout ROC-AUC,0.8272,results/modeling/model_selection.json,selected_threshold.ROC-AUC,0.8272,True
+Abstract / Sec 5 / Tab 5,Holdout PR-AUC,0.4238,results/modeling/model_selection.json,selected_threshold.PR-AUC,0.4238,True
+Sec 5 / Tab 5,Holdout F1-Score (t=0.13),0.4369,results/modeling/model_selection.json,selected_threshold.F1-Score,0.4369,True
+Sec 5 / Tab 5,Holdout Accuracy (t=0.13),70.91%,results/modeling/model_selection.json,selected_threshold.Accuracy,70.9100,True
+Sec 5 / Tab 5 / Tab 6,Default Recall (t=0.50),16.54%,results/modeling/model_selection.json,default_0.50.Recall,16.5400,True
+Sec 5 / Tab 6,Default Precision (t=0.50),55.83%,results/modeling/model_selection.json,default_0.50.Precision,55.8300,True
+Sec 5 / Tab 6,Default Specificity (t=0.50),97.88%,results/modeling/model_selection.json,default_0.50.Specificity,97.8800,True
+Sec 5 / Tab 6,Default Accuracy (t=0.50),86.55%,results/modeling/model_selection.json,default_0.50.Accuracy,86.5500,True
+Abstract / Sec 5 / Tab 6,Selected Threshold True Positives (TP),"5,725",results/modeling/model_selection.json,selected_threshold.TP,5725,True
+Sec 5 / Tab 6,Selected Threshold False Positives (FP),"13,416",results/modeling/model_selection.json,selected_threshold.FP,13416,True
+Sec 5 / Tab 6,Selected Threshold True Negatives (TN),"30,251",results/modeling/model_selection.json,selected_threshold.TN,30251,True
+Abstract / Sec 5 / Tab 6,Selected Threshold False Negatives (FN),"1,344",results/modeling/model_selection.json,selected_threshold.FN,1344,True
+Sec 5 / Tab 6,Default Threshold False Negatives (FN),"5,900",results/modeling/model_selection.json,default_0.50.FN,5900,True
+Abstract / Sec 5 / Tab 6,False Negative Reduction Percentage,77.22%,results/modeling/model_selection.json,(5900 - 1344) / 5900,77.2203,True
+Abstract / Sec 5 / Tab 7,Holdout Brier Score,0.0974,results/modeling/calibration_metrics.csv,Brier_Score,0.0974,True
+Sec 5 / Tab 7,Holdout Null Brier Score,0.1199,results/data_understanding/dataset_audit.json,Base Rate Variance p*(1-p),0.1199,True
+Abstract / Sec 5 / Tab 7,Holdout Cox Calibration Slope,0.9589,results/modeling/calibration_metrics.csv,Calibration_Slope,0.9589,True
+Abstract / Sec 5 / Tab 7,Holdout Cox Calibration Intercept,-0.0515,results/modeling/calibration_metrics.csv,Calibration_Intercept,-0.0515,True
+Abstract / Sec 5 / Tab 7,Holdout Calibration Slope 95% CI Lower,0.9342,results/modeling/calibration_metrics.csv,Slope_95_CI_Lower,0.9342,True
+Abstract / Sec 5 / Tab 7,Holdout Calibration Slope 95% CI Upper,0.9854,results/modeling/calibration_metrics.csv,Slope_95_CI_Upper,0.9854,True
+Abstract / Sec 5 / Tab 7,Holdout Calibration Intercept 95% CI Lower,-0.0861,results/modeling/calibration_metrics.csv,Intercept_95_CI_Lower,-0.0861,True
+Abstract / Sec 5 / Tab 7,Holdout Calibration Intercept 95% CI Upper,-0.0148,results/modeling/calibration_metrics.csv,Intercept_95_CI_Upper,-0.0148,True
+Abstract / Sec 5 / Tab 9,Primary Spearman rho (SHAP vs LR Chi2),0.9338,results/xai/rank_sensitivity_analysis.csv,Spearman_Rho_Primary,0.9338,True
+Abstract / Sec 5 / Tab 9,Top-5 Jaccard Similarity (Primary),1.0000,results/xai/rank_sensitivity_analysis.csv,Top-5 Jaccard,1.0000,True
+Abstract / Sec 5 / Tab 9,Top-10 Jaccard Similarity (Primary),1.0000,results/xai/rank_sensitivity_analysis.csv,Top-10 Jaccard,1.0000,True
+Sec 5 / Tab 9,Top-15 Jaccard Similarity (Primary),0.7647,results/xai/rank_sensitivity_analysis.csv,Top-15 Jaccard,0.7647,True
+Sec 5 / Tab 9,df-Aware (LR Chi2 - df) Spearman rho,0.9338,results/xai/rank_sensitivity_analysis.csv,Spearman_Rho_Penalized,0.9338,True
+Sec 5 / Tab 9,df-Aware (LR Chi2 - df) Top-10 Jaccard,1.0000,results/xai/rank_sensitivity_analysis.csv,Top-10 Jaccard Penalized,1.0000,True
+Sec 5 / Tab 9,df-Aware (LR Chi2 / df) Spearman rho,0.8818,results/xai/rank_sensitivity_analysis.csv,Spearman_Rho_Per_DF,0.8818,True
+Sec 5 / Tab 9,df-Aware (LR Chi2 / df) Top-10 Jaccard,0.8182,results/xai/rank_sensitivity_analysis.csv,Top-10 Jaccard Per DF,0.8182,True
+Sec 5 / Tab 8,Top Feature 1 (GenHlth) Mean |SHAP|,0.6381,results/xai/explanation_consistency.csv,SHAP_Importance,0.6381,True
+Sec 5 / Tab 2,GenHlth Cramer V,0.2993,results/statistical_analysis/chi_square_results.csv,GenHlth.Cramér's V,0.2993,True
+Sec 5 / Tab 2,HighBP Cramer V,0.2631,results/statistical_analysis/chi_square_results.csv,HighBP.Cramér's V,0.2631,True
+Sec 5 / Tab 2,DiffWalk Cramer V,0.2183,results/statistical_analysis/chi_square_results.csv,DiffWalk.Cramér's V,0.2183,True
+Sec 5 / Tab 2,HighChol Cramer V,0.2003,results/statistical_analysis/chi_square_results.csv,HighChol.Cramér's V,0.2003,True
+Sec 5 / Tab 2,AnyHealthcare Chi2,66.81,results/statistical_analysis/chi_square_results.csv,AnyHealthcare.Chi2 Statistic,66.8124,True
+Sec 5 / Tab 2,BMI Rank-Biserial r_rb,0.3766,results/statistical_analysis/numerical_results.csv,BMI.Rank-Biserial Correlation,0.3766,True
+Sec 5 / Tab 2,PhysHlth Rank-Biserial r_rb,0.2260,results/statistical_analysis/numerical_results.csv,PhysHlth.Rank-Biserial Correlation,0.2260,True
+Sec 5 / Tab 2,MentHlth Rank-Biserial r_rb,0.0546,results/statistical_analysis/numerical_results.csv,MentHlth.Rank-Biserial Correlation,0.0546,True
+Sec 5 / Tab 3,GenHlth LR Chi2,4941.50,results/statistical_analysis/adjusted_feature_contributions.csv,GenHlth.LR_Chi2,4941.5021,True
+Sec 5 / Tab 3,BMI LR Chi2,3986.04,results/statistical_analysis/adjusted_feature_contributions.csv,BMI.LR_Chi2,3986.0392,True
+Sec 5 / Tab 3,Age LR Chi2,2869.38,results/statistical_analysis/adjusted_feature_contributions.csv,Age.LR_Chi2,2869.3753,True
+Sec 5 / Tab 3,HighBP LR Chi2,2448.45,results/statistical_analysis/adjusted_feature_contributions.csv,HighBP.LR_Chi2,2448.4511,True
+Sec 5 / Tab 3,HighChol LR Chi2,1572.34,results/statistical_analysis/adjusted_feature_contributions.csv,HighChol.LR_Chi2,1572.3381,True
+Sec 5 / Tab 3,HvyAlcoholConsump LR Chi2,476.94,results/statistical_analysis/adjusted_feature_contributions.csv,HvyAlcoholConsump.LR_Chi2,476.9418,True
+Sec 5 / Tab 3,CholCheck LR Chi2,452.13,results/statistical_analysis/adjusted_feature_contributions.csv,CholCheck.LR_Chi2,452.1314,True
+Sec 5 / Tab 3,Sex LR Chi2,391.04,results/statistical_analysis/adjusted_feature_contributions.csv,Sex.LR_Chi2,391.0409,True
+Sec 5 / Tab 10,Delta CV PR-AUC,-0.0037,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,CV PR-AUC (Mean).Absolute_Delta,-0.0037,True
+Sec 5 / Tab 10,Delta CV ROC-AUC,-0.0011,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,CV ROC-AUC (Mean).Absolute_Delta,-0.0011,True
+Sec 5 / Tab 10,Delta Holdout PR-AUC,+0.0133,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout PR-AUC.Absolute_Delta,0.0133,True
+Sec 5 / Tab 10,Delta Holdout ROC-AUC,+0.0037,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout ROC-AUC.Absolute_Delta,0.0037,True
+Sec 5 / Tab 10,Delta Holdout Recall,+0.55%,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout Recall.Absolute_Delta,0.5500,True
+Sec 5 / Tab 10,Delta Holdout Precision,+0.02%,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout Precision.Absolute_Delta,0.0200,True
+Sec 5 / Tab 10,Delta Holdout Specificity,-0.18%,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout Specificity.Absolute_Delta,-0.1800,True
+Sec 5 / Tab 10,Delta Holdout Brier Score,-0.0010,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout Brier Score.Absolute_Delta,-0.0010,True
+Sec 5 / Tab 10,Delta Calibration Slope,+0.0289,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Calibration Slope.Absolute_Delta,0.0289,True
+Sec 5 / Tab 10,Delta Calibration Intercept,+0.0357,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Calibration Intercept.Absolute_Delta,0.0357,True
+Abstract / Sec 5 / Tab 10,Redeveloped Grouped Holdout PR-AUC,0.4372,results/phase2_sensitivity/grouped_calibration_metrics.csv,Holdout PR-AUC,0.4372,True
+Abstract / Sec 5 / Tab 10,Redeveloped Grouped Holdout ROC-AUC,0.8310,results/phase2_sensitivity/grouped_calibration_metrics.csv,Holdout ROC-AUC,0.8310,True
+Abstract / Sec 5 / Tab 10,Redeveloped Grouped Holdout Recall,81.54%,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout Recall,81.5400,True
+Sec 5 / Tab 10,Redeveloped Grouped Holdout Precision,29.93%,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout Precision,29.9300,True
+Sec 5 / Tab 10,Redeveloped Grouped Holdout Specificity,69.10%,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout Specificity,69.1000,True
+Sec 5 / Tab 10,Redeveloped Grouped Holdout F1-Score,0.4379,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout F1-Score,0.4379,True
+Sec 5 / Tab 10,Redeveloped Grouped Holdout Accuracy,70.83%,results/phase2_sensitivity/primary_vs_grouped_comparison.csv,Holdout Accuracy,70.8300,True
+Abstract / Sec 5 / Tab 10,Redeveloped Grouped Holdout Brier Score,0.0964,results/phase2_sensitivity/grouped_calibration_metrics.csv,Brier_Score,0.0964,True
+Abstract / Sec 5 / Tab 10,Redeveloped Grouped Calibration Slope,0.9878,results/phase2_sensitivity/grouped_calibration_metrics.csv,Calibration_Slope,0.9878,True
+Sec 5 / Tab 10,Redeveloped Grouped Calibration Intercept,-0.0158,results/phase2_sensitivity/grouped_calibration_metrics.csv,Calibration_Intercept,-0.0158,True

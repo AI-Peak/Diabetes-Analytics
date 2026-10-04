@@ -1,0 +1,29 @@
+Category,Metric,Value,Unit
+Dataset Structure,Total Observations (N),253680,Rows
+Dataset Structure,Total Variables,22,Columns
+Dataset Structure,Predictor Variables,21,Columns
+Dataset Structure,Target Column,Diabetes_binary,Name
+Dataset Structure,Missing Values,0,Count
+Dataset Structure,Duplicated Column Names,0,Count
+Class Distribution,Class 0 (No Reported Diabetes) Count,218334,Observations
+Class Distribution,Class 1 (Prediabetes/Diabetes) Count,35346,Observations
+Class Distribution,Class 0 Prevalence,86.0667%,Percentage
+Class Distribution,Class 1 Prevalence,13.9333%,Percentage
+Exact Duplicate Rows (22 cols),Surplus Duplicate Rows (beyond 1st),24206,Rows
+Exact Duplicate Rows (22 cols),Total Rows in Duplicate Groups,35575,Rows
+Exact Duplicate Rows (22 cols),Percentage of Dataset in Duplicate Groups,14.0236%,Percentage
+Exact Duplicate Rows (22 cols),Distinct Duplicate Groups,11369,Groups
+Exact Duplicate Rows (22 cols),Maximum Group Size,59,Rows
+Exact Duplicate Rows (22 cols),Mean Group Size (clusters > 1),3.129,Rows
+Repeated Predictor Profiles (21 cols),Unique Predictor Profiles,227908,Profiles
+Repeated Predictor Profiles (21 cols),Surplus Repeated Profile Observations,25772,Rows
+Repeated Predictor Profiles (21 cols),Total Rows in Multi-Observation Profiles,38000,Rows
+Repeated Predictor Profiles (21 cols),Percentage of Dataset in Multi-Observation Profiles,14.9795%,Percentage
+Repeated Predictor Profiles (21 cols),Distinct Multi-Observation Profiles,12228,Profiles
+Repeated Predictor Profiles (21 cols),Maximum Profile Size,59,Observations
+Repeated Predictor Profiles (21 cols),Mean Profile Size (profiles > 1),3.108,Observations
+Conflicting-Label Profiles,Conflicting Predictor Profiles Count,1566,Profiles
+Conflicting-Label Profiles,Observations in Conflicting Profiles,5218,Observations
+Conflicting-Label Profiles,Percentage of Dataset in Conflicting Profiles,2.0569%,Percentage
+Conflicting-Label Profiles,Largest Conflicting Profile Size,44,Observations
+Conflicting-Label Profiles,Mean Positive Rate in Conflicting Profiles,41.4449%,Rate

@@ -1,0 +1,35 @@
+\begin{table}[htbp]
+\centering
+\caption{Multivariable Logistic Regression Feature Contributions and Adjusted Odds Ratios}
+\label{tab:multivariable}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}clccccc@{}}
+\toprule
+\textbf{Rank} & \textbf{Variable} & \textbf{df} & \textbf{LR $\chi^2$} & \textbf{Adjusted OR [95\% CI]} & \textbf{VIF} & \textbf{Holm $p$-value} \\
+\midrule
+1 & \texttt{GenHlth} & 4 & 4941.50 & Max 7.59 [6.99, 8.25]* & Max 2.17 & $< 10^{-300}$ \\
+2 & \texttt{BMI} & 1 & 3986.04 & 1.06 [1.06, 1.06] & 1.17 & $< 10^{-300}$ \\
+3 & \texttt{Age} & 12 & 2869.38 & Max 7.79 [6.17, 9.82]* & Max 6.23 & $< 10^{-300}$ \\
+4 & \texttt{HighBP} & 1 & 2448.45 & 2.05 [1.99, 2.11] & 1.34 & $< 10^{-300}$ \\
+5 & \texttt{HighChol} & 1 & 1572.34 & 1.71 [1.66, 1.76] & 1.18 & $< 10^{-300}$ \\
+6 & \texttt{HvyAlcoholConsump} & 1 & 476.94 & 0.46 [0.43, 0.50] & 1.02 & $9.89e-106$ \\
+7 & \texttt{CholCheck} & 1 & 452.13 & 3.44 [3.01, 3.93] & 1.03 & $2.48e-100$ \\
+8 & \texttt{Sex} & 1 & 391.04 & 1.31 [1.27, 1.34] & 1.08 & $4.91e-87$ \\
+9 & \texttt{Income} & 7 & 297.98 & Max 0.98 [0.92, 1.06]* & Max 7.82 & $1.63e-60$ \\
+10 & \texttt{HeartDiseaseorAttack} & 1 & 201.68 & 1.29 [1.25, 1.34] & 1.19 & $9.00e-46$ \\
+11 & \texttt{DiffWalk} & 1 & 73.65 & 1.16 [1.12, 1.20] & 1.56 & $9.31e-18$ \\
+12 & \texttt{Education} & 5 & 49.61 & Max 0.97 [0.66, 1.42]* & Max 357.58 & $1.67e-09$ \\
+13 & \texttt{Stroke} & 1 & 41.07 & 1.17 [1.12, 1.23] & 1.08 & $1.47e-10$ \\
+14 & \texttt{PhysHlth} & 1 & 18.73 & 1.00 [0.99, 1.00] & 1.80 & $1.50e-05$ \\
+15 & \texttt{PhysActivity} & 1 & 16.57 & 0.94 [0.92, 0.97] & 1.16 & $4.69e-05$ \\
+16 & \texttt{MentHlth} & 1 & 11.43 & 1.00 [1.00, 1.00] & 1.25 & $7.22e-04$ \\
+17 & \texttt{Smoker} & 1 & 9.25 & 0.96 [0.94, 0.99] & 1.11 & $2.36e-03$ \\
+18 & \texttt{AnyHealthcare} & 1 & 4.95 & 1.08 [1.01, 1.15] & 1.12 & $2.61e-02$ \\
+19 & \texttt{Veggies} & 1 & 3.36 & 0.97 [0.94, 1.00] & 1.11 & $6.68e-02$ \\
+20 & \texttt{Fruits} & 1 & 2.86 & 0.98 [0.95, 1.00] & 1.12 & $9.06e-02$ \\
+21 & \texttt{NoDocbcCost} & 1 & 0.11 & 1.01 [0.96, 1.05] & 1.15 & $7.46e-01$ \\
+\bottomrule
+\end{tabular}
+\footnotetext{Note: Model estimated on $N = 253,680$. Ordinal features (\texttt{GenHlth}, \texttt{Age}, \texttt{Education}, \texttt{Income}) are modeled via categorical indicator dummy blocks. Statistical contribution is measured via nested Likelihood-Ratio $\chi^2$ ($\Delta$deviance) dropping each feature block. For multi-category blocks (*), the maximum level-specific adjusted odds ratio and maximum dummy VIF are displayed; complete category-level parameter estimates are archived in project records.}
+\end{table}

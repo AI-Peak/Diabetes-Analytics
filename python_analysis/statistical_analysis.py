@@ -13,7 +13,9 @@ It applies:
 - Chi-Square Test of Independence and Cramér's V for categorical/binary/ordinal variables.
 - Mann-Whitney U Test (non-parametric) and Two-Sample t-Test (parametric) with
   Cohen's d and Rank-Biserial Correlation for numerical variables.
-- Multivariable Logistic Regression for Adjusted Association Analysis (Odds Ratios, 95% CIs, VIF).
+- Multivariable Logistic Regression with categorical indicator blocks for ordinal/multiclass
+  predictors (GenHlth, Age, Education, Income), reporting dummy-level AORs, 95% CIs, VIFs,
+  and feature-level nested Likelihood-Ratio tests (LR Chi2 / delta deviance).
 
 All outputs are saved in results/statistical_analysis/ and docs/statistical_analysis.md.
 """
@@ -68,7 +70,10 @@ LABEL_MAPPING = {
     "Sex": "Biological Sex",
     "Age": "Age Category (13 levels)",
     "Education": "Education Level (6 levels)",
-    "Income": "Income Bracket (8 levels)"
+    "Income": "Income Bracket (8 levels)",
+    "BMI": "Body Mass Index",
+    "MentHlth": "Mental Unhealthy Days",
+    "PhysHlth": "Physical Unhealthy Days"
 }
 
 def load_data(file_path: Path) -> pd.DataFrame:
@@ -200,42 +205,76 @@ def perform_numerical_tests(df: pd.DataFrame) -> pd.DataFrame:
     return results_df
 
 def perform_adjusted_association_tests(df: pd.DataFrame) -> pd.DataFrame:
-    """Performs multivariable logistic regression to evaluate adjusted associations and calculate Odds Ratios and VIF."""
+    """Performs multivariable logistic regression with categorical indicator blocks for ordinal/categorical
+    variables (GenHlth, Age, Education, Income), computes dummy-level AORs, 95% CIs, and VIFs,
+    and conducts feature-level nested Likelihood-Ratio tests (LR Chi2 / delta deviance).
+    """
     print("Performing multivariable adjusted association analysis (Logistic Regression)...")
-    X = df.drop(columns=["Diabetes_binary"])
     y = df["Diabetes_binary"]
     
-    X_const = sm.add_constant(X)
-    logit_model = sm.Logit(y, X_const).fit(disp=False)
-    
-    params = logit_model.params
-    conf = logit_model.conf_int()
-    pvalues = logit_model.pvalues
-    bse = logit_model.bse
-    zvalues = logit_model.tvalues
-    
-    results = []
-    # Compute VIF
-    X_const_mat = X_const.values
-    vif_vals = {}
-    for i, col in enumerate(X_const.columns):
+    cat_cols = ["GenHlth", "Age", "Education", "Income"]
+    binary_cols = [
+        "HighBP", "HighChol", "CholCheck", "Smoker", "Stroke", 
+        "HeartDiseaseorAttack", "PhysActivity", "Fruits", "Veggies", 
+        "HvyAlcoholConsump", "AnyHealthcare", "NoDocbcCost", "DiffWalk", "Sex"
+    ]
+    num_cols = ["BMI", "MentHlth", "PhysHlth"]
+
+    # Construct design matrix with dummies
+    X_parts = [df[binary_cols + num_cols]]
+    col_map = {}
+    for col in binary_cols + num_cols:
+        col_map[col] = [col]
+
+    for c in cat_cols:
+        dummies = pd.get_dummies(df[c], prefix=c, drop_first=True, dtype=float)
+        X_parts.append(dummies)
+        col_map[c] = list(dummies.columns)
+
+    X_full = pd.concat(X_parts, axis=1)
+    X_full_const = sm.add_constant(X_full)
+
+    # 1. Fit full model
+    print(f"Fitting full multivariable logistic regression model ({X_full_const.shape[1]} parameters)...")
+    full_model = sm.Logit(y, X_full_const).fit(disp=False)
+    ll_full = full_model.llf
+    params = full_model.params
+    conf = full_model.conf_int()
+    pvalues = full_model.pvalues
+    bse = full_model.bse
+    zvalues = full_model.tvalues
+
+    # Compute term-level VIFs
+    print("Computing Variance Inflation Factors (VIF)...")
+    X_mat = X_full_const.values
+    vif_dict = {}
+    for i, col in enumerate(X_full_const.columns):
         if col != "const":
-            vif_vals[col] = variance_inflation_factor(X_const_mat, i)
-            
-    for col in X.columns:
-        coef = params[col]
-        or_val = np.exp(coef)
-        ci_lower = np.exp(conf.loc[col, 0])
-        ci_upper = np.exp(conf.loc[col, 1])
-        pval = pvalues[col]
-        zstat = zvalues[col]
-        vif = vif_vals[col]
+            vif_dict[col] = variance_inflation_factor(X_mat, i)
+
+    # Build multivariable_associations.csv (term/dummy-level)
+    dummy_records = []
+    for term in X_full.columns:
+        parent_var = term
+        for orig, dummy_list in col_map.items():
+            if term in dummy_list:
+                parent_var = orig
+                break
         
-        results.append({
-            "Variable": col,
-            "Description": LABEL_MAPPING.get(col, col),
+        coef = params[term]
+        or_val = np.exp(coef)
+        ci_lower = np.exp(conf.loc[term, 0])
+        ci_upper = np.exp(conf.loc[term, 1])
+        pval = pvalues[term]
+        zstat = zvalues[term]
+        vif = vif_dict[term]
+
+        dummy_records.append({
+            "Term": term,
+            "Variable": parent_var,
+            "Description": LABEL_MAPPING.get(parent_var, parent_var),
             "Coefficient": coef,
-            "Std_Error": bse[col],
+            "Std_Error": bse[term],
             "z_statistic": zstat,
             "p_value": pval,
             "Odds_Ratio": or_val,
@@ -243,18 +282,65 @@ def perform_adjusted_association_tests(df: pd.DataFrame) -> pd.DataFrame:
             "OR_95_CI_Upper": ci_upper,
             "VIF": vif
         })
+    dummy_df = pd.DataFrame(dummy_records)
+    reject_dummy, pvals_dummy_adj, _, _ = multipletests(dummy_df["p_value"], alpha=0.05, method="holm")
+    dummy_df["Holm_p_value"] = pvals_dummy_adj
+    dummy_df["Reject_Holm"] = reject_dummy
+    dummy_df.to_csv(RESULTS_DIR / "multivariable_associations.csv", index=False)
+    print("Saved multivariable_associations.csv (term-level coefficients).")
+
+    # 2. Feature-level nested Likelihood-Ratio tests (delta deviance)
+    print("Performing feature-level nested Likelihood-Ratio tests...")
+    lr_results = []
+    for orig_col, dummy_list in col_map.items():
+        X_reduced = X_full_const.drop(columns=dummy_list)
+        red_model = sm.Logit(y, X_reduced).fit(disp=False)
+        ll_red = red_model.llf
+        lr_stat = 2.0 * (ll_full - ll_red)
+        df_diff = len(dummy_list)
+        p_val = stats.chi2.sf(lr_stat, df_diff)
         
-    res_df = pd.DataFrame(results)
-    
-    # Apply Holm-Bonferroni correction to adjusted p-values
-    reject, pvals_corrected, _, _ = multipletests(res_df["p_value"], alpha=0.05, method="holm")
-    res_df["Holm_p_value"] = pvals_corrected
-    res_df["Reject_Holm"] = reject
-    
-    res_df = res_df.sort_values(by="Odds_Ratio", ascending=False)
-    res_df.to_csv(RESULTS_DIR / "adjusted_association.csv", index=False)
+        if len(dummy_list) == 1:
+            term = dummy_list[0]
+            rep_or = np.exp(params[term])
+            rep_ci_lower = np.exp(conf.loc[term, 0])
+            rep_ci_upper = np.exp(conf.loc[term, 1])
+            rep_vif = vif_dict[term]
+        else:
+            sub_df = dummy_df[dummy_df["Variable"] == orig_col]
+            max_row = sub_df.loc[sub_df["Odds_Ratio"].idxmax()]
+            rep_or = max_row["Odds_Ratio"]
+            rep_ci_lower = max_row["OR_95_CI_Lower"]
+            rep_ci_upper = max_row["OR_95_CI_Upper"]
+            rep_vif = sub_df["VIF"].max()
+
+        lr_results.append({
+            "Variable": orig_col,
+            "Description": LABEL_MAPPING.get(orig_col, orig_col),
+            "LR_Chi2": lr_stat,
+            "df": df_diff,
+            "p_value": p_val,
+            "Odds_Ratio": rep_or,
+            "OR_95_CI_Lower": rep_ci_lower,
+            "OR_95_CI_Upper": rep_ci_upper,
+            "VIF": rep_vif
+        })
+
+    feature_contrib_df = pd.DataFrame(lr_results).sort_values(by="LR_Chi2", ascending=False).reset_index(drop=True)
+    feature_contrib_df["Rank"] = range(1, len(feature_contrib_df) + 1)
+    reject_feat, pvals_feat_adj, _, _ = multipletests(feature_contrib_df["p_value"], alpha=0.05, method="holm")
+    feature_contrib_df["Holm_p_value"] = pvals_feat_adj
+    feature_contrib_df["Reject_Holm"] = reject_feat
+
+    cols_order = ["Rank", "Variable", "Description", "LR_Chi2", "df", "p_value", "Holm_p_value", "Reject_Holm"]
+    feature_contrib_df[cols_order].to_csv(RESULTS_DIR / "adjusted_feature_contributions.csv", index=False)
+    print("Saved adjusted_feature_contributions.csv (feature-level LR Chi2).")
+
+    full_adj_order = ["Rank", "Variable", "Description", "LR_Chi2", "df", "p_value", "Holm_p_value", "Reject_Holm", "Odds_Ratio", "OR_95_CI_Lower", "OR_95_CI_Upper", "VIF"]
+    feature_contrib_df[full_adj_order].to_csv(RESULTS_DIR / "adjusted_association.csv", index=False)
     print("Saved adjusted_association.csv.")
-    return res_df
+
+    return feature_contrib_df
 
 def apply_holm_bonferroni_corrections(cat_df: pd.DataFrame, num_df: pd.DataFrame):
     """Applies Holm-Bonferroni p-value adjustment across prespecified primary association tests (Chi-square and Mann-Whitney U)."""
@@ -273,7 +359,7 @@ def apply_holm_bonferroni_corrections(cat_df: pd.DataFrame, num_df: pd.DataFrame
     print("Saved chi_square_results.csv and numerical_results.csv with Holm-adjusted p-values.")
 
 def generate_visualizations(df: pd.DataFrame, cat_results: pd.DataFrame, num_results: pd.DataFrame):
-    """Generates and saves professional, scientific visualizations of statistical findings."""
+    """Generates and saves scientific visualizations of statistical findings."""
     print("Generating statistical visualizations...")
     sns.set_theme(style="whitegrid")
     
@@ -346,7 +432,8 @@ def generate_visualizations(df: pd.DataFrame, cat_results: pd.DataFrame, num_res
     plt.legend(title="Class", labels=["0: No reported diabetes", "1: Prediabetes/diabetes positive class"])
     plt.tight_layout()
     plt.savefig(RESULTS_DIR / "health_days_comparison.png", dpi=300)
-    plt.savefig(DOCS_DIR / "figures/health_days_comparison.png", dpi=300)
+    if (DOCS_DIR / "figures").exists():
+        plt.savefig(DOCS_DIR / "figures/health_days_comparison.png", dpi=300)
     plt.close()
     print("Saved all diagnostic statistical plots successfully.")
 
@@ -390,17 +477,17 @@ To ensure statistical rigor, we apply:
 3. **Independent Two-Sample Welch t-Test** (parametric mean comparison) and **Mann-Whitney U Test** (non-parametric median/distribution comparison) for continuous numerical variables.
 4. **Absolute Rank-Biserial Correlation** (primary) and **Cohen's d** (secondary) to measure numerical effect sizes.
 5. **Holm–Bonferroni Multiple Testing Correction**: Holm adjustment was applied across the prespecified primary association tests: Chi-square tests for categorical features and Mann–Whitney U tests for numerical features. Welch’s t-tests were retained as complementary sensitivity analyses.
-6. **Multivariable Adjusted Association Analysis**: Multivariable Logistic Regression to evaluate adjusted Odds Ratios (ORs), 95% Confidence Intervals, and Variance Inflation Factors (VIF) to assess conditional feature contributions while controlling for co-occurring indicators.
+6. **Multivariable Adjusted Association Analysis**: Multivariable Logistic Regression with categorical indicator blocks for ordinal/multiclass predictors (`GenHlth`, `Age`, `Education`, `Income`), reporting term-level AORs, 95% Confidence Intervals, and feature-level nested Likelihood-Ratio tests ($\\Delta\\text{{deviance}}$ / LR $\\chi^2$) to assess conditional feature contributions while controlling for all co-occurring indicators.
 
 > **Methodological Note on Large Sample Size:**  
-> With *N* = {n_total:,}, statistical tests possess near-infinite power, causing p-values for almost all predictors to drop below $p < 0.05$. Therefore, p-values are reported alongside Holm-adjusted values for formal hypothesis testing, but **practical feature importance is evaluated by Effect Size within each feature family**.
+> With *N* = {n_total:,}, statistical tests possess near-infinite power, causing p-values for almost all predictors to drop below $p < 0.05$. Therefore, p-values are reported alongside Holm-adjusted values for formal hypothesis testing, but **practical feature importance is evaluated by Effect Size within each feature family and feature-level Likelihood-Ratio $\\chi^2$ ($\\Delta\\text{{deviance}}$)**.
 
 ---
 
 ## 2. Categorical Variable Analysis (Chi-Square & Cramér's V)
 
 ### Contingency Table & Chi-Square Summary (with Holm-Bonferroni Correction)
-| Variable Name | Attribute Description | Chi-Square ($\chi^2$) | Raw p-value | Holm-Adjusted p | Reject $H_0$ | df | Cramér's V | Effect Size Interpretation | Max Prevalence Diff |
+| Variable Name | Attribute Description | Chi-Square ($\\chi^2$) | Raw p-value | Holm-Adjusted p | Reject $H_0$ | df | Cramér's V | Effect Size Interpretation | Max Prevalence Diff |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :--- | :---: |
 """
     for _, row in cat_results.iterrows():
@@ -414,7 +501,6 @@ To ensure statistical rigor, we apply:
             f"**{row['Effect Size Interpretation']}** | {row['Max Difference (%)']:.2f}% |\n"
         )
 
-        
     markdown_content += f"""
 ### Key Findings from Categorical Analysis:
 1. **Strongest Marginal Associated Feature**: **`{top_cat}`** ({top_cat_desc}) exhibits the strongest univariate association within the analyzed BRFSS sample with diabetes status (*V* = **{top_cat_v:.4f}**), showing a **{top_cat_diff:.2f}%** difference in prevalence across health levels.
@@ -451,25 +537,24 @@ To ensure statistical rigor, we apply:
 
 ## 4. Multivariable Adjusted Association Analysis (Logistic Regression)
 
-To complement univariate marginal testing, a multivariable logistic regression model was estimated to quantify adjusted Odds Ratios (ORs) while controlling for all 21 health indicators simultaneously.
+To evaluate adjusted associations while controlling for co-occurring indicators, a multivariable logistic regression model was estimated. Categorical and ordinal features (`GenHlth`, `Age`, `Education`, `Income`) were modeled using categorical indicator blocks with the lowest category as reference. Feature-level statistical contributions were evaluated via nested Likelihood-Ratio $\\chi^2$ tests ($\\Delta\\text{{deviance}}$).
 
-### Adjusted Odds Ratio & Multicollinearity Summary
-| Variable Name | Description | Coef ($\beta$) | Std Error | z-stat | Adjusted p-val | Holm-Adjusted p | Adjusted Odds Ratio (95% CI) | VIF |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+### Feature-Level Likelihood-Ratio Contributions (Nested Model Comparison)
+| Rank | Variable Name | Description | LR $\\chi^2$ ($\\Delta$deviance) | df | Raw p-value | Holm-Adjusted p | Reject $H_0$ |
+| :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
 """
     for _, row in adj_results.iterrows():
         p_raw_str = f"{row['p_value']:.2e}" if row['p_value'] > 0 else "< 1.00e-300"
         p_holm_str = f"{row['Holm_p_value']:.2e}" if row['Holm_p_value'] > 0 else "< 1.00e-300"
         markdown_content += (
-            f"| `{row['Variable']}` | {row['Description']} | {row['Coefficient']:.4f} | "
-            f"{row['Std_Error']:.4f} | {row['z_statistic']:.2f} | `{p_raw_str}` | `{p_holm_str}` | "
-            f"**{row['Odds_Ratio']:.2f}** ({row['OR_95_CI_Lower']:.2f}–{row['OR_95_CI_Upper']:.2f}) | {row['VIF']:.2f} |\n"
+            f"| {int(row['Rank'])} | `{row['Variable']}` | {row['Description']} | {row['LR_Chi2']:.2f} | "
+            f"{int(row['df'])} | `{p_raw_str}` | `{p_holm_str}` | {'Yes' if row['Reject_Holm'] else 'No'} |\n"
         )
 
     markdown_content += f"""
 ### Key Findings from Multivariable Analysis:
-1. **Highest Adjusted Odds Ratios**: `GenHlth` (OR = {adj_results.loc[adj_results['Variable']=='GenHlth', 'Odds_Ratio'].values[0]:.2f}), `HighBP` (OR = {adj_results.loc[adj_results['Variable']=='HighBP', 'Odds_Ratio'].values[0]:.2f}), `HighChol` (OR = {adj_results.loc[adj_results['Variable']=='HighChol', 'Odds_Ratio'].values[0]:.2f}), and `CholCheck` (OR = {adj_results.loc[adj_results['Variable']=='CholCheck', 'Odds_Ratio'].values[0]:.2f}) maintain strong positive adjusted associations with diabetes status.
-2. **Multicollinearity Diagnostic**: All Variance Inflation Factor (VIF) values remain low (VIF < 3.0), indicating that severe multicollinearity is not present and multivariable parameter estimates are stable.
+1. **Top Feature Contributions by $\\Delta\\text{{deviance}}$**: `GenHlth` (LR $\\chi^2$ = {adj_results.loc[adj_results['Variable']=='GenHlth', 'LR_Chi2'].values[0]:.2f}, df = 4), `BMI` (LR $\\chi^2$ = {adj_results.loc[adj_results['Variable']=='BMI', 'LR_Chi2'].values[0]:.2f}, df = 1), `Age` (LR $\\chi^2$ = {adj_results.loc[adj_results['Variable']=='Age', 'LR_Chi2'].values[0]:.2f}, df = 12), `HighBP` (LR $\\chi^2$ = {adj_results.loc[adj_results['Variable']=='HighBP', 'LR_Chi2'].values[0]:.2f}, df = 1), and `HighChol` (LR $\\chi^2$ = {adj_results.loc[adj_results['Variable']=='HighChol', 'LR_Chi2'].values[0]:.2f}, df = 1) contribute the largest likelihood gains to the multivariable model.
+2. **Category-Level Odds Ratios**: Full term-level adjusted odds ratios and confidence intervals across all dummy categories are archived in `results/statistical_analysis/multivariable_associations.csv`.
 
 ---
 
@@ -483,8 +568,8 @@ Saved under `results/statistical_analysis/` and `docs/figures/`:
 ---
 
 ## 6. Conclusions for Research Question 1 (RQ1)
-1. **Primary Associated Features**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest sample-level effect sizes and adjusted odds ratios in the analyzed sample.
-2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but feature prioritization is governed by effect size and adjusted odds ratio rather than p-value magnitudes.
+1. **Primary Associated Features**: General Health (`GenHlth`), Body Mass Index (`BMI`), Age (`Age`), High Blood Pressure (`HighBP`), and High Cholesterol (`HighChol`) demonstrate the highest multivariable likelihood contributions and sample-level effect sizes.
+2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but feature prioritization is governed by effect size and likelihood contribution rather than raw p-value magnitudes.
 """
     
     output_path = DOCS_DIR / "statistical_analysis.md"
@@ -507,7 +592,6 @@ def main():
     apply_holm_bonferroni_corrections(cat_results, num_results)
     adj_results = perform_adjusted_association_tests(df)
     
-    # Reload saved dataframes to get Holm-adjusted columns
     cat_results = pd.read_csv(RESULTS_DIR / "chi_square_results.csv")
     num_results = pd.read_csv(RESULTS_DIR / "numerical_results.csv")
     
@@ -517,4 +601,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

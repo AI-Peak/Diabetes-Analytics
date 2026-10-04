@@ -102,7 +102,35 @@ paper.zip
 prompts/
 
 # Next.js web app build artifacts
+node_modules/
 app/node_modules/
+.next/
 app/.next/
 app/out/
 app/.env*.local
+*.tsbuildinfo
+
+# OS artifacts
+.DS_Store
+Thumbs.db
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# Local archives and temp files
+*.zip
+*.tar.gz
+*.tmp
+*.temp
+*.bak
+
+# Environment files
+.env
+.env.*
+!.env.example

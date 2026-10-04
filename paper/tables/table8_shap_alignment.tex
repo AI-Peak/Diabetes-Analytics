@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\caption{Epidemiological and Machine Learning Evidence Alignment Classification}
+\label{tab:evidence_alignment}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}p{3.0cm}p{4.3cm}p{4.5cm}@{}}
+\toprule
+\textbf{Evidence Group} & \textbf{Features Included} & \textbf{Epidemiological \& Model Interpretation} \\
+\midrule
+Group 1: Consistent High Evidence (10 features) & \texttt{GenHlth}, \texttt{HighBP}, \texttt{Age}, \texttt{BMI}, \texttt{HighChol}, \texttt{Income}, \texttt{Sex}, \texttt{CholCheck}, \texttt{HeartDiseaseorAttack}, \texttt{HvyAlcoholConsump} & Robust multivariable likelihood contributions (LR $\chi^2$ Top-10) concordant with high gradient-boosted salience (SHAP Top-10); Top-10 set identity is identical across rankings. \\
+Group 2: High Statistical, Lower Model Salience (0 features) & None (at Top-10 cutoff) & High multivariable likelihood contribution but secondary tree-based salience. \\
+Group 3: High Model Salience, Lower Statistical (0 features) & None (at Top-10 cutoff) & High tree-based salience despite secondary multivariable statistical contribution. \\
+Group 4: Consistent Secondary Evidence (11 features) & \texttt{MentHlth}, \texttt{DiffWalk}, \texttt{Education}, \texttt{Stroke}, \texttt{Fruits}, \texttt{PhysHlth}, \texttt{PhysActivity}, \texttt{Smoker}, \texttt{Veggies}, \texttt{AnyHealthcare}, \texttt{NoDocbcCost} & Secondary multivariable contribution and secondary model salience within the analyzed survey sample. \\
+\bottomrule
+\end{tabular}
+\footnotetext{Note: Evidence groups cross-reference feature-level nested Likelihood-Ratio $\chi^2$ ($\Delta$deviance) statistical ranks with Top-10 mean absolute SHAP feature attributions on 10,000 independent holdout observations. Group 1 features represent the descriptive set identity of features appearing in both Top-10 rankings.}
+\end{table}

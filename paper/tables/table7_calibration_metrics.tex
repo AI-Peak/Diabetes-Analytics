@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\caption{Probability Calibration Assessment on Primary Holdout Set ($n_{\text{holdout}} = 50,736$)}
+\label{tab:calibration}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lccp{5.2cm}@{}}
+\toprule
+\textbf{Calibration Metric} & \textbf{Observed [95\% CI]} & \textbf{Ideal} & \textbf{Interpretation} \\
+\midrule
+Brier Score & 0.0974 [0.0964, 0.0983] & 0.0000 & Mean squared probability error; beats baseline ($0.1199$) \\
+Cox Calibration Slope & 0.9589 [0.9342, 0.9854] & 1.0000 & Unpenalized GLM slope; CI strictly $< 1$ reflects modest calibration deviation \\
+Calibration Intercept & $-0.0515$ [$-0.0861$, $-0.0148$] & 0.0000 & Unpenalized GLM intercept; near zero confirms calibrated base rate \\
+\bottomrule
+\end{tabular}
+\footnotetext{Note: Evaluated post-hoc on the untouched holdout test set using unpenalized Cox calibration model via GLM Binomial. 95\% confidence intervals were derived from 1,000 stratified bootstrap iterations.}
+\end{table}

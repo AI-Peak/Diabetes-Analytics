@@ -1,0 +1,2 @@
+development_rows,holdout_rows,development_pct,holdout_pct,development_prevalence,holdout_prevalence,full_prevalence,dev_unique_profiles,holdout_unique_profiles,shared_predictor_profiles,shared_exact_rows,selected_outer_fold
+202944,50736,0.8,0.2,0.13933400346893723,0.13932907600126143,0.13933301797540207,182316,45592,0,0,2

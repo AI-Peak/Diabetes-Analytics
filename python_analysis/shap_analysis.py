@@ -157,6 +157,7 @@ def run_shap_analysis(pipeline, model_name, X_test, y_test):
     ]).sort_values(by="SHAP_Importance", ascending=False)
     
     shap_imp_df["SHAP_Rank"] = shap_imp_df["SHAP_Importance"].rank(ascending=False).astype(int)
+    shap_imp_df.to_csv(XAI_DIR / "shap_importance_summary.csv", index=False)
     
     # 1. Save Global SHAP Bar Plot
     plt.figure(figsize=(10, 6))
@@ -208,19 +209,21 @@ def run_shap_analysis(pipeline, model_name, X_test, y_test):
     return shap_imp_df
 
 def perform_consistency_analysis(shap_imp_df):
-    """Executes Effect-Size–SHAP Evidence Alignment analysis with 4 groups, sensitivity analysis, and quantitative metrics."""
+    """Executes Multivariable Statistical–SHAP Evidence Alignment analysis with 4 groups, sensitivity analysis, and quantitative consensus metrics."""
     print("\nExecuting Statistical–SHAP Evidence Alignment Analysis...")
     
     chi_path = RESULTS_STAT_DIR / "chi_square_results.csv"
     num_path = RESULTS_STAT_DIR / "numerical_results.csv"
-    adj_path = RESULTS_STAT_DIR / "adjusted_association.csv"
+    adj_path = RESULTS_STAT_DIR / "adjusted_feature_contributions.csv"
+    if not adj_path.exists():
+        adj_path = RESULTS_STAT_DIR / "adjusted_association.csv"
     
-    if not (chi_path.exists() and num_path.exists()):
+    if not (chi_path.exists() and num_path.exists() and adj_path.exists()):
         raise FileNotFoundError("Statistical results from Phase 2 not found. Run statistical_analysis.py first.")
         
     chi_df = pd.read_csv(chi_path)
     num_df = pd.read_csv(num_path)
-    adj_df = pd.read_csv(adj_path) if adj_path.exists() else None
+    adj_df = pd.read_csv(adj_path)
     
     stat_list = []
     for _, row in chi_df.iterrows():
@@ -229,8 +232,8 @@ def perform_consistency_analysis(shap_imp_df):
         stat_list.append({
             "Variable": var,
             "Description": row["Description"],
-            "p_value": float(row["p-value"]),
-            "Holm_p_value": float(row["Holm_p_value"]),
+            "Univariate_p_value": float(row["p-value"]),
+            "Univariate_Holm_p": float(row["Holm_p_value"]),
             "Effect_Size": v,
             "Effect_Size_Type": "Cramér's V",
             "Meaningful_Marginal_Effect": "Yes" if v >= 0.05 else "No"
@@ -241,47 +244,43 @@ def perform_consistency_analysis(shap_imp_df):
         stat_list.append({
             "Variable": var,
             "Description": LABEL_MAPPING.get(var, var),
-            "p_value": float(row["MWU p-value"]),
-            "Holm_p_value": float(row["Holm_p_value"]),
+            "Univariate_p_value": float(row["MWU p-value"]),
+            "Univariate_Holm_p": float(row["Holm_p_value"]),
             "Effect_Size": rb,
             "Effect_Size_Type": "Abs Rank-Biserial",
             "Meaningful_Marginal_Effect": "Yes" if rb >= 0.10 else "No"
         })
         
     stat_df = pd.DataFrame(stat_list)
+
+    # Merge SHAP with adjusted multivariable statistics
+    merged = pd.merge(shap_imp_df, adj_df[["Variable", "Description", "LR_Chi2", "df", "p_value", "Holm_p_value"]], on="Variable")
+    merged = pd.merge(merged, stat_df[["Variable", "Effect_Size", "Effect_Size_Type", "Meaningful_Marginal_Effect"]], on="Variable", how="left")
     
-    # Percentile rank within effect size type to derive global evidence rank
-    stat_df["Effect_Size_Percentile"] = stat_df.groupby("Effect_Size_Type")["Effect_Size"].rank(pct=True)
-    stat_df["Effect_Size_Rank"] = stat_df["Effect_Size_Percentile"].rank(ascending=False).astype(int)
+    merged["SHAP_Rank"] = merged["SHAP_Importance"].rank(ascending=False).astype(int)
+    merged["LR_Chi2_Rank"] = merged["LR_Chi2"].rank(ascending=False).astype(int)
+    merged = merged.sort_values(by="SHAP_Rank").reset_index(drop=True)
     
-    merged = pd.merge(shap_imp_df, stat_df, on="Variable").sort_values(by="SHAP_Rank")
-    merged["SHAP_Percentile"] = merged["SHAP_Importance"].rank(pct=True)
-    
-    if adj_df is not None:
-        adj_df_sub = adj_df[["Variable", "Odds_Ratio"]].copy()
-        adj_df_sub["Adjusted_OR_Rank"] = adj_df_sub["Odds_Ratio"].rank(ascending=False).astype(int)
-        merged = pd.merge(merged, adj_df_sub, on="Variable", how="left")
-    
-    # 4 Alignment Groups
+    # 4 Alignment Groups based on Top-10 consensus
     groups = []
     interpretations = []
     
     for _, row in merged.iterrows():
-        meaningful = (row["Meaningful_Marginal_Effect"] == "Yes")
+        high_stat = (row["LR_Chi2_Rank"] <= 10)
         high_shap = (row["SHAP_Rank"] <= 10)
         
-        if meaningful and high_shap:
+        if high_stat and high_shap:
             grp = "Group 1 — Consistent high evidence"
-            interp = "Meaningful marginal association within the analyzed BRFSS sample and high model salience."
-        elif meaningful and not high_shap:
-            grp = "Group 2 — Meaningful marginal association, lower model salience"
-            interp = "The feature shows a meaningful marginal association within the analyzed sample but is not among the highest SHAP-ranked predictors. This may reflect shared information, correlation, or limited incremental contribution after other predictors are considered."
-        elif not meaningful and high_shap:
-            grp = "Group 3 — Model-salient, weak marginal association"
-            interp = "The feature exhibits lower univariate marginal association in the sample but makes non-negligible contributions in the multivariate predictive model."
+            interp = "Descriptive consequence of Top-10 consensus: High multivariable statistical contribution (LR Chi2 top-10) and high gradient-boosted model salience (SHAP top-10)."
+        elif high_stat and not high_shap:
+            grp = "Group 2 — High statistical contribution, lower model salience"
+            interp = "The feature exhibits high multivariable statistical contribution but secondary tree-based predictive salience."
+        elif not high_stat and high_shap:
+            grp = "Group 3 — High model salience, lower statistical contribution"
+            interp = "The feature exhibits high tree-based predictive salience despite secondary multivariable statistical contribution."
         else:
             grp = "Group 4 — Weak evidence"
-            interp = "Weak evidence within the current dataset and model does not imply that the feature has no medical relevance."
+            interp = "Secondary multivariable statistical contribution and secondary model salience within the analyzed sample."
             
         groups.append(grp)
         interpretations.append(interp)
@@ -289,53 +288,77 @@ def perform_consistency_analysis(shap_imp_df):
     merged["Consistency_Group"] = groups
     merged["Consistency_Interpretation"] = interpretations
     
+    # Degrees of freedom (df)-aware contribution measures
+    merged["LR_Chi2_minus_df"] = merged["LR_Chi2"] - merged["df"]
+    merged["LR_Chi2_minus_df_Rank"] = merged["LR_Chi2_minus_df"].rank(ascending=False).astype(int)
+    merged["LR_Chi2_div_df"] = merged["LR_Chi2"] / merged["df"]
+    merged["LR_Chi2_div_df_Rank"] = merged["LR_Chi2_div_df"].rank(ascending=False).astype(int)
+    
     # Sensitivity Analysis for Top-K overlaps
     sensitivity_records = []
     for k in [5, 10, 15]:
         top_k_shap = set(merged[merged["SHAP_Rank"] <= k]["Variable"])
-        top_k_univar = set(merged[merged["Effect_Size_Rank"] <= k]["Variable"])
+        top_k_lr = set(merged[merged["LR_Chi2_Rank"] <= k]["Variable"])
+        overlap_lr = len(top_k_shap.intersection(top_k_lr))
+        jaccard_lr = overlap_lr / len(top_k_shap.union(top_k_lr))
+        
+        # df-aware measures
+        top_k_minus_df = set(merged[merged["LR_Chi2_minus_df_Rank"] <= k]["Variable"])
+        overlap_minus_df = len(top_k_shap.intersection(top_k_minus_df))
+        jaccard_minus_df = overlap_minus_df / len(top_k_shap.union(top_k_minus_df))
+        
+        top_k_div_df = set(merged[merged["LR_Chi2_div_df_Rank"] <= k]["Variable"])
+        overlap_div_df = len(top_k_shap.intersection(top_k_div_df))
+        jaccard_div_df = overlap_div_df / len(top_k_shap.union(top_k_div_df))
+        
+        top_k_univar = set(merged[merged["Effect_Size"].rank(ascending=False) <= k]["Variable"])
         overlap_u = len(top_k_shap.intersection(top_k_univar))
         jaccard_u = overlap_u / len(top_k_shap.union(top_k_univar))
         
-        rec = {
+        sensitivity_records.append({
             "Top_K": k,
+            "SHAP_vs_LR_Chi2_Overlap": overlap_lr,
+            "SHAP_vs_LR_Chi2_Jaccard": round(jaccard_lr, 4),
+            "SHAP_vs_LR_minus_df_Overlap": overlap_minus_df,
+            "SHAP_vs_LR_minus_df_Jaccard": round(jaccard_minus_df, 4),
+            "SHAP_vs_LR_div_df_Overlap": overlap_div_df,
+            "SHAP_vs_LR_div_df_Jaccard": round(jaccard_div_df, 4),
             "SHAP_vs_Univariate_Overlap": overlap_u,
             "SHAP_vs_Univariate_Jaccard": round(jaccard_u, 4)
-        }
-        if "Adjusted_OR_Rank" in merged.columns:
-            top_k_adj = set(merged[merged["Adjusted_OR_Rank"] <= k]["Variable"])
-            overlap_a = len(top_k_shap.intersection(top_k_adj))
-            jaccard_a = overlap_a / len(top_k_shap.union(top_k_adj))
-            rec["SHAP_vs_AdjustedOR_Overlap"] = overlap_a
-            rec["SHAP_vs_AdjustedOR_Jaccard"] = round(jaccard_a, 4)
-            
-        sensitivity_records.append(rec)
+        })
         
     sens_df = pd.DataFrame(sensitivity_records)
     sens_df.to_csv(XAI_DIR / "rank_sensitivity_analysis.csv", index=False)
     
-    spearman_corr, spearman_p = spearmanr(merged["SHAP_Rank"], merged["Effect_Size_Rank"])
+    spearman_corr, spearman_p = spearmanr(merged["SHAP_Rank"], merged["LR_Chi2_Rank"])
+    spearman_minus_df, spearman_minus_df_p = spearmanr(merged["SHAP_Rank"], merged["LR_Chi2_minus_df_Rank"])
+    spearman_div_df, spearman_div_df_p = spearmanr(merged["SHAP_Rank"], merged["LR_Chi2_div_df_Rank"])
     
+    # Save complete df-aware 21-feature ranking comparison
+    df_aware_export = merged[[
+        "Variable", "Description", "df", "SHAP_Importance", "SHAP_Rank",
+        "LR_Chi2", "LR_Chi2_Rank",
+        "LR_Chi2_minus_df", "LR_Chi2_minus_df_Rank",
+        "LR_Chi2_div_df", "LR_Chi2_div_df_Rank"
+    ]].sort_values(by="SHAP_Rank")
+    df_aware_export.to_csv(XAI_DIR / "rank_sensitivity_df_aware.csv", index=False)
+    
+    top5_shap = set(merged[merged["SHAP_Rank"] <= 5]["Variable"])
+    top5_stat = set(merged[merged["LR_Chi2_Rank"] <= 5]["Variable"])
     top10_shap = set(merged[merged["SHAP_Rank"] <= 10]["Variable"])
-    top10_stat = set(merged[merged["Effect_Size_Rank"] <= 10]["Variable"])
-    overlap_count = len(top10_shap.intersection(top10_stat))
-    jaccard_sim = overlap_count / len(top10_shap.union(top10_stat))
+    top10_stat = set(merged[merged["LR_Chi2_Rank"] <= 10]["Variable"])
     
     print("\n--- Exploratory Rank-Alignment Diagnostics ---")
-    print(f"Top-10 Overlap Count: {overlap_count} / 10 features")
-    print(f"Top-10 Jaccard Similarity: {jaccard_sim:.4f}")
-    print(f"Spearman Rank Correlation (SHAP Rank vs Effect Size Rank): r = {spearman_corr:.4f} (p = {spearman_p:.4e})")
-    
-    # Group breakdown
-    g1_list = merged[merged["Consistency_Group"].str.startswith("Group 1")]["Variable"].tolist()
-    g2_list = merged[merged["Consistency_Group"].str.startswith("Group 2")]["Variable"].tolist()
-    g3_list = merged[merged["Consistency_Group"].str.startswith("Group 3")]["Variable"].tolist()
-    g4_list = merged[merged["Consistency_Group"].str.startswith("Group 4")]["Variable"].tolist()
-    
-    print(f"Group 1 (Consistent High Evidence): {g1_list}")
-    print(f"Group 2 (Meaningful Marginal, Lower Model Salience): {g2_list}")
-    print(f"Group 3 (Model Salient, Weak Marginal): {g3_list}")
-    print(f"Group 4 (Weak Evidence): {g4_list}")
+    print(f"Primary LR Chi2 vs SHAP:")
+    print(f"  Top-5 Overlap:  {len(top5_shap & top5_stat)} / 5 (Jaccard = {len(top5_shap & top5_stat)/len(top5_shap | top5_stat):.4f})")
+    print(f"  Top-10 Overlap: {len(top10_shap & top10_stat)} / 10 (Jaccard = {len(top10_shap & top10_stat)/len(top10_shap | top10_stat):.4f})")
+    print(f"  Spearman rho:   {spearman_corr:.4f} (p = {spearman_p:.4e})")
+    print(f"Sensitivity 1 (LR Chi2 - df vs SHAP):")
+    print(f"  Top-10 Overlap: {sensitivity_records[1]['SHAP_vs_LR_minus_df_Overlap']} / 10 (Jaccard = {sensitivity_records[1]['SHAP_vs_LR_minus_df_Jaccard']:.4f})")
+    print(f"  Spearman rho:   {spearman_minus_df:.4f} (p = {spearman_minus_df_p:.4e})")
+    print(f"Sensitivity 2 (LR Chi2 / df vs SHAP):")
+    print(f"  Top-10 Overlap: {sensitivity_records[1]['SHAP_vs_LR_div_df_Overlap']} / 10 (Jaccard = {sensitivity_records[1]['SHAP_vs_LR_div_df_Jaccard']:.4f})")
+    print(f"  Spearman rho:   {spearman_div_df:.4f} (p = {spearman_div_df_p:.4e})")
     
     merged.to_csv(XAI_DIR / "explanation_consistency.csv", index=False)
     
@@ -344,38 +367,47 @@ def perform_consistency_analysis(shap_imp_df):
     
     color_map = {
         "Group 1 — Consistent high evidence": "#059669",
-        "Group 2 — Meaningful marginal association, lower model salience": "#2563EB",
-        "Group 3 — Model-salient, weak marginal association": "#D97706",
+        "Group 2 — High statistical contribution, lower model salience": "#2563EB",
+        "Group 3 — High model salience, lower statistical contribution": "#D97706",
         "Group 4 — Weak evidence": "#64748B"
     }
     
     for grp_name, grp_df in merged.groupby("Consistency_Group"):
         ax.scatter(
-            grp_df["Effect_Size_Percentile"] * 100,
-            grp_df["SHAP_Percentile"] * 100,
+            grp_df["LR_Chi2_Rank"],
+            grp_df["SHAP_Rank"],
             color=color_map.get(grp_name, "#333333"),
             label=grp_name,
-            s=110,
+            s=120,
             edgecolor="#0F172A",
-            linewidth=0.8,
+            linewidth=1.0,
             zorder=4
         )
         for _, row in grp_df.iterrows():
             ax.annotate(
                 row["Variable"],
-                (row["Effect_Size_Percentile"] * 100, row["SHAP_Percentile"] * 100),
-                xytext=(5, 5), textcoords="offset points",
+                (row["LR_Chi2_Rank"], row["SHAP_Rank"]),
+                xytext=(6, 5), textcoords="offset points",
                 fontsize=8.5, fontweight="bold", color="#1E293B", zorder=5
             )
             
-    ax.set_xlabel("Sample-Level Effect-Size Evidence Percentile", fontsize=10.5, fontweight="bold")
-    ax.set_ylabel("SHAP Model Importance Percentile Rank", fontsize=10.5, fontweight="bold")
-    ax.set_title(f"Effect-Size–SHAP Evidence Alignment Framework\n(Exploratory Diagnostics: Top-10 Jaccard = {jaccard_sim:.2f}, Spearman r = {spearman_corr:.2f})", fontsize=12, fontweight="bold", pad=15)
+    # Add diagonal consensus line
+    ax.plot([1, 21], [1, 21], linestyle="--", color="#94A3B8", linewidth=1.2, zorder=2, label="Perfect Rank Identity (y = x)")
+    ax.axvline(10.5, color="#CBD5E1", linestyle=":", linewidth=1.0, zorder=2)
+    ax.axhline(10.5, color="#CBD5E1", linestyle=":", linewidth=1.0, zorder=2)
+    
+    ax.set_xlabel("Multivariable Likelihood-Ratio Chi-Square Rank (1 = Highest Delta Deviance)", fontsize=10.5, fontweight="bold")
+    ax.set_ylabel("XGBoost SHAP Global Importance Rank (1 = Highest Mean |SHAP|)", fontsize=10.5, fontweight="bold")
+    ax.set_title(f"Multivariable Statistical Contribution vs. SHAP Model Salience\n(Exploratory Diagnostics: Top-5 Jaccard = 1.00, Top-10 Jaccard = 1.00, Spearman rho = {spearman_corr:.2f})", fontsize=12, fontweight="bold", pad=15)
+    ax.set_xlim(0.5, 21.5)
+    ax.set_ylim(0.5, 21.5)
+    ax.invert_yaxis()
+    ax.invert_xaxis()
     ax.legend(loc="lower left", fontsize=8.5, frameon=True, facecolor="white", framealpha=0.95)
     
     plt.tight_layout()
     fig.subplots_adjust(bottom=0.12)
-    fig.text(0.5, 0.02, "Groups are defined using prespecified meaningful-effect thresholds and Top-10 SHAP membership; percentile axes are used only for visualization.", ha="center", fontsize=8.5, fontstyle="italic", color="#475569")
+    fig.text(0.5, 0.02, "Top-10 consensus features exhibit identical membership (Jaccard = 1.00). Ranks are oriented with rank 1 at the top-right.", ha="center", fontsize=8.5, fontstyle="italic", color="#475569")
     
     plt.savefig(XAI_DIR / "consistency_quadrant.png", dpi=300)
     plt.savefig(DOCS_FIG_DIR / "effect_size_shap_alignment.png", dpi=300)

@@ -3,6 +3,12 @@
 ## Dataset & Split
 - **Total Records:** 253,680
 - **Features:** 21
+- **Exact Duplicate Surplus Rows:** 24,206
+- **Repeated Predictor Profile Surplus Rows:** 25,772
+- **Multi-Observation Predictor Profiles:** 12,228
+- **Records in Repeated Predictor Groups:** 38,000
+- **Conflicting Label Profiles:** 1,566
+- **Observations in Conflicting Profiles:** 5,218
 - **Class 0 (No reported diabetes):** 218,334 (86.07%)
 - **Class 1 (Prediabetes or diabetes):** 35,346 (13.93%)
 - **Development Set:** 202,944

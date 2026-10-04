@@ -1,0 +1,20 @@
+\begin{table}[htbp]
+\centering
+\caption{Decision Threshold Trade-offs on Development Out-Of-Fold Predictions ($N = 202,944$)}
+\label{tab:threshold_analysis}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}lccccccc@{}}
+\toprule
+\textbf{Threshold} & \textbf{Recall} & \textbf{Precision} & \textbf{Specificity} & \textbf{F1-score} & \textbf{Accuracy} & \textbf{FN} & \textbf{FP} \\
+\midrule
+0.10 & 0.8653 & 0.2736 & 0.6281 & 0.4157 & 0.6611 & 3,808 & 64,966 \\
+0.13 (Selected $t^*$) & 0.8097 & 0.3000 & 0.6941 & 0.4378 & 0.7102 & 5,380 & 53,432 \\
+0.20 & 0.6757 & 0.3569 & 0.8029 & 0.4671 & 0.7852 & 9,171 & 34,431 \\
+0.30 & 0.4869 & 0.4305 & 0.8957 & 0.4570 & 0.8388 & 14,509 & 18,210 \\
+0.40 & 0.3142 & 0.5054 & 0.9502 & 0.3875 & 0.8616 & 19,391 & 8,695 \\
+0.50 (Default) & 0.1665 & 0.5806 & 0.9805 & 0.2587 & 0.8671 & 23,570 & 3,400 \\
+\bottomrule
+\end{tabular}
+\footnotetext{Note: Evaluated on development out-of-fold probabilities. Operational threshold $t^* = 0.13$ was selected to satisfy the clinical constraint $\text{Recall} \ge 0.80$, maximizing precision at acceptable sensitivity.}
+\end{table}

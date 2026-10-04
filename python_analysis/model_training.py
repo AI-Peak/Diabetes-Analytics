@@ -29,6 +29,7 @@ import seaborn as sns
 from pathlib import Path
 from scipy.special import logit
 from scipy.stats import linregress
+import statsmodels.api as sm
 from sklearn.model_selection import train_test_split, StratifiedKFold
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -287,6 +288,10 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
     boot_records = []
     
     y_test_arr = y_test.values
+    eps = 1e-15
+    probs_clipped = np.clip(y_test_prob, eps, 1 - eps)
+    logits_all = logit(probs_clipped)
+    exog_all = sm.add_constant(logits_all)
     
     for b in range(n_boot):
         idx_0 = np.where(y_test_arr == 0)[0]
@@ -297,14 +302,21 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
         
         y_b = y_test_arr[boot_idx]
         p_b = y_test_prob[boot_idx]
+        exog_b = exog_all[boot_idx]
         pred_sel_b = (p_b >= selected_threshold).astype(int)
+        
+        # Unpenalized Cox Calibration for bootstrap sample
+        cal_m = sm.GLM(y_b, exog_b, family=sm.families.Binomial()).fit()
         
         boot_records.append({
             "ROC-AUC": roc_auc_score(y_b, p_b),
             "PR-AUC": average_precision_score(y_b, p_b),
             "Recall": recall_score(y_b, pred_sel_b, zero_division=0),
             "Precision": precision_score(y_b, pred_sel_b, zero_division=0),
-            "F1-score": f1_score(y_b, pred_sel_b, zero_division=0)
+            "F1-score": f1_score(y_b, pred_sel_b, zero_division=0),
+            "Brier_Score": brier_score_loss(y_b, p_b),
+            "Calibration_Slope": float(cal_m.params[1]),
+            "Calibration_Intercept": float(cal_m.params[0])
         })
         
     df_boot = pd.DataFrame(boot_records)
@@ -344,20 +356,23 @@ def evaluate_final_holdout(best_model_name, selected_threshold, X_dev, y_dev, X_
     ])
     
     test_metrics_df.to_csv(RESULTS_DIR / "final_test_metrics.csv", index=False)
-    # Post-hoc Holdout Calibration Assessment (Cox Logistic Calibration Assessment: logit(P) = intercept + slope * logit(p_hat))
-    print("\nExecuting Holdout Calibration Assessment...")
+    # Post-hoc Holdout Calibration Assessment (Unpenalized Cox Calibration: logit(P) = intercept + slope * logit(p_hat))
+    print("\nExecuting Holdout Calibration Assessment (Unpenalized Cox GLM Binomial)...")
     brier = brier_score_loss(y_test, y_test_prob)
-    eps = 1e-15
-    probs_clipped = np.clip(y_test_prob, eps, 1 - eps)
-    logits = logit(probs_clipped)
-    calib_model = LogisticRegression(C=1e5, solver="lbfgs").fit(logits.reshape(-1, 1), y_test.values)
-    calib_slope = float(calib_model.coef_[0][0])
-    calib_intercept = float(calib_model.intercept_[0])
+    glm_model = sm.GLM(y_test_arr, exog_all, family=sm.families.Binomial()).fit()
+    calib_slope = float(glm_model.params[1])
+    calib_intercept = float(glm_model.params[0])
     
     calib_df = pd.DataFrame([{
         "Brier_Score": round(float(brier), 4),
+        "Brier_Score_95_CI_Lower": ci_results["Brier_Score"][0],
+        "Brier_Score_95_CI_Upper": ci_results["Brier_Score"][1],
         "Calibration_Slope": round(calib_slope, 4),
+        "Slope_95_CI_Lower": ci_results["Calibration_Slope"][0],
+        "Slope_95_CI_Upper": ci_results["Calibration_Slope"][1],
         "Calibration_Intercept": round(calib_intercept, 4),
+        "Intercept_95_CI_Lower": ci_results["Calibration_Intercept"][0],
+        "Intercept_95_CI_Upper": ci_results["Calibration_Intercept"][1],
         "Holdout_Sample_Size": len(y_test),
         "Evaluation_Split": "Untouched holdout test"
     }])
@@ -516,12 +531,13 @@ def generate_canonical_figures(cv_results, best_model_name, selected_threshold, 
     eps = 1e-15
     probs_clipped = np.clip(y_test_prob, eps, 1 - eps)
     logits = logit(probs_clipped)
-    calib_model = LogisticRegression(C=1e5, solver="lbfgs").fit(logits.reshape(-1, 1), y_test.values)
-    calib_slope = float(calib_model.coef_[0][0])
-    calib_intercept = float(calib_model.intercept_[0])
+    exog_fig = sm.add_constant(logits)
+    calib_model = sm.GLM(y_test.values, exog_fig, family=sm.families.Binomial()).fit()
+    calib_slope = float(calib_model.params[1])
+    calib_intercept = float(calib_model.params[0])
     
     ax.plot(prob_pred, prob_true, "s-", color="#2563EB", linewidth=2.0, markersize=6, label=f"{best_model_name} (Brier = {brier_val:.4f}, Slope = {calib_slope:.4f}, Intercept = {calib_intercept:.4f})")
-    ax.plot([0, 1], [0, 1], "k--", label="Perfect Calibration", linewidth=1.2)
+    ax.plot([0, 1], [0, 1], "k--", label="Ideal Calibration (y = x)", linewidth=1.2)
     ax.set_xlabel("Mean Predicted Probability", fontsize=10, fontweight="bold")
     ax.set_ylabel("Fraction of Positives (Prediabetes/Diabetes)", fontsize=10, fontweight="bold")
     ax.set_title(f"Holdout Reliability Diagram (Evaluation split: Untouched holdout test, N = {len(y_test):,})", fontsize=11, fontweight="bold")
@@ -569,6 +585,46 @@ def save_metadata_and_reports(best_model_name, selected_threshold, selection_rul
     with open(RESULTS_DIR / "model_selection.json", "w", encoding="utf-8") as f:
         json.dump(metadata, f, indent=4)
     print(f"Saved model selection metadata to {RESULTS_DIR / 'model_selection.json'}")
+
+    model_config = {
+        "Logistic Regression": {
+            "classifier": "LogisticRegression",
+            "penalty": "l2",
+            "C": 1.0,
+            "max_iter": 1000,
+            "random_state": 42,
+            "solver": "lbfgs",
+            "preprocessing": "StandardScaler on continuous (BMI, MentHlth, PhysHlth); OneHotEncoder(drop='first') on multi-category (Education, Income, Age, GenHlth); remainder passthrough"
+        },
+        "Decision Tree": {
+            "classifier": "DecisionTreeClassifier",
+            "criterion": "gini",
+            "max_depth": 8,
+            "random_state": 42,
+            "preprocessing": "None (native discrete features)"
+        },
+        "Random Forest": {
+            "classifier": "RandomForestClassifier",
+            "n_estimators": 100,
+            "max_depth": 12,
+            "random_state": 42,
+            "n_jobs": -1,
+            "preprocessing": "None (native discrete features)"
+        },
+        "XGBoost": {
+            "classifier": "XGBClassifier",
+            "n_estimators": 100,
+            "max_depth": 6,
+            "learning_rate": 0.1,
+            "eval_metric": "logloss",
+            "random_state": 42,
+            "n_jobs": -1,
+            "preprocessing": "None (native discrete features)"
+        }
+    }
+    with open(RESULTS_DIR / "model_configuration.json", "w", encoding="utf-8") as f:
+        json.dump(model_config, f, indent=4)
+    print(f"Saved model configuration metadata to {RESULTS_DIR / 'model_configuration.json'}")
 
 def main():
     print("=== Phase 4: Machine Learning Modeling & Model Selection ===")

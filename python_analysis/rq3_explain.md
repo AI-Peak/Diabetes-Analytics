@@ -39,9 +39,13 @@ Không dựa vào các giá trị p-value ngây thơ ($p < 0.05$), chúng tôi p
 
 ## 3. Exploratory Rank-Alignment Diagnostics
 
-*   **Top-10 Overlap Count:** 7 / 10 đặc trưng.
-*   **Top-10 Jaccard Similarity:** **0.5385**
-*   **Spearman Rank Correlation (SHAP Rank vs Effect Size Evidence Rank):** **r = 0.7098** ($p = 3.13 \times 10^{-4}$)
+*   **Primary Multivariable Alignment (SHAP vs Nested LR $\chi^2$ Deviance):**
+    *   **Top-10 Overlap Count:** 10 / 10 đặc trưng (100%).
+    *   **Top-10 Jaccard Similarity:** **1.0000**
+    *   **Spearman Rank Correlation:** **$\rho_s = 0.9338$** ($p = 6.38 \times 10^{-10}$)
+*   **Degree-of-Freedom-Aware Sensitivity Alignment:**
+    *   **$\text{LR } \chi^2 - \text{df}$:** Top-10 Overlap = 10/10, Jaccard = 1.0000, $\rho_s = 0.9338$ ($p = 6.38 \times 10^{-10}$).
+    *   **$\text{LR } \chi^2 / \text{df}$:** Top-10 Overlap = 9/10, Jaccard = 0.8182, $\rho_s = 0.8818$ ($p = 1.27 \times 10^{-7}$).
 
 ---
 

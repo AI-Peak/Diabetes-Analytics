@@ -1,7 +1,7 @@
 {
   "title": "Predicting Diabetes Risk Using CDC Health Indicators - Final Results Summary",
   "metadata": {
-    "generated_at_utc": "2026-07-20T17:50:10.948221+00:00",
+    "generated_at_utc": "2026-10-04T14:41:15.868251+00:00",
     "random_seed": 42,
     "target_variable": "Diabetes_binary",
     "class_definitions": {
@@ -12,7 +12,12 @@
   "dataset": {
     "n_records": 253680,
     "n_features": 21,
-    "repeated_profiles_count": 24206,
+    "exact_duplicate_surplus_rows": 24206,
+    "repeated_predictor_profile_surplus_rows": 25772,
+    "multi_observation_predictor_profiles": 12228,
+    "records_in_repeated_predictor_groups": 38000,
+    "conflicting_label_profiles": 1566,
+    "observations_in_conflicting_profiles": 5218,
     "target_distribution": {
       "no_diabetes_count": 218334,
       "no_diabetes_pct": 86.07,
@@ -116,12 +121,30 @@
       "F1-score": [
         0.4317,
         0.4418
+      ],
+      "Brier_Score": [
+        0.0964,
+        0.0983
+      ],
+      "Calibration_Slope": [
+        0.9342,
+        0.9854
+      ],
+      "Calibration_Intercept": [
+        -0.0861,
+        -0.0148
       ]
     },
     "calibration": {
       "Brier_Score": 0.0974,
-      "Calibration_Slope": 0.959,
-      "Calibration_Intercept": -0.0514,
+      "Brier_Score_95_CI_Lower": 0.0964,
+      "Brier_Score_95_CI_Upper": 0.0983,
+      "Calibration_Slope": 0.9589,
+      "Slope_95_CI_Lower": 0.9342,
+      "Slope_95_CI_Upper": 0.9854,
+      "Calibration_Intercept": -0.0515,
+      "Intercept_95_CI_Lower": -0.0861,
+      "Intercept_95_CI_Upper": -0.0148,
       "Holdout_Sample_Size": 50736,
       "Evaluation_Split": "Untouched holdout test"
     }
@@ -129,27 +152,27 @@
   "adjusted_association": {
     "top_5_odds_ratios": [
       {
-        "Variable": "CholCheck",
-        "Odds_Ratio": 3.4694598255499005
+        "Variable": "GenHlth",
+        "Odds_Ratio": 7.589952182274092
+      },
+      {
+        "Variable": "BMI",
+        "Odds_Ratio": 1.059339688022274
+      },
+      {
+        "Variable": "Age",
+        "Odds_Ratio": 7.786404205944724
       },
       {
         "Variable": "HighBP",
-        "Odds_Ratio": 2.1330765833446623
+        "Odds_Ratio": 2.048174464138522
       },
       {
         "Variable": "HighChol",
-        "Odds_Ratio": 1.783389349089521
-      },
-      {
-        "Variable": "GenHlth",
-        "Odds_Ratio": 1.709064445044304
-      },
-      {
-        "Variable": "Sex",
-        "Odds_Ratio": 1.2945116545505035
+        "Odds_Ratio": 1.7093509649681171
       }
     ],
-    "max_vif": 1.8
+    "max_vif": 357.58
   },
   "xai_consistency": {
     "evidence_groups": {
@@ -160,25 +183,21 @@
         "BMI",
         "HighChol",
         "Income",
+        "Sex",
         "CholCheck",
         "HeartDiseaseorAttack",
         "HvyAlcoholConsump"
       ],
-      "Group 2 \u2014 Meaningful marginal association, lower model salience": [
+      "Group 4 \u2014 Weak evidence": [
+        "MentHlth",
         "DiffWalk",
         "Education",
         "Stroke",
+        "Fruits",
         "PhysHlth",
         "PhysActivity",
         "Smoker",
-        "Veggies"
-      ],
-      "Group 3 \u2014 Model-salient, weak marginal association": [
-        "Sex"
-      ],
-      "Group 4 \u2014 Weak evidence": [
-        "MentHlth",
-        "Fruits",
+        "Veggies",
         "AnyHealthcare",
         "NoDocbcCost"
       ]
@@ -187,24 +206,36 @@
     "rank_sensitivity": [
       {
         "Top_K": 5,
-        "SHAP_vs_Univariate_Overlap": 4,
-        "SHAP_vs_Univariate_Jaccard": 0.6667,
-        "SHAP_vs_AdjustedOR_Overlap": 3,
-        "SHAP_vs_AdjustedOR_Jaccard": 0.4286
+        "SHAP_vs_LR_Chi2_Overlap": 5,
+        "SHAP_vs_LR_Chi2_Jaccard": 1.0,
+        "SHAP_vs_LR_minus_df_Overlap": 5,
+        "SHAP_vs_LR_minus_df_Jaccard": 1.0,
+        "SHAP_vs_LR_div_df_Overlap": 4,
+        "SHAP_vs_LR_div_df_Jaccard": 0.6667,
+        "SHAP_vs_Univariate_Overlap": 3,
+        "SHAP_vs_Univariate_Jaccard": 0.4286
       },
       {
         "Top_K": 10,
+        "SHAP_vs_LR_Chi2_Overlap": 10,
+        "SHAP_vs_LR_Chi2_Jaccard": 1.0,
+        "SHAP_vs_LR_minus_df_Overlap": 10,
+        "SHAP_vs_LR_minus_df_Jaccard": 1.0,
+        "SHAP_vs_LR_div_df_Overlap": 9,
+        "SHAP_vs_LR_div_df_Jaccard": 0.8182,
         "SHAP_vs_Univariate_Overlap": 7,
-        "SHAP_vs_Univariate_Jaccard": 0.5385,
-        "SHAP_vs_AdjustedOR_Overlap": 7,
-        "SHAP_vs_AdjustedOR_Jaccard": 0.5385
+        "SHAP_vs_Univariate_Jaccard": 0.5385
       },
       {
         "Top_K": 15,
-        "SHAP_vs_Univariate_Overlap": 13,
-        "SHAP_vs_Univariate_Jaccard": 0.7222,
-        "SHAP_vs_AdjustedOR_Overlap": 11,
-        "SHAP_vs_AdjustedOR_Jaccard": 0.5789
+        "SHAP_vs_LR_Chi2_Overlap": 13,
+        "SHAP_vs_LR_Chi2_Jaccard": 0.7647,
+        "SHAP_vs_LR_minus_df_Overlap": 13,
+        "SHAP_vs_LR_minus_df_Jaccard": 0.7647,
+        "SHAP_vs_LR_div_df_Overlap": 13,
+        "SHAP_vs_LR_div_df_Jaccard": 0.7647,
+        "SHAP_vs_Univariate_Overlap": 12,
+        "SHAP_vs_Univariate_Jaccard": 0.6667
       }
     ]
   }

@@ -200,8 +200,10 @@ def plot_correlation_heatmap(df: pd.DataFrame) -> None:
 
     predictors = [c for c in columns if c != TARGET]
     pred_corr = corr.loc[predictors, predictors].abs().copy()
-    np.fill_diagonal(pred_corr.values, 0.0)
-    stacked = pred_corr.stack()
+    pred_vals = pred_corr.to_numpy(copy=True)
+    np.fill_diagonal(pred_vals, 0.0)
+    pred_corr_clean = pd.DataFrame(pred_vals, index=pred_corr.index, columns=pred_corr.columns)
+    stacked = pred_corr_clean.stack()
     max_pair = stacked.idxmax()
     max_value = stacked.max()
 
