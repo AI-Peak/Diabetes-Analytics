@@ -1,0 +1,18 @@
+\begin{table}[htbp]
+\centering
+\caption{5-Fold Stratified Cross-Validation Model Comparison on Development Set ($n_{\text{dev}} = 202,944$)}
+\label{tab:cv_comparison}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Model} & \textbf{\shortstack{PR-AUC\\(Mean $\pm$ SD)}} & \textbf{\shortstack{ROC-AUC\\(Mean $\pm$ SD)}} & \textbf{\shortstack{F1-\\score}} & \textbf{Recall} & \textbf{Precision} \\
+\midrule
+XGBoost & 0.4359 $\pm$ 0.0077 & 0.8305 $\pm$ 0.0021 & 0.2587 & 0.1665 & 0.5805 \\
+Random Forest & 0.4301 $\pm$ 0.0070 & 0.8271 $\pm$ 0.0024 & 0.1913 & 0.1133 & 0.6130 \\
+Logistic Regression & 0.4163 $\pm$ 0.0052 & 0.8250 $\pm$ 0.0016 & 0.2444 & 0.1561 & 0.5628 \\
+Decision Tree & 0.4015 $\pm$ 0.0065 & 0.8169 $\pm$ 0.0025 & 0.2254 & 0.1417 & 0.5509 \\
+\bottomrule
+\end{tabular}
+\footnotetext{Note: Models were trained strictly on the 80\% development set using 5-fold stratified cross-validation. Decision metrics (F1, Recall, Precision) reflect the default 0.50 cutoff. Model selection was prioritized by Mean PR-AUC, with Mean ROC-AUC serving as tie-breaker.}
+\end{table}

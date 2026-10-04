@@ -1,0 +1,218 @@
+{
+    "analysis_phase": "Phase 2 \u2014 Profile-Grouped Sensitivity Analysis for Evaluation Reliability",
+    "timestamp_utc": "2026-10-04T14:39:01.634236+00:00",
+    "git_commit": "9bd7a1cf0b084a4c47b0a7e951af93f2e31f0eb9",
+    "environment": {
+        "python_version": "3.13.12 (tags/v3.13.12:1cbe481, Feb  3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]",
+        "platform": "Windows-10-10.0.19045-SP0",
+        "pandas_version": "3.0.3",
+        "numpy_version": "2.4.6"
+    },
+    "dataset": {
+        "path": "data/processed/diabetes_cleaned.csv",
+        "total_observations": 253680,
+        "target_column": "Diabetes_binary",
+        "predictor_columns": [
+            "HighBP",
+            "HighChol",
+            "CholCheck",
+            "BMI",
+            "Smoker",
+            "Stroke",
+            "HeartDiseaseorAttack",
+            "PhysActivity",
+            "Fruits",
+            "Veggies",
+            "HvyAlcoholConsump",
+            "AnyHealthcare",
+            "NoDocbcCost",
+            "GenHlth",
+            "MentHlth",
+            "PhysHlth",
+            "DiffWalk",
+            "Sex",
+            "Age",
+            "Education",
+            "Income"
+        ],
+        "predictor_count": 21,
+        "positive_prevalence": 0.13933301797540207
+    },
+    "group_definition": {
+        "columns_used": [
+            "HighBP",
+            "HighChol",
+            "CholCheck",
+            "BMI",
+            "Smoker",
+            "Stroke",
+            "HeartDiseaseorAttack",
+            "PhysActivity",
+            "Fruits",
+            "Veggies",
+            "HvyAlcoholConsump",
+            "AnyHealthcare",
+            "NoDocbcCost",
+            "GenHlth",
+            "MentHlth",
+            "PhysHlth",
+            "DiffWalk",
+            "Sex",
+            "Age",
+            "Education",
+            "Income"
+        ],
+        "target_excluded": true,
+        "unique_predictor_profiles": 227908,
+        "method": "df.groupby(feature_cols, sort=True).ngroup()"
+    },
+    "outer_partition": {
+        "method": "StratifiedGroupKFold",
+        "n_splits": 5,
+        "shuffle": true,
+        "random_state": 42,
+        "selected_fold": 2,
+        "development_sample_size": 202944,
+        "holdout_sample_size": 50736,
+        "development_prevalence": 0.13933400346893723,
+        "holdout_prevalence": 0.13932907600126143,
+        "shared_predictor_profiles": 0,
+        "shared_exact_rows": 0
+    },
+    "inner_cross_validation": {
+        "method": "StratifiedGroupKFold",
+        "n_splits": 5,
+        "shuffle": true,
+        "random_state": 42,
+        "group_disjointness_enforced": true,
+        "cv_metrics_summary": [
+            {
+                "Model": "Logistic Regression",
+                "Mean_PR_AUC": 0.4116680149633039,
+                "Std_PR_AUC": 0.004494593434407305,
+                "Mean_ROC_AUC": 0.8236900638578302,
+                "Std_ROC_AUC": 0.003350247183569524,
+                "Mean_Accuracy": 0.8648444893255476,
+                "Std_Accuracy": 0.0008956507910565224,
+                "Mean_Precision": 0.5546812860483984,
+                "Std_Precision": 0.011886704424552523,
+                "Mean_Recall": 0.1521023502501823,
+                "Std_Recall": 0.005004184293010786,
+                "Mean_F1": 0.23871834697195982,
+                "Std_F1": 0.0069216271880538005,
+                "Evaluation_Split": "5-Fold StratifiedGroupKFold Development"
+            },
+            {
+                "Model": "Decision Tree",
+                "Mean_PR_AUC": 0.4011447620428289,
+                "Std_PR_AUC": 0.00464249117026539,
+                "Mean_ROC_AUC": 0.8154698153972728,
+                "Std_ROC_AUC": 0.0018854996424255244,
+                "Mean_Accuracy": 0.8641201532039128,
+                "Std_Accuracy": 0.0005770969301854283,
+                "Mean_Precision": 0.5556565422287877,
+                "Std_Precision": 0.014192517958941438,
+                "Mean_Recall": 0.12664009769677234,
+                "Std_Recall": 0.01274033324675767,
+                "Mean_F1": 0.20587640234528598,
+                "Std_F1": 0.015716670801847923,
+                "Evaluation_Split": "5-Fold StratifiedGroupKFold Development"
+            },
+            {
+                "Model": "Random Forest",
+                "Mean_PR_AUC": 0.4260839518496325,
+                "Std_PR_AUC": 0.006108358731381291,
+                "Mean_ROC_AUC": 0.825907289365692,
+                "Std_ROC_AUC": 0.002436025816931586,
+                "Mean_Accuracy": 0.8655195507704194,
+                "Std_Accuracy": 0.0006702433830082065,
+                "Mean_Precision": 0.5995355410070338,
+                "Std_Precision": 0.013426727653782182,
+                "Mean_Recall": 0.10489096029724229,
+                "Std_Recall": 0.002835601920061418,
+                "Mean_F1": 0.17854212446864143,
+                "Std_F1": 0.004646206399375183,
+                "Evaluation_Split": "5-Fold StratifiedGroupKFold Development"
+            },
+            {
+                "Model": "XGBoost",
+                "Mean_PR_AUC": 0.4322257633806469,
+                "Std_PR_AUC": 0.006142060696991797,
+                "Mean_ROC_AUC": 0.8293673148466242,
+                "Std_ROC_AUC": 0.003033313954364845,
+                "Mean_Accuracy": 0.8667070700919208,
+                "Std_Accuracy": 0.00038381325394571785,
+                "Mean_Precision": 0.5766516973429139,
+                "Std_Precision": 0.004730362058331866,
+                "Mean_Recall": 0.16313609515555574,
+                "Std_Recall": 0.005327621048631838,
+                "Mean_F1": 0.2542845238176,
+                "Std_F1": 0.006497956748920376,
+                "Evaluation_Split": "5-Fold StratifiedGroupKFold Development"
+            }
+        ]
+    },
+    "model_selection": {
+        "selected_model": "XGBoost",
+        "selection_criterion": "Mean 5-Fold StratifiedGroupKFold PR-AUC on Development Set (Tie-break: ROC-AUC)"
+    },
+    "threshold_selection": {
+        "selected_threshold": 0.13,
+        "selection_source": "Grouped Development Out-Of-Fold (OOF) Probabilities Only",
+        "target_recall": 0.8,
+        "rule": "Recall >= 0.8 satisfied. Selected max Precision (0.2990), max F1 (0.4370)."
+    },
+    "holdout_evaluation": {
+        "sample_size": 50736,
+        "metrics_at_selected_threshold": {
+            "Accuracy": 0.70831362346263,
+            "Precision": 0.2993041852736525,
+            "Recall": 0.8153911444334417,
+            "Specificity": 0.6909794581720751,
+            "F1-score": 0.4378774642002507,
+            "ROC-AUC": 0.830966350120104,
+            "PR-AUC": 0.4371585278188008,
+            "TP": 5764,
+            "FP": 13494,
+            "TN": 30173,
+            "FN": 1305
+        },
+        "bootstrap_95_ci": {
+            "ROC-AUC": [
+                0.8261651015388091,
+                0.8352999005468484
+            ],
+            "PR-AUC": [
+                0.4255732292762,
+                0.44780080127229976
+            ],
+            "Recall": [
+                0.8064719196491724,
+                0.8243032960814826
+            ],
+            "Precision": [
+                0.29546685528001143,
+                0.3030034955811499
+            ],
+            "Specificity": [
+                0.6866472393340509,
+                0.6954450729383745
+            ],
+            "F1-score": [
+                0.43279223814012246,
+                0.4426288576096895
+            ],
+            "Accuracy": [
+                0.7043519394512772,
+                0.7121777436140019
+            ]
+        },
+        "calibration": {
+            "Brier_Score": 0.0964,
+            "Calibration_Slope": 0.9878,
+            "Calibration_Intercept": -0.0158,
+            "Holdout_Sample_Size": 50736,
+            "Evaluation_Split": "Profile-Grouped Holdout"
+        }
+    }
+}

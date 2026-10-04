@@ -1,7 +1,7 @@
 # Data Preprocessing Documentation
 
 ## Purpose of Preprocessing
-This document outlines the data preprocessing step for the **Diabetes-Analytics** project. The primary goal is to ensure the quality and integrity of the CDC Diabetes Health Indicators dataset, validate values against the codebook, inspect repeated feature profiles, and prepare the dataset for analysis and modeling. Importantly, the real-world class imbalance of the dataset is preserved, meaning no balancing techniques (like SMOTE or random under/oversampling) are applied.
+This document outlines the data preprocessing and quality audit for the **Diabetes-Analytics** project. The primary goal is to ensure the quality and integrity of the CDC Diabetes Health Indicators dataset, validate values against the BRFSS 2015 codebook, audit exact duplicates and repeated predictor profiles, and prepare the dataset for analysis and modeling. Importantly, the real-world class imbalance of the dataset is preserved; no artificial balancing techniques (like SMOTE or random under/oversampling) are applied.
 
 ## Datasets Directory Info
 * **Raw Dataset Path:** `data/raw/diabetes_binary_health_indicators_BRFSS2015.csv`
@@ -17,10 +17,12 @@ This document outlines the data preprocessing step for the **Diabetes-Analytics*
 * **Status:** No missing values found
 * **Notes:** All fields are fully populated in the original survey response file.
 
-### 3. Repeated Feature Profiles
-* **Status:** Inspected and Retained
-* **Number of repeated profiles:** 24,206 rows (representing 9.54% of the raw dataset)
-* **Rationale:** The dataset does not provide a respondent identifier. Exact repeated rows therefore cannot be verified as repeated observations of the same individual. They may represent different respondents sharing the same discretized demographic, lifestyle, and health profile. These profiles were retained to preserve the original sample frequencies and class distribution.
+### 3. Exact Duplicates & Repeated Predictor Profiles
+* **Exact Full-Row Duplicates (22 columns):** 24,206 surplus rows (35,575 rows involved in 11,369 distinct duplicate groups; 9.54%).
+* **Predictor Profiles (21 features):** 227,908 unique profiles across 253,680 records.
+* **Repeated Predictor Profile Surplus:** 25,772 surplus observations (38,000 rows involved in 12,228 multi-observation profile groups; 10.16%).
+* **Conflicting-Label Profiles:** 1,566 predictor profiles exhibit conflicting diabetes labels, comprising 5,218 observations (2.06%).
+* **Retention Rationale:** The BRFSS survey dataset does not provide respondent identifiers. Discretized survey categories (e.g., 13 age brackets, 5 health ratings, 8 income brackets) inevitably cause independent respondents to share identical covariate combinations. Retaining these records preserves genuine sample frequencies and natural survey distributions.
 
 ### 4. Invalid Values (Out of Expected Range)
 * **Status:** No invalid values found
@@ -66,10 +68,10 @@ Refer to the CSV summary at `results/data_preprocessing/preprocessing_summary.cs
 
 | Step | Result | Notes |
 |------|--------|-------|
-| Load Raw Dataset | Shape: (253680, 22) | Successfully loaded dataset with 22 features and 253680 records. |
-| Check Missing Values | 0 missing values | No missing value handling needed. |
-| Inspect Repeated Feature Profiles | 24206 retained | Repeated feature profiles (24206) retained because dataset lacks respondent IDs to prove duplicate identity. |
-| Check Expected Ranges | 0 invalid values | All variables conform to CDC expected ranges. |
-| Convert Data Types | float64 -> int | Converted categorical and binary float representations to integer types for clean formatting and memory efficiency. |
+| Load Raw Dataset | Shape: (253680, 22) | Successfully loaded BRFSS 2015 dataset with 22 columns and 253,680 records. |
+| Check Missing Values | 0 missing values | No missing value handling needed; survey records are fully populated. |
+| Inspect Exact Duplicates & Repeated Profiles | 24206 exact duplicate surplus; 25772 profile surplus retained | Exact full-row duplicates (24206) and repeated feature profiles (25772) were intentionally retained because BRFSS lacks respondent identifiers to confirm duplicate identity. Discretized survey bins naturally produce identical profiles across distinct individuals. |
+| Check Expected Ranges | 0 invalid values | All variables conform to CDC BRFSS codebook specifications. |
+| Convert Data Types | float64 -> int | Converted categorical, ordinal, and binary float representations to integer types for clean formatting and memory efficiency. |
 | Save Cleaned Dataset | Saved shape: (253680, 22) | Cleaned data successfully written to CSV file. |
 | Preserve Class Imbalance | Preserved | Imbalance preserved without SMOTE/resampling. Raw: 13.93% positive, 86.07% negative. Cleaned: 13.93% positive, 86.07% negative. |

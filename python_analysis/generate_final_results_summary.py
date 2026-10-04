@@ -21,7 +21,20 @@ def main():
     class_counts = df["Diabetes_binary"].astype(int).value_counts()
     no_diabetes_count = int(class_counts.get(0, 0))
     prediabetes_or_diabetes_count = int(class_counts.get(1, 0))
-    repeated_profiles = int(df.duplicated().sum())
+    feature_cols = [c for c in df.columns if c != "Diabetes_binary"]
+    exact_duplicate_surplus_rows = int(df.duplicated().sum())
+    repeated_predictor_profile_surplus_rows = int(df.duplicated(subset=feature_cols).sum())
+
+    # Predictor profile group metrics
+    profile_sizes = df.groupby(feature_cols).size()
+    multi_profiles = profile_sizes[profile_sizes > 1]
+    multi_observation_predictor_profiles = int(len(multi_profiles))
+    records_in_repeated_predictor_groups = int(multi_profiles.sum())
+
+    profile_targets = df.groupby(feature_cols)["Diabetes_binary"].nunique()
+    conflicting_profiles = profile_targets[profile_targets > 1]
+    conflicting_label_profiles = int(len(conflicting_profiles))
+    observations_in_conflicting_profiles = int(profile_sizes[conflicting_profiles.index].sum())
 
     model_sel_path = RESULTS_DIR / "modeling" / "model_selection.json"
     consistency_path = RESULTS_DIR / "xai" / "explanation_consistency.csv"
@@ -56,7 +69,12 @@ def main():
         "dataset": {
             "n_records": n_total,
             "n_features": len(df.columns) - 1,
-            "repeated_profiles_count": repeated_profiles,
+            "exact_duplicate_surplus_rows": exact_duplicate_surplus_rows,
+            "repeated_predictor_profile_surplus_rows": repeated_predictor_profile_surplus_rows,
+            "multi_observation_predictor_profiles": multi_observation_predictor_profiles,
+            "records_in_repeated_predictor_groups": records_in_repeated_predictor_groups,
+            "conflicting_label_profiles": conflicting_label_profiles,
+            "observations_in_conflicting_profiles": observations_in_conflicting_profiles,
             "target_distribution": {
                 "no_diabetes_count": no_diabetes_count,
                 "no_diabetes_pct": round((no_diabetes_count / n_total) * 100, 2),
@@ -117,6 +135,12 @@ def main():
         "## Dataset & Split",
         f"- **Total Records:** {summary['dataset']['n_records']:,}",
         f"- **Features:** {summary['dataset']['n_features']}",
+        f"- **Exact Duplicate Surplus Rows:** {summary['dataset']['exact_duplicate_surplus_rows']:,}",
+        f"- **Repeated Predictor Profile Surplus Rows:** {summary['dataset']['repeated_predictor_profile_surplus_rows']:,}",
+        f"- **Multi-Observation Predictor Profiles:** {summary['dataset']['multi_observation_predictor_profiles']:,}",
+        f"- **Records in Repeated Predictor Groups:** {summary['dataset']['records_in_repeated_predictor_groups']:,}",
+        f"- **Conflicting Label Profiles:** {summary['dataset']['conflicting_label_profiles']:,}",
+        f"- **Observations in Conflicting Profiles:** {summary['dataset']['observations_in_conflicting_profiles']:,}",
         f"- **Class 0 (No reported diabetes):** {summary['dataset']['target_distribution']['no_diabetes_count']:,} ({summary['dataset']['target_distribution']['no_diabetes_pct']}%)",
         f"- **Class 1 (Prediabetes or diabetes):** {summary['dataset']['target_distribution']['prediabetes_or_diabetes_count']:,} ({summary['dataset']['target_distribution']['prediabetes_or_diabetes_pct']}%)",
         f"- **Development Set:** {summary['dataset']['split']['development_size']:,}",

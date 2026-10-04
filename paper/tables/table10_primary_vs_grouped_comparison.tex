@@ -1,0 +1,28 @@
+\begin{table}[htbp]
+\centering
+\caption{Comparison of Primary Stratified and Profile-Grouped Redevelopment Evaluations}
+\label{tab:primary_vs_grouped}
+\footnotesize
+\setlength{\tabcolsep}{2.5pt}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Metric} & \textbf{\shortstack{Primary\\Stratified}} & \textbf{\shortstack{Profile-Grouped\\Redevelopment}} & \textbf{\shortstack{Delta\\(Grouped $-$ Primary)}} \\
+\midrule
+Selected Classifier & XGBoost & XGBoost & Identical \\
+Screening Cutoff ($t^*$) & 0.13 & 0.13 & Identical \\
+Development CV PR-AUC & 0.4359 $\pm$ 0.0077 & 0.4322 $\pm$ 0.0061 & $-0.0037$ \\
+Development CV ROC-AUC & 0.8305 $\pm$ 0.0021 & 0.8294 $\pm$ 0.0030 & $-0.0011$ \\
+Holdout PR-AUC & 0.4238 [0.4135, 0.4347] & 0.4372 [0.4256, 0.4478] & $+0.0133$ \\
+Holdout ROC-AUC & 0.8272 [0.8223, 0.8322] & 0.8310 [0.8262, 0.8353] & $+0.0037$ \\
+Holdout Recall & 80.99\% [80.04\%, 81.94\%] & 81.54\% [80.65\%, 82.43\%] & $+0.55\%$ \\
+Holdout Precision & 29.91\% [29.53\%, 30.28\%] & 29.93\% [29.55\%, 30.30\%] & $+0.02\%$ \\
+Holdout Specificity & 69.28\% & 69.10\% [68.66\%, 69.54\%] & $-0.18\%$ \\
+Holdout F1-Score & 0.4369 & 0.4379 & $+0.0010$ \\
+Holdout Accuracy & 70.91\% & 70.83\% [70.44\%, 71.22\%] & $-0.08\%$ \\
+Holdout Brier Score & 0.0974 [0.0964, 0.0983] & 0.0964 & $-0.0010$ \\
+Joint Cox Calibration Slope & 0.9589 [0.9342, 0.9854] & 0.9878 & $+0.0289$ \\
+Joint Cox Calibration Intercept & $-0.0515$ [$-0.0861$, $-0.0148$] & $-0.0158$ & $+0.0357$ \\
+\bottomrule
+\end{tabular}
+\footnotetext{Note: All holdout evaluations contain $n_{\text{holdout}} = 50,736$ observations (prevalence: 13.93\%). Primary Stratified reflects conventional 80/20 random stratified splitting. Profile-Grouped Redevelopment sensitivity enforces zero predictor-profile overlap between development and holdout partitions, repeating 5-fold grouped cross-validation, model selection, and development out-of-fold threshold selection before evaluating on the grouped holdout. $\text{Delta} = \text{Grouped} - \text{Primary}$.}
+\end{table}

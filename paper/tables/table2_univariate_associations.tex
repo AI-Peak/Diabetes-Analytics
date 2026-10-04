@@ -1,0 +1,35 @@
+\begin{table}[htbp]
+\centering
+\caption{Univariate Statistical Associations with Reported Diabetes Status ($N = 253,680$)}
+\label{tab:univariate}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}llcccc@{}}
+\toprule
+\textbf{Variable} & \textbf{Type} & \textbf{Test Statistic} & \textbf{Effect Size} & \textbf{Holm $p$-value} & \textbf{Significant} \\
+\midrule
+\texttt{GenHlth} & Categorical & 22728.07 & Cram\'{e}r's $V = 0.2993$ & $< 10^{-300}$ & Yes \\
+\texttt{HighBP} & Categorical & 17562.45 & Cram\'{e}r's $V = 0.2631$ & $< 10^{-300}$ & Yes \\
+\texttt{DiffWalk} & Categorical & 12092.32 & Cram\'{e}r's $V = 0.2183$ & $< 10^{-300}$ & Yes \\
+\texttt{HighChol} & Categorical & 10174.07 & Cram\'{e}r's $V = 0.2003$ & $< 10^{-300}$ & Yes \\
+\texttt{Age} & Categorical & 8795.05 & Cram\'{e}r's $V = 0.1862$ & $< 10^{-300}$ & Yes \\
+\texttt{HeartDiseaseorAttack} & Categorical & 7971.16 & Cram\'{e}r's $V = 0.1773$ & $< 10^{-300}$ & Yes \\
+\texttt{Income} & Categorical & 7003.72 & Cram\'{e}r's $V = 0.1662$ & $< 10^{-300}$ & Yes \\
+\texttt{Education} & Categorical & 4027.11 & Cram\'{e}r's $V = 0.1260$ & $< 10^{-300}$ & Yes \\
+\texttt{PhysActivity} & Categorical & 3539.42 & Cram\'{e}r's $V = 0.1181$ & $< 10^{-300}$ & Yes \\
+\texttt{Stroke} & Categorical & 2838.92 & Cram\'{e}r's $V = 0.1058$ & $< 10^{-300}$ & Yes \\
+\texttt{CholCheck} & Categorical & 1062.94 & Cram\'{e}r's $V = 0.0647$ & $3.38e-232$ & Yes \\
+\texttt{Smoker} & Categorical & 937.06 & Cram\'{e}r's $V = 0.0608$ & $6.91e-205$ & Yes \\
+\texttt{HvyAlcoholConsump} & Categorical & 825.12 & Cram\'{e}r's $V = 0.0570$ & $1.31e-180$ & Yes \\
+\texttt{Veggies} & Categorical & 811.81 & Cram\'{e}r's $V = 0.0566$ & $8.78e-178$ & Yes \\
+\texttt{Fruits} & Categorical & 421.61 & Cram\'{e}r's $V = 0.0408$ & $5.44e-93$ & Yes \\
+\texttt{Sex} & Categorical & 250.41 & Cram\'{e}r's $V = 0.0314$ & $6.33e-56$ & Yes \\
+\texttt{NoDocbcCost} & Categorical & 250.31 & Cram\'{e}r's $V = 0.0314$ & $6.33e-56$ & Yes \\
+\texttt{AnyHealthcare} & Categorical & 66.81 & Cram\'{e}r's $V = 0.0162$ & $2.99e-16$ & Yes \\
+\texttt{BMI} & Numerical & 5.31e+09 & $r_{rb} = 0.3766$ & $< 10^{-300}$ & Yes \\
+\texttt{MentHlth} & Numerical & 4.07e+09 & $r_{rb} = 0.0546$ & $7.00e-90$ & Yes \\
+\texttt{PhysHlth} & Numerical & 4.73e+09 & $r_{rb} = 0.2260$ & $< 10^{-300}$ & Yes \\
+\bottomrule
+\end{tabular}
+\footnotetext{Note: Categorical features were evaluated using Pearson's Chi-square ($\chi^2$) test of independence and Cram\'{e}r's $V$. Continuous numerical features were evaluated using two-sided Mann-Whitney $U$ tests and rank-biserial correlation ($r_{rb}$). All $p$-values were adjusted using the Holm--Bonferroni sequential procedure.}
+\end{table}

@@ -39,18 +39,47 @@ def validate_pipeline_outputs():
         if df_clean.isnull().sum().sum() > 0:
             errors.append("Cleaned dataset contains unexpected missing values.")
 
-    # 2. Required Results Artifacts Checks
+    # 2. Required Results & Manuscript Artifacts Checks
     required_files = [
+        # Data understanding & duplicate audit
+        RESULTS_DIR / "data_understanding" / "dataset_audit.json",
+        RESULTS_DIR / "data_understanding" / "dataset_audit.csv",
+        RESULTS_DIR / "data_understanding" / "duplicate_summary.csv",
+        # Statistical analysis
         RESULTS_DIR / "statistical_analysis" / "chi_square_results.csv",
         RESULTS_DIR / "statistical_analysis" / "numerical_results.csv",
         RESULTS_DIR / "statistical_analysis" / "adjusted_association.csv",
+        RESULTS_DIR / "statistical_analysis" / "multivariable_associations.csv",
+        RESULTS_DIR / "statistical_analysis" / "adjusted_feature_contributions.csv",
+        # Modeling & holdout evaluation
         RESULTS_DIR / "modeling" / "model_selection.json",
         RESULTS_DIR / "modeling" / "final_test_metrics.csv",
         RESULTS_DIR / "modeling" / "threshold_analysis.csv",
         RESULTS_DIR / "modeling" / "calibration_metrics.csv",
+        RESULTS_DIR / "modeling" / "model_configuration.json",
         RESULTS_DIR / "modeling" / "final_model.joblib",
+        # XAI & evidence alignment
         RESULTS_DIR / "xai" / "explanation_consistency.csv",
         RESULTS_DIR / "xai" / "rank_sensitivity_analysis.csv",
+        # Phase 1 & Phase 2 integrity / sensitivity
+        RESULTS_DIR / "phase1_integrity" / "split_integrity_summary.csv",
+        RESULTS_DIR / "phase2_sensitivity" / "primary_vs_grouped_comparison.csv",
+        RESULTS_DIR / "phase2_sensitivity" / "grouped_calibration_metrics.csv",
+        # Publication manuscript & paper tables
+        PROJECT_ROOT / "paper" / "main.tex",
+        PROJECT_ROOT / "paper" / "main.pdf",
+        PROJECT_ROOT / "paper" / "generated_metrics.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table1_preprocessing.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table2_univariate_associations.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table3_multivariable_associations.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table4_cv_model_comparison.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table5_threshold_selection.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table6_holdout_performance.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table7_calibration_metrics.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table8_shap_alignment.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table9_sensitivity_alignment.tex",
+        PROJECT_ROOT / "paper" / "tables" / "table10_primary_vs_grouped_comparison.tex",
+        # Summaries
         RESULTS_DIR / "final_results_summary.json",
         RESULTS_DIR / "final_results_summary.md"
     ]
@@ -103,6 +132,18 @@ def validate_pipeline_outputs():
             for term in forbidden_terms:
                 if term in content:
                     errors.append(f"Forbidden path pattern '{term}' found in: {mdf.relative_to(PROJECT_ROOT)}")
+
+    # 6. Independent Manuscript Consistency Audit
+    print("\n[Check 6] Running independent manuscript consistency audit...")
+    try:
+        from python_analysis.audit_manuscript_consistency import audit_consistency
+    except ImportError:
+        from audit_manuscript_consistency import audit_consistency
+    
+    try:
+        audit_consistency()
+    except Exception as e:
+        errors.append(f"Manuscript consistency audit failed: {e}")
 
     if errors:
         print("\n[FAILED] VALIDATION FAILED WITH THE FOLLOWING ERRORS:")

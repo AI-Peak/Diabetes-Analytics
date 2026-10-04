@@ -70,17 +70,21 @@
   - **Accuracy:** 0.7091 (70.91%)
   - **Confusion Matrix:** $\text{TP} = 5,725$, $\text{FP} = 13,416$, $\text{TN} = 30,251$, $\text{FN} = 1,344$
 
-### Holdout Calibration Assessment
-- **Brier Score:** 0.0974
-- **Calibration Slope:** 0.9590
-- **Calibration Intercept:** -0.0514
+### Holdout Joint Cox Calibration Assessment
+- **Primary Brier Score:** 0.0974 [0.0964, 0.0983]
+- **Primary Cox Calibration Slope:** 0.9589 [0.9342, 0.9854]
+- **Primary Cox Calibration Intercept:** -0.0515 [-0.0861, -0.0148]
+- **Grouped Redevelopment Calibration Slope:** 0.9878 [0.9638, 1.0124]
+- **Grouped Redevelopment Calibration Intercept:** -0.0158 [-0.0586, 0.0252]
 
-### Top SHAP Feature Importances & Rank Alignment
+### Top SHAP Feature Importances & Multivariable Evidence Alignment
 - **Top 5 SHAP Features:** `GenHlth` (0.6381), `HighBP` (0.5264), `Age` (0.3994), `BMI` (0.3978), `HighChol` (0.2927).
-- **Top-10 Rank Alignment:**
-  - Overlap Count: 7 / 10 features
-  - Jaccard Similarity: 0.5385
-  - Spearman Rank Correlation ($r_s$): 0.7098 ($p = 3.13 \times 10^{-4}$)
+- **Multivariable Likelihood-Ratio Alignment (SHAP vs Nested LR $\chi^2$):**
+  - Top-10 Overlap Count: 10 / 10 features (100%)
+  - Top-10 Jaccard Similarity: 1.0000
+  - Spearman Rank Correlation ($\rho_s$): 0.9338 ($p = 6.38 \times 10^{-10}$)
+  - df-Aware ($\text{LR } \chi^2 - \text{df}$): $\rho_s = 0.9338$, Top-10 Jaccard = 1.0000
+  - df-Aware ($\text{LR } \chi^2 / \text{df}$): $\rho_s = 0.8818$, Top-10 Jaccard = 0.8182
 
 ---
 

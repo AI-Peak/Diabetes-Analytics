@@ -18,10 +18,10 @@ To ensure statistical rigor, we apply:
 3. **Independent Two-Sample Welch t-Test** (parametric mean comparison) and **Mann-Whitney U Test** (non-parametric median/distribution comparison) for continuous numerical variables.
 4. **Absolute Rank-Biserial Correlation** (primary) and **Cohen's d** (secondary) to measure numerical effect sizes.
 5. **Holm–Bonferroni Multiple Testing Correction**: Holm adjustment was applied across the prespecified primary association tests: Chi-square tests for categorical features and Mann–Whitney U tests for numerical features. Welch’s t-tests were retained as complementary sensitivity analyses.
-6. **Multivariable Adjusted Association Analysis**: Multivariable Logistic Regression to evaluate adjusted Odds Ratios (ORs), 95% Confidence Intervals, and Variance Inflation Factors (VIF) to assess conditional feature contributions while controlling for co-occurring indicators.
+6. **Multivariable Adjusted Association Analysis**: Multivariable Logistic Regression with categorical indicator blocks for ordinal/multiclass predictors (`GenHlth`, `Age`, `Education`, `Income`), reporting term-level AORs, 95% Confidence Intervals, and feature-level nested Likelihood-Ratio tests ($\Delta\text{deviance}$ / LR $\chi^2$) to assess conditional feature contributions while controlling for all co-occurring indicators.
 
 > **Methodological Note on Large Sample Size:**  
-> With *N* = 253,680, statistical tests possess near-infinite power, causing p-values for almost all predictors to drop below $p < 0.05$. Therefore, p-values are reported alongside Holm-adjusted values for formal hypothesis testing, but **practical feature importance is evaluated by Effect Size within each feature family**.
+> With *N* = 253,680, statistical tests possess near-infinite power, causing p-values for almost all predictors to drop below $p < 0.05$. Therefore, p-values are reported alongside Holm-adjusted values for formal hypothesis testing, but **practical feature importance is evaluated by Effect Size within each feature family and feature-level Likelihood-Ratio $\chi^2$ ($\Delta\text{deviance}$)**.
 
 ---
 
@@ -74,36 +74,36 @@ To ensure statistical rigor, we apply:
 
 ## 4. Multivariable Adjusted Association Analysis (Logistic Regression)
 
-To complement univariate marginal testing, a multivariable logistic regression model was estimated to quantify adjusted Odds Ratios (ORs) while controlling for all 21 health indicators simultaneously.
+To evaluate adjusted associations while controlling for co-occurring indicators, a multivariable logistic regression model was estimated. Categorical and ordinal features (`GenHlth`, `Age`, `Education`, `Income`) were modeled using categorical indicator blocks with the lowest category as reference. Feature-level statistical contributions were evaluated via nested Likelihood-Ratio $\chi^2$ tests ($\Delta\text{deviance}$).
 
-### Adjusted Odds Ratio & Multicollinearity Summary
-| Variable Name | Description | Coef ($eta$) | Std Error | z-stat | Adjusted p-val | Holm-Adjusted p | Adjusted Odds Ratio (95% CI) | VIF |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `CholCheck` | Cholesterol Check (5 Years) | 1.2440 | 0.0686 | 18.14 | `1.58e-73` | `2.21e-72` | **3.47** (3.03–3.97) | 1.03 |
-| `HighBP` | High Blood Pressure | 0.7576 | 0.0148 | 51.33 | `< 1.00e-300` | `< 1.00e-300` | **2.13** (2.07–2.20) | 1.33 |
-| `HighChol` | High Cholesterol | 0.5785 | 0.0136 | 42.56 | `< 1.00e-300` | `< 1.00e-300` | **1.78** (1.74–1.83) | 1.17 |
-| `GenHlth` | Self-Rated General Health | 0.5359 | 0.0081 | 65.86 | `< 1.00e-300` | `< 1.00e-300` | **1.71** (1.68–1.74) | 1.80 |
-| `Sex` | Biological Sex | 0.2581 | 0.0135 | 19.18 | `5.28e-82` | `7.92e-81` | **1.29** (1.26–1.33) | 1.08 |
-| `HeartDiseaseorAttack` | Heart Disease or Attack History | 0.2204 | 0.0178 | 12.38 | `3.25e-35` | `3.90e-34` | **1.25** (1.20–1.29) | 1.17 |
-| `Stroke` | Stroke History | 0.1342 | 0.0251 | 5.35 | `9.01e-08` | `8.11e-07` | **1.14** (1.09–1.20) | 1.08 |
-| `Age` | Age Category (13 levels) | 0.1236 | 0.0028 | 44.20 | `< 1.00e-300` | `< 1.00e-300` | **1.13** (1.13–1.14) | 1.35 |
-| `DiffWalk` | Difficulty Walking or Climbing Stairs | 0.1232 | 0.0170 | 7.26 | `4.01e-13` | `4.01e-12` | **1.13** (1.09–1.17) | 1.53 |
-| `AnyHealthcare` | Healthcare Coverage Access | 0.0827 | 0.0335 | 2.47 | `1.35e-02` | `5.41e-02` | **1.09** (1.02–1.16) | 1.11 |
-| `BMI` | BMI | 0.0609 | 0.0009 | 67.60 | `< 1.00e-300` | `< 1.00e-300` | **1.06** (1.06–1.06) | 1.14 |
-| `NoDocbcCost` | Doctor Cost Barrier | 0.0180 | 0.0230 | 0.78 | `4.36e-01` | `8.63e-01` | **1.02** (0.97–1.07) | 1.14 |
-| `MentHlth` | MentHlth | -0.0036 | 0.0009 | -4.25 | `2.11e-05` | `1.48e-04` | **1.00** (0.99–1.00) | 1.24 |
-| `PhysHlth` | PhysHlth | -0.0074 | 0.0008 | -9.45 | `3.26e-21` | `3.59e-20` | **0.99** (0.99–0.99) | 1.62 |
-| `Smoker` | Tobacco Smoker Status | -0.0104 | 0.0132 | -0.79 | `4.31e-01` | `8.63e-01` | **0.99** (0.96–1.02) | 1.09 |
-| `Education` | Education Level (6 levels) | -0.0308 | 0.0070 | -4.42 | `9.77e-06` | `7.82e-05` | **0.97** (0.96–0.98) | 1.33 |
-| `Veggies` | Vegetable Consumption Daily | -0.0332 | 0.0159 | -2.08 | `3.72e-02` | `1.12e-01` | **0.97** (0.94–1.00) | 1.11 |
-| `Fruits` | Fruit Consumption Daily | -0.0499 | 0.0137 | -3.65 | `2.65e-04` | `1.59e-03` | **0.95** (0.93–0.98) | 1.11 |
-| `Income` | Income Bracket (8 levels) | -0.0515 | 0.0036 | -14.42 | `3.73e-47` | `4.86e-46` | **0.95** (0.94–0.96) | 1.50 |
-| `PhysActivity` | Physical Activity Indicator | -0.0518 | 0.0144 | -3.59 | `3.35e-04` | `1.68e-03` | **0.95** (0.92–0.98) | 1.16 |
-| `HvyAlcoholConsump` | Heavy Alcohol Consumption | -0.7692 | 0.0385 | -19.96 | `1.16e-88` | `1.86e-87` | **0.46** (0.43–0.50) | 1.02 |
+### Feature-Level Likelihood-Ratio Contributions (Nested Model Comparison)
+| Rank | Variable Name | Description | LR $\chi^2$ ($\Delta$deviance) | df | Raw p-value | Holm-Adjusted p | Reject $H_0$ |
+| :---: | :--- | :--- | :---: | :---: | :---: | :---: | :---: |
+| 1 | `GenHlth` | Self-Rated General Health | 4941.50 | 4 | `< 1.00e-300` | `< 1.00e-300` | Yes |
+| 2 | `BMI` | Body Mass Index | 3986.04 | 1 | `< 1.00e-300` | `< 1.00e-300` | Yes |
+| 3 | `Age` | Age Category (13 levels) | 2869.38 | 12 | `< 1.00e-300` | `< 1.00e-300` | Yes |
+| 4 | `HighBP` | High Blood Pressure | 2448.45 | 1 | `< 1.00e-300` | `< 1.00e-300` | Yes |
+| 5 | `HighChol` | High Cholesterol | 1572.34 | 1 | `< 1.00e-300` | `< 1.00e-300` | Yes |
+| 6 | `HvyAlcoholConsump` | Heavy Alcohol Consumption | 476.94 | 1 | `9.89e-106` | `1.58e-104` | Yes |
+| 7 | `CholCheck` | Cholesterol Check (5 Years) | 452.13 | 1 | `2.48e-100` | `3.72e-99` | Yes |
+| 8 | `Sex` | Biological Sex | 391.04 | 1 | `4.91e-87` | `6.88e-86` | Yes |
+| 9 | `Income` | Income Bracket (8 levels) | 297.98 | 7 | `1.63e-60` | `2.12e-59` | Yes |
+| 10 | `HeartDiseaseorAttack` | Heart Disease or Attack History | 201.68 | 1 | `9.00e-46` | `1.08e-44` | Yes |
+| 11 | `DiffWalk` | Difficulty Walking or Climbing Stairs | 73.65 | 1 | `9.31e-18` | `1.02e-16` | Yes |
+| 12 | `Education` | Education Level (6 levels) | 49.61 | 5 | `1.67e-09` | `1.50e-08` | Yes |
+| 13 | `Stroke` | Stroke History | 41.07 | 1 | `1.47e-10` | `1.47e-09` | Yes |
+| 14 | `PhysHlth` | Physical Unhealthy Days | 18.73 | 1 | `1.50e-05` | `1.20e-04` | Yes |
+| 15 | `PhysActivity` | Physical Activity Indicator | 16.57 | 1 | `4.69e-05` | `3.29e-04` | Yes |
+| 16 | `MentHlth` | Mental Unhealthy Days | 11.43 | 1 | `7.22e-04` | `4.33e-03` | Yes |
+| 17 | `Smoker` | Tobacco Smoker Status | 9.25 | 1 | `2.36e-03` | `1.18e-02` | Yes |
+| 18 | `AnyHealthcare` | Healthcare Coverage Access | 4.95 | 1 | `2.61e-02` | `1.05e-01` | No |
+| 19 | `Veggies` | Vegetable Consumption Daily | 3.36 | 1 | `6.68e-02` | `2.00e-01` | No |
+| 20 | `Fruits` | Fruit Consumption Daily | 2.86 | 1 | `9.06e-02` | `2.00e-01` | No |
+| 21 | `NoDocbcCost` | Doctor Cost Barrier | 0.11 | 1 | `7.46e-01` | `7.46e-01` | No |
 
 ### Key Findings from Multivariable Analysis:
-1. **Highest Adjusted Odds Ratios**: `GenHlth` (OR = 1.71), `HighBP` (OR = 2.13), `HighChol` (OR = 1.78), and `CholCheck` (OR = 3.47) maintain strong positive adjusted associations with diabetes status.
-2. **Multicollinearity Diagnostic**: All Variance Inflation Factor (VIF) values remain low (VIF < 3.0), indicating that severe multicollinearity is not present and multivariable parameter estimates are stable.
+1. **Top Feature Contributions by $\Delta\text{deviance}$**: `GenHlth` (LR $\chi^2$ = 4941.50, df = 4), `BMI` (LR $\chi^2$ = 3986.04, df = 1), `Age` (LR $\chi^2$ = 2869.38, df = 12), `HighBP` (LR $\chi^2$ = 2448.45, df = 1), and `HighChol` (LR $\chi^2$ = 1572.34, df = 1) contribute the largest likelihood gains to the multivariable model.
+2. **Category-Level Odds Ratios**: Full term-level adjusted odds ratios and confidence intervals across all dummy categories are archived in `results/statistical_analysis/multivariable_associations.csv`.
 
 ---
 
@@ -117,5 +117,5 @@ Saved under `results/statistical_analysis/` and `docs/figures/`:
 ---
 
 ## 6. Conclusions for Research Question 1 (RQ1)
-1. **Primary Associated Features**: General Health (`GenHlth`), High Blood Pressure (`HighBP`), High Cholesterol (`HighChol`), Difficulty Walking (`DiffWalk`), and Body Mass Index (`BMI`) demonstrate the highest sample-level effect sizes and adjusted odds ratios in the analyzed sample.
-2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but feature prioritization is governed by effect size and adjusted odds ratio rather than p-value magnitudes.
+1. **Primary Associated Features**: General Health (`GenHlth`), Body Mass Index (`BMI`), Age (`Age`), High Blood Pressure (`HighBP`), and High Cholesterol (`HighChol`) demonstrate the highest multivariable likelihood contributions and sample-level effect sizes.
+2. **Multiple Testing Control**: All key relationships remain statistically significant after Holm–Bonferroni correction, but feature prioritization is governed by effect size and likelihood contribution rather than raw p-value magnitudes.

@@ -1,0 +1,48 @@
+{
+  "project": "Diabetes-Analytics / Predicting Diabetes Risk Using CDC Health Indicators",
+  "canonical_environment": {
+    "recommended_python": "3.11",
+    "tested_python_runtime": "3.13.12 (tags/v3.13.12:1cbe481, Feb 3 2026, 18:22:25) [MSC v.1944 64 bit (AMD64)]",
+    "operating_system": "Windows 10 / Linux / macOS (cross-platform compatible)",
+    "core_libraries": {
+      "numpy": "2.4.6",
+      "scipy": "1.18.0",
+      "pandas": "3.0.3",
+      "scikit-learn": "1.9.0",
+      "statsmodels": "0.14.6",
+      "xgboost": "3.3.0",
+      "shap": "0.52.0",
+      "matplotlib": "3.11.0"
+    },
+    "tex_engine": {
+      "compiler": "tectonic",
+      "fallback": "pdflatex + bibtex"
+    }
+  },
+  "directory_structure_relative": {
+    "raw_data": "data/raw/diabetes_binary_health_indicators_BRFSS2015.csv",
+    "processed_data": "data/processed/diabetes_cleaned.csv",
+    "analysis_scripts": "python_analysis/",
+    "notebook_scripts": "notebooks/",
+    "results_statistical": "results/statistical_analysis/",
+    "results_modeling": "results/modeling/",
+    "results_xai": "results/xai/",
+    "results_phase1_integrity": "results/phase1_integrity/",
+    "results_phase2_sensitivity": "results/phase2_sensitivity/",
+    "paper_manuscript": "paper/main.tex",
+    "paper_tables": "paper/tables/",
+    "paper_figures": "paper/images/",
+    "paper_compiled_pdf": "paper/main.pdf"
+  },
+  "reproducibility_entrypoints": {
+    "full_pipeline": "python run_pipeline.py",
+    "data_integrity_audit": "python python_analysis/phase1_data_integrity_audit.py",
+    "statistical_analysis": "python python_analysis/statistical_analysis.py",
+    "model_benchmarking": "python python_analysis/model_training.py",
+    "shap_evidence_alignment": "python python_analysis/shap_analysis.py",
+    "grouped_sensitivity": "python python_analysis/phase2_profile_grouped_sensitivity.py",
+    "artifact_synchronization": "python python_analysis/generate_paper_artifacts.py",
+    "manuscript_compilation": "tectonic paper/main.tex",
+    "quality_control_audit": "python python_analysis/validate_outputs.py"
+  }
+}

@@ -1,0 +1,29 @@
+\begin{table}[htbp]
+\centering
+\caption{Dataset Summary and Integrity Audit Overview}
+\label{tab:data_overview}
+\begin{tabular}{lc}
+\toprule
+\textbf{Metric / Parameter} & \textbf{Value} \\
+\midrule
+Total Analyzed Observations ($N$) & 253,680 \\
+Number of Predictor Variables & 21 \\
+Target Variable & \texttt{Diabetes\_binary} \\
+Class 0: No reported diabetes & 218,334 (86.07\%) \\
+Class 1: Prediabetes or diabetes & 35,346 (13.93\%) \\
+Missing Values & 0 (0.00\%) \\
+\midrule
+\multicolumn{2}{l}{\textit{Data Integrity Audit: Duplication and Profiles}} \\
+Surplus Exact Duplicate Rows (22 variables) & 24,206 (9.54\%) \\
+Observations in Exact Duplicate Clusters & 35,575 (14.02\%) \\
+Distinct Exact Duplicate Groups & 11,369 \\
+Unique Predictor Profiles (21 predictors only) & 227,908 \\
+Surplus Repeated Predictor Profiles & 25,772 (10.16\%) \\
+Observations in Repeated Predictor Profiles & 38,000 (14.98\%) \\
+Distinct Multi-Observation Predictor Profiles & 12,228 \\
+Predictor Profiles with Conflicting Target Labels & 1,566 \\
+Observations in Conflicting-Label Profiles & 5,218 (2.06\%) \\
+\bottomrule
+\end{tabular}
+\footnotetext{Note: Exact duplicates consider all 21 predictors and the binary outcome. Predictor profiles are defined solely on the 21 predictor variables. All records were retained because identical discrete response profiles may legitimately occur among different respondents, and respondent identity cannot be determined from the released analytic dataset.}
+\end{table}

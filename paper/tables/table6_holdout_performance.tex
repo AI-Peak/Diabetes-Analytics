@@ -1,0 +1,23 @@
+\begin{table}[htbp]
+\centering
+\caption{Final Performance on Untouched Holdout Test Set ($n_{\text{holdout}} = 50,736$)}
+\label{tab:holdout_performance}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Metric} & \textbf{Default Cutoff ($0.50$)} & \textbf{Selected Cutoff ($t^* = 0.13$) [95\% CI]} \\
+\midrule
+ROC-AUC & 0.8272 & 0.8272 [0.8223, 0.8322] \\
+PR-AUC & 0.4238 & 0.4238 [0.4135, 0.4347] \\
+Recall (Sensitivity) & 0.1654 & 0.8099 [0.8004, 0.8194] \\
+Precision (PPV) & 0.5583 & 0.2991 [0.2953, 0.3028] \\
+Specificity & 0.9788 & 0.6928 \\
+F1-score & 0.2552 & 0.4369 [0.4317, 0.4418] \\
+Accuracy & 0.8655 & 0.7091 \\
+True Positives (TP) & 1,169 & 5,725 \\
+False Negatives (FN) & 5,900 & 1,344 ($-77.22\%$, count change) \\
+True Negatives (TN) & 42,742 & 30,251 \\
+False Positives (FP) & 925 & 13,416 \\
+\bottomrule
+\end{tabular}
+\footnotetext{Note: Evaluated strictly once on the quarantined holdout test set. 95\% confidence intervals were obtained via 1,000 stratified bootstrap resamples.}
+\end{table}

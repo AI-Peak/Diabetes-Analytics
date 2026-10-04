@@ -43,26 +43,29 @@ This document maps all canonical datasets, method scripts, main tables, main fig
 | **Table 5: Threshold Selection Analysis** | `results/modeling/threshold_analysis.csv` | OOF Recall, Precision, F1, TP, FP, TN, FN across thresholds 0.01 to 0.99. |
 | **Table 6: Untouched Holdout Test Metrics** | `results/modeling/final_test_metrics.csv` | Holdout performance at default (0.50) vs validation-selected threshold (0.13). |
 | **Table 7: Holdout Calibration Assessment** | `results/modeling/calibration_metrics.csv` | Brier score, calibration slope, calibration intercept. |
-| **Table 8: SHAP–Statistical Evidence Alignment** | `results/xai/explanation_consistency.csv` | 4 alignment groups, SHAP rank, effect size rank, adjusted OR rank. |
-| **Table 9: Rank Alignment Sensitivity Analysis** | `results/xai/rank_sensitivity_analysis.csv` | Top-5, Top-10, Top-15 Jaccard similarity and overlap counts. |
+| **Table 8: SHAP–Statistical Evidence Alignment** | `results/xai/explanation_consistency.csv` | Multivariable likelihood-ratio chi2 contributions vs global SHAP importance attributions. |
+| **Table 9: Rank Alignment Sensitivity Analysis** | `results/xai/rank_sensitivity_analysis.csv` | Top-5, Top-10, Top-15 Jaccard similarity and degree-of-freedom sensitivity (Chi2 - df, Chi2 / df). |
+| **Table 10: Primary vs Grouped Comparison** | `results/phase2_sensitivity/primary_vs_grouped_comparison.csv` | Full metric comparison and deltas between Primary Stratified and Profile-Grouped Redevelopment. |
 
 ---
 
 ## 4. Main Canonical Figures
 
-| Paper Figure | Artifact Path | Format |
-| :--- | :--- | :--- |
-| **Figure 1: Methodology Pipeline** | `docs/figures/methodology_pipeline.png` | PNG (300 DPI) & SVG |
-| **Figure 2: Class Distribution** | `docs/figures/class_distribution.png` | PNG (300 DPI) & SVG |
-| **Figure 3: Effect Size Evidence by Feature Family** | `docs/figures/effect_size_ranking.png` | PNG (300 DPI) |
-| **Figure 4: 5-Fold CV Model Comparison** | `docs/figures/cv_model_comparison.png` | PNG (300 DPI) |
-| **Figure 5: Holdout ROC & PR Curves** | `docs/figures/holdout_roc_pr_curves.png` | PNG (300 DPI) |
-| **Figure 6: Threshold Selection & Trade-off** | `docs/figures/threshold_tradeoff.png` | PNG (300 DPI) |
-| **Figure 7: Holdout Calibration Curve** | `docs/figures/holdout_calibration_curve.png` | PNG (300 DPI) |
-| **Figure 8: Global SHAP Feature Importance** | `docs/figures/shap_global_importance.png` | PNG (300 DPI) & SVG |
-| **Figure 9: Global SHAP Summary Beeswarm** | `docs/figures/shap_summary_beeswarm.png` | PNG (300 DPI) & SVG |
-| **Figure 10: Local SHAP Explanation (Class 1 Profile)** | `docs/figures/shap_local_high_risk.png` | PNG (300 DPI) & SVG |
-| **Figure 11: Effect Size–SHAP Alignment Framework** | `docs/figures/effect_size_shap_alignment.png` | PNG (300 DPI) & SVG |
+The 9 authoritative publication figures tracked in `paper/images/` (cataloged in `paper/images/final_figure_inventory.csv`):
+
+| Figure ID | Filename | Research Question | Purpose |
+| :---: | :--- | :---: | :--- |
+| **FIG-01** | `methodology_pipeline_final.png` | Overall Methodology | End-to-end 12-step scientific methodology workflow diagram |
+| **FIG-02** | `effect_size_ranking.png` | RQ1 | Univariate statistical associations (Cramer's V & rank-biserial with Holm-Bonferroni correction) |
+| **FIG-03** | `cv_model_comparison.png` | RQ2 | 5-fold cross-validation performance comparison across supervised classifiers |
+| **FIG-04** | `threshold_tradeoff.png` | RQ2 | Development out-of-fold screening decision threshold optimization curve ($t^* = 0.13$) |
+| **FIG-05** | `holdout_roc_pr_curves.png` | RQ2 | Primary internal holdout discrimination curves (ROC and PR) |
+| **FIG-06** | `figure2_calibration_curves.png` | RQ2 / RQ4 | Joint Cox calibration curves comparing primary stratified vs zero-overlap grouped models |
+| **FIG-07** | `shap_summary_beeswarm.png` | RQ3 | TreeExplainer SHAP beeswarm plot displaying global importance and directional attribution |
+| **FIG-08** | `effect_size_shap_alignment.png` | RQ3 | Likelihood-ratio Chi2 vs global SHAP importance ranking alignment and quadrant classification |
+| **FIG-09** | `figure1_discrimination_comparison.png` | RQ4 | Primary stratified vs profile-grouped redevelopment discrimination comparison (ROC and PR) |
+
+*Note: Supplementary figures (class distribution, local waterfall plots, etc.) are maintained under `paper/images/supplementary/` and `docs/figures/`.*
 
 ---
 
